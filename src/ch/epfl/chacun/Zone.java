@@ -2,7 +2,15 @@ package ch.epfl.chacun;
 
 import java.util.List;
 
+/**
+ * Represents different kinds of ine game (tile) zones .
+ *
+ * @author Alexis Grillet-Aubert (381587)
+ * @author Jakub Kliment (380660)
+ */
 public sealed interface Zone {
+
+    // The special powers
     enum SpecialPower {
         SHAMAN,
         LOGBOAT,
@@ -12,30 +20,69 @@ public sealed interface Zone {
         RAFT
     }
 
-    public static int tileId(int zoneId) {
+    /**
+     * The id of the tile the zone is located in.
+     *
+     * @param zoneId the id of the zone
+     * @return the id of the tile the zone is on
+     */
+    static int tileId(int zoneId) {
         return zoneId / 10;
     }
 
-    public static int localId(int zoneId) {
+    /**
+     * The local id of a specific zone in the tile.
+     *
+     * @param zoneId the id of the zone
+     * @return the local id of the specific zone in the tile
+     */
+    static int localId(int zoneId) {
         return zoneId % 10;
     }
 
-    public abstract int id();
+    /**
+     * Abstract method for the id of the zone.
+     *
+     * @return the id of the zone
+     */
+    int id();
 
-    default public int tileId() {
+    /**
+     * The id of the tile the zone is located in.
+     *
+     * @return the id of the tile the zone is on
+     */
+    default int tileId() {
         return tileId(id());
     }
 
-    default public int localId() {
+    /**
+     * The local id of a specific zone in the tile.
+     *
+     * @return the local id of the specific zone in the tile
+     */
+    default int localId() {
         return id() % 10;
     }
 
-    default public SpecialPower specialPower() {
+    /**
+     * The special power of the zone.
+     *
+     * @return the special power of the zone (by default null)
+     */
+    default SpecialPower specialPower() {
         return null;
     }
 
 
-    public record Forest(int id, Kind kind) implements Zone {
+    /**
+     * Forest zone
+     *
+     * @param id the id of the zone
+     * @param kind the kind of the forest
+     */
+    record Forest(int id, Kind kind) implements Zone {
+        // Different kinds of forests
         public enum Kind {
             PLAIN,
             WITH_MENHIR,
@@ -43,20 +90,54 @@ public sealed interface Zone {
         }
     }
 
-    public record Meadow(int id, List<Animal> animals, SpecialPower specialPower) implements Zone {
+    /**
+     * Meadow zone
+     *
+     * @param id the id of the zone
+     * @param animals list of animals in the meadow
+     * @param specialPower the special power of the meadow (can be null)
+     */
+    record Meadow(int id, List<Animal> animals, SpecialPower specialPower) implements Zone {
+
+        // Compact constructor
         public Meadow {
+            // Defensive copy of animals
             animals = List.copyOf(animals);
         }
     }
 
-    public sealed interface Water extends Zone {
+    /**
+     * Water zone
+     */
+    sealed interface Water extends Zone {
+        // The number of fish in the water
         int fishCount();
     }
 
-    public record Lake(int id, int fishCount, SpecialPower specialPower) implements Water {
+    /**
+     * Lake zone
+     *
+     * @param id the id of the zone
+     * @param fishCount the number of fish in the lake
+     * @param specialPower the special power of the lake (can be null)
+     */
+    record Lake(int id, int fishCount, SpecialPower specialPower) implements Water {
     }
 
-    public record River(int id, int fishCount, Lake lake) implements Water {
+    /**
+     * River zone
+     *
+     * @param id the id of the zone
+     * @param fishCount the number of fish in the river
+     * @param lake the lake the river is connected to (can be null)
+     */
+    record River(int id, int fishCount, Lake lake) implements Water {
+
+        /**
+         * Boolean that checks whether a river is connected to a lake.
+         *
+         * @return true if the river is connected to a lake, false otherwise
+         */
         public boolean hasLake() {
             return lake != null;
         }
