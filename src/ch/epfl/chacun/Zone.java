@@ -1,6 +1,8 @@
 package ch.epfl.chacun;
 
-public interface Zone {
+import java.util.List;
+
+public sealed interface Zone {
     enum SpecialPower {
         SHAMAN,
         LOGBOAT,
@@ -21,7 +23,7 @@ public interface Zone {
     public abstract int id();
 
     default public int tileId() {
-        return id();
+        return tileId(id());
     }
 
     default public int localId() {
@@ -30,5 +32,33 @@ public interface Zone {
 
     default public SpecialPower specialPower() {
         return null;
+    }
+
+
+    public record Forest(int id, Kind kind) implements Zone {
+        public enum Kind {
+            PLAIN,
+            WITH_MENHIR,
+            WITH_MUSHROOMS
+        }
+    }
+
+    public record Meadow(int id, List<Animal> animals, SpecialPower specialPower) implements Zone {
+        public Meadow {
+            animals = List.copyOf(animals);
+        }
+    }
+
+    public sealed interface Water extends Zone {
+        int fishCount();
+    }
+
+    public record Lake(int id, int fishCount, SpecialPower specialPower) implements Water {
+    }
+
+    public record River(int id, int fishCount, Lake lake) implements Water {
+        public boolean hasLake() {
+            return lake != null;
+        }
     }
 }
