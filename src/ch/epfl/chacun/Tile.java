@@ -1,5 +1,6 @@
 package ch.epfl.chacun;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -27,11 +28,33 @@ public record Tile(int id, Kind kind, TileSide n, TileSide e, TileSide s, TileSi
         return List.of(n, e, s, w);
     }
 
+
+    /**
+     * Set of all zones on the sides of the tile. (All zones except lakes)
+     *
+     * @return the set of all zones on the sides of the tile
+     */
     public Set<Zone> sideZones() {
-        return null;
+        Set<Zone> zones = new HashSet<>();
+        for (TileSide side : sides()) {
+            zones.addAll(side.zones());
+        }
+        return zones;
     }
 
+
+    /**
+     * Set of all zones on the tile. (Including lakes)
+     *
+     * @return the set of all zones on the tile
+     */
     public Set<Zone> zones() {
-        return null;
+        Set<Zone> zones = sideZones();
+        for (Zone zone : zones) {
+            if (zone instanceof Zone.River river && river.hasLake()) {
+                zones.add(river.lake());
+            }
+        }
+        return zones;
     }
 }
