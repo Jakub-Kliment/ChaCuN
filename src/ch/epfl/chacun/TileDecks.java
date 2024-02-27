@@ -15,7 +15,7 @@ import java.util.function.Predicate;
  */
 public record TileDecks(List<Tile> startTiles, List<Tile> normalTiles, List<Tile> menhirTiles) {
 
-    // pas sure (doit etre immuable )
+    // pas sure (doit etre immuable)
     public TileDecks {
         startTiles = List.copyOf(startTiles);
         normalTiles = List.copyOf(normalTiles);
@@ -43,27 +43,20 @@ public record TileDecks(List<Tile> startTiles, List<Tile> normalTiles, List<Tile
 
     // pas sure si il faut garder l'element enleve ou pas
     public TileDecks withTopTileDrawn(Tile.Kind kind) {
+        Preconditions.checkArgument(deckSize(kind) != 0);
         switch (kind) {
-            case START -> {
-                Preconditions.checkArgument(!startTiles.isEmpty());
-                startTiles.remove(0);
-            }
-            case NORMAL -> {
-                Preconditions.checkArgument(!normalTiles.isEmpty());
-                normalTiles.remove(0);
-            }
-            case MENHIR -> {
-                Preconditions.checkArgument(!menhirTiles.isEmpty());
-                menhirTiles.remove(0);
-            }
+            case START -> startTiles.remove(0);
+            case NORMAL -> normalTiles.remove(0);
+            case MENHIR -> menhirTiles.remove(0);
         }
         return new TileDecks(startTiles, normalTiles, menhirTiles);
     }
 
     public TileDecks withTopTileDrawnUntil(Tile.Kind kind, Predicate<Tile> predicate) {
+        /*
         switch (kind) {
             case START -> {
-                while (!predicate.test(startTiles.getFirst())) {
+                while (!predicate.test(top)) {
                     startTiles.remove(0);
                 }
             }
@@ -77,6 +70,10 @@ public record TileDecks(List<Tile> startTiles, List<Tile> normalTiles, List<Tile
                     normalTiles.remove(0);
                 }
             }
+        }
+        */
+        while (!predicate.test(topTile(kind))) {
+            withTopTileDrawn(kind);
         }
         return new TileDecks(startTiles, normalTiles, menhirTiles);
     }
