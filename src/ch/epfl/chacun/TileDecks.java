@@ -41,14 +41,15 @@ public record TileDecks(List<Tile> startTiles, List<Tile> normalTiles, List<Tile
         };
     }
 
-    // pas sure si il faut garder l'element enleve ou pas
     public TileDecks withTopTileDrawn(Tile.Kind kind) {
         Preconditions.checkArgument(deckSize(kind) != 0);
+
         switch (kind) {
             case START -> startTiles.remove(0);
             case NORMAL -> normalTiles.remove(0);
             case MENHIR -> menhirTiles.remove(0);
         }
+
         return new TileDecks(startTiles, normalTiles, menhirTiles);
     }
 
