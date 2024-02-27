@@ -13,7 +13,7 @@ import java.util.Set;
 public record Tile(int id, Kind kind, TileSide n, TileSide e, TileSide s, TileSide w) {
 
     // The tile kinds
-    enum Kind {
+    public enum Kind {
         START,
         NORMAL,
         MENHIR
