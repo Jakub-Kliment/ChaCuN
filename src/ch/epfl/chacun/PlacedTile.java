@@ -40,7 +40,7 @@ public record PlacedTile(Tile tile, PlayerColor placer, Rotation rotation, Pos p
                 return zone;
             }
         }
-        throw new IllegalStateException();
+        throw new IllegalArgumentException();
     }
 
     public Zone specialPowerZone() {
