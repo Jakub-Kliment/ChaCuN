@@ -48,9 +48,9 @@ public class TileTest {
     }
     @Test
     void zoneMethodForRiverWorksCorrectly(){
-        assertTrue(riverC.zones().get(2) instanceof Zone.River);
         assertTrue(riverC.zones().get(0) instanceof Zone.Meadow);
-        assertTrue(riverC.zones().get(1) instanceof Zone.Meadow);
+        assertTrue(riverC.zones().get(1) instanceof Zone.River);
+        assertTrue(riverC.zones().get(2) instanceof Zone.Meadow);
 
     }
     @Test
@@ -444,12 +444,13 @@ public class TileTest {
     public void testWithTopTileDrawnUntil() {
         Tile normalTile1 = new Tile(2, Tile.Kind.NORMAL, null, null, null, null);
         Tile normalTile2 = new Tile(3, Tile.Kind.NORMAL, null, null, null, null);
-        Predicate<Tile> predicate = tile -> tile.id() == 3; // Test returns true only for tile with id 3
+        Tile normalTile3 = new Tile(4, Tile.Kind.NORMAL, null, null, null, null);
+        Predicate<Tile> predicate = tile -> tile.id() == 4; // Test returns true only for tile with id 3
 
-        TileDecks decks = new TileDecks(List.of(), List.of(normalTile1, normalTile2), List.of());
+        TileDecks decks = new TileDecks(List.of(), List.of(normalTile1, normalTile2, normalTile3), List.of());
         TileDecks newDecks = decks.withTopTileDrawnUntil(Tile.Kind.NORMAL, predicate);
 
         assertEquals(1, newDecks.deckSize(Tile.Kind.NORMAL), "Should remove tiles until predicate is true");
-        assertEquals(normalTile2, newDecks.topTile(Tile.Kind.NORMAL), "Tile matching predicate should be on top");
+        assertEquals(normalTile3, newDecks.topTile(Tile.Kind.NORMAL), "Tile matching predicate should be on top");
     }
 }
