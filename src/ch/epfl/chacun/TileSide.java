@@ -41,8 +41,7 @@ public sealed interface TileSide {
          */
         @Override
         public boolean isSameKindAs(TileSide that) {
-            // return that instanceof Forest; !!!!!!!!!
-            return this.getClass() == that.getClass();
+            return that instanceof Forest;
         }
     }
 
@@ -71,8 +70,7 @@ public sealed interface TileSide {
          */
         @Override
         public boolean isSameKindAs(TileSide that) {
-            // return that instanceof Meadow; !!!!!!!!!
-            return this.getClass() == that.getClass();
+            return that instanceof Meadow;
         }
     }
 
@@ -103,8 +101,7 @@ public sealed interface TileSide {
          */
         @Override
         public boolean isSameKindAs(TileSide that) {
-            // return that instanceof River; !!!!!!!!!
-            return this.getClass() == that.getClass();
+            return that instanceof River;
         }
     }
 }
