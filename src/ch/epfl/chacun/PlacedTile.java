@@ -113,7 +113,7 @@ public record PlacedTile(Tile tile, PlayerColor placer, Rotation rotation, Pos p
     }
 
     public int idOfZoneOccupiedBy(Occupant.Kind occupantKind) {
-        if (occupant.kind() == occupantKind){
+        if (occupant != null && occupant.kind() == occupantKind){
             return occupant.zoneId();
         }
         return -1;
