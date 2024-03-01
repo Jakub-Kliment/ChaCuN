@@ -14,7 +14,7 @@ import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TileTest {
+public class GhettoTest {
     private List<Animal> animalList = new ArrayList<>();
     private List<Animal> animalList1 = new ArrayList<>();
     private List<Animal> animalList2 = new ArrayList<>();

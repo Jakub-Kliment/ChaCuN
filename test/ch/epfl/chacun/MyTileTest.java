@@ -45,7 +45,40 @@ class MyTileTest {
         assertEquals(Set.of(meadow1z, river1z, meadow3z), tile3.sideZones());
     }
 
+    Zone.Meadow meadowWithSuperpower = new Zone.Meadow(560, List.of(new Animal(1, Animal.Kind.AUROCHS)), Zone.SpecialPower.HUNTING_TRAP);
+    Zone.Forest forest = new Zone.Forest(561, Zone.Forest.Kind.WITH_MENHIR);
+    Zone.Meadow meadowWithNoSuperpower = new Zone.Meadow(562, List.of(), null);
+    Zone.River river = new Zone.River(563, 1, null);
+    Zone.River riverWithLake = new Zone.River(564, 1, new Zone.Lake(565, 1, null));
+
+    TileSide n = new TileSide.Meadow(meadowWithSuperpower);
+    TileSide e = new TileSide.Forest(forest);
+    TileSide s = new TileSide.Forest(forest);
+    TileSide w = new TileSide.River(meadowWithNoSuperpower, river, meadowWithSuperpower);
+    TileSide n1 = new TileSide.Meadow(meadowWithNoSuperpower);
+    TileSide w1 = new TileSide.River(meadowWithNoSuperpower, riverWithLake, meadowWithSuperpower);
+
+    public Tile startTile = new Tile(1, Tile.Kind.START, n, e, s, w);
+
+    public Tile tileWithLake = new Tile(1, Tile.Kind.START, n, e, s, w1);
+
     @Test
-    void zones() {
+    void sidesWorksInCorrectOrderForStartTile(){
+        assertEquals(List.of(n, e, s, w), startTile.sides());
+    }
+
+    @Test
+    void sideZonesWorksForStartTile(){
+        assertEquals(Set.of(meadowWithSuperpower, forest, river, meadowWithNoSuperpower), startTile.sideZones());
+    }
+
+    @Test
+    void zonesWorksForStartTile(){
+        assertEquals(Set.of(meadowWithSuperpower, forest, river, meadowWithNoSuperpower), startTile.zones());
+    }
+
+    @Test
+    void zonesWorksForStartTileWithLake(){
+        assertEquals(Set.of(meadowWithSuperpower, forest, riverWithLake, meadowWithNoSuperpower, riverWithLake.lake()), tileWithLake.zones());
     }
 }
