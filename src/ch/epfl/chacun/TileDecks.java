@@ -21,58 +21,44 @@ public record TileDecks(List<Tile> startTiles, List<Tile> normalTiles, List<Tile
         menhirTiles = List.copyOf(menhirTiles);
     }
 
-    public int deckSize(Tile.Kind kind) {
+    /**
+     * The list of deck of a given tile kind.
+     *
+     * @param kind the kind of the tile
+     * @return the list of tiles of the given kind
+     */
+    private List<Tile> deckKind(Tile.Kind kind) {
         return switch (kind) {
-            case START -> startTiles.size();
-            case NORMAL -> normalTiles.size();
-            case MENHIR -> menhirTiles.size();
+            case START -> startTiles;
+            case NORMAL -> normalTiles;
+            case MENHIR -> menhirTiles;
         };
+    }
+    public int deckSize(Tile.Kind kind) {
+        return deckKind(kind).size();
     }
 
     public Tile topTile(Tile.Kind kind) {
         if (deckSize(kind) == 0) {
             return null;
         }
-        return switch (kind) {
-            case START -> startTiles.getFirst();
-            case NORMAL -> normalTiles.getFirst();
-            case MENHIR -> menhirTiles.getFirst();
-        };
+        return deckKind(kind).getFirst();
     }
 
     public TileDecks withTopTileDrawn(Tile.Kind kind) {
         Preconditions.checkArgument(deckSize(kind) != 0);
 
         return switch (kind) {
-            case START ->  new TileDecks(startTiles.subList(1, startTiles.size()), normalTiles, menhirTiles);
+            case START -> new TileDecks(startTiles.subList(1, startTiles.size()), normalTiles, menhirTiles);
             case NORMAL -> new TileDecks(startTiles, normalTiles.subList(1, normalTiles.size()), menhirTiles);
             case MENHIR -> new TileDecks(startTiles, normalTiles, menhirTiles.subList(1, menhirTiles.size()));
         };
     }
 
     public TileDecks withTopTileDrawnUntil(Tile.Kind kind, Predicate<Tile> predicate) {
-        /*
-        switch (kind) {
-            case START -> {
-                while (!predicate.test(top)) {
-                    startTiles.remove(0);
-                }
-            }
-            case NORMAL -> {
-                while (!predicate.test(normalTiles.getFirst())) {
-                    normalTiles.remove(0);
-                }
-            }
-            case MENHIR -> {
-                while (!predicate.test(menhirTiles.getFirst())) {
-                    normalTiles.remove(0);
-                }
-            }
-        }
-        */
         TileDecks tileDecks = this;
-        while (!predicate.test(tileDecks.topTile(kind))) {
-            tileDecks = withTopTileDrawn(kind);
+        if (!predicate.test(tileDecks.topTile(kind)) && deckSize(kind) != 0) {
+            return tileDecks.withTopTileDrawn(kind).withTopTileDrawnUntil(kind, predicate);
         }
         return tileDecks;
     }
