@@ -112,7 +112,6 @@ public record PlacedTile(Tile tile, PlayerColor placer, Rotation rotation, Pos p
         return new PlacedTile(tile, placer, rotation, pos);
     }
 
-    // verifier !!!!!!!!!!!
     public int idOfZoneOccupiedBy(Occupant.Kind occupantKind) {
         if (occupant.kind() == occupantKind){
             return occupant.zoneId();

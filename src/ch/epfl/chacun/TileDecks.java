@@ -15,7 +15,6 @@ import java.util.function.Predicate;
  */
 public record TileDecks(List<Tile> startTiles, List<Tile> normalTiles, List<Tile> menhirTiles) {
 
-    // pas sure (doit etre immuable)
     public TileDecks {
         startTiles = List.copyOf(startTiles);
         normalTiles = List.copyOf(normalTiles);
@@ -45,7 +44,7 @@ public record TileDecks(List<Tile> startTiles, List<Tile> normalTiles, List<Tile
         Preconditions.checkArgument(deckSize(kind) != 0);
 
         return switch (kind) {
-            case START -> new TileDecks(startTiles.subList(1, startTiles.size()), normalTiles, menhirTiles);
+            case START ->  new TileDecks(startTiles.subList(1, startTiles.size()), normalTiles, menhirTiles);
             case NORMAL -> new TileDecks(startTiles, normalTiles.subList(1, normalTiles.size()), menhirTiles);
             case MENHIR -> new TileDecks(startTiles, normalTiles, menhirTiles.subList(1, menhirTiles.size()));
         };
@@ -71,9 +70,10 @@ public record TileDecks(List<Tile> startTiles, List<Tile> normalTiles, List<Tile
             }
         }
         */
-        while (!predicate.test(topTile(kind))) {
-            withTopTileDrawn(kind);
+        TileDecks tileDecks = this;
+        while (!predicate.test(tileDecks.topTile(kind))) {
+            tileDecks = withTopTileDrawn(kind);
         }
-        return new TileDecks(startTiles, normalTiles, menhirTiles);
+        return tileDecks;
     }
 }
