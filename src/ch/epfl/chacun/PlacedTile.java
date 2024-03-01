@@ -31,8 +31,7 @@ public record PlacedTile(Tile tile, PlayerColor placer, Rotation rotation, Pos p
     }
 
     public TileSide side(Direction direction) {
-        // pas sure !!!!!!!!!!
-        return tile.sides().get(direction.ordinal() + rotation.ordinal());
+        return tile.sides().get((direction.rotated(rotation).ordinal()));
     }
 
     public Zone zoneWithId(int id) {
@@ -90,14 +89,11 @@ public record PlacedTile(Tile tile, PlayerColor placer, Rotation rotation, Pos p
             return occupants;
         }
 
-        // peut etre ameliorer !!!!!!!!!
         for (Zone zone : tile.zones()) {
             if (zone instanceof Zone.Lake) {
                 occupants.add(new Occupant(Occupant.Kind.HUT, zone.id()));
             } else if (zone instanceof Zone.River river && !river.hasLake()) {
                 occupants.add(new Occupant(Occupant.Kind.HUT, zone.id()));
-            } else if (zone instanceof Zone.River) {
-                occupants.add(new Occupant(Occupant.Kind.PAWN, zone.id()));
             } else {
                 occupants.add(new Occupant(Occupant.Kind.PAWN, zone.id()));
             }
@@ -118,12 +114,8 @@ public record PlacedTile(Tile tile, PlayerColor placer, Rotation rotation, Pos p
 
     // verifier !!!!!!!!!!!
     public int idOfZoneOccupiedBy(Occupant.Kind occupantKind) {
-        if (occupant != null) {
-            for (Occupant possibleOccupant : potentialOccupants()) {
-                if (possibleOccupant.kind() == occupantKind) {
-                    return occupant.zoneId();
-                }
-            }
+        if (occupant.kind() == occupantKind){
+            return occupant.zoneId();
         }
         return -1;
     }
