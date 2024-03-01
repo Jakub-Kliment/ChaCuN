@@ -15,6 +15,7 @@ import java.util.function.Predicate;
  */
 public record TileDecks(List<Tile> startTiles, List<Tile> normalTiles, List<Tile> menhirTiles) {
 
+    // Constructor that copies the lists
     public TileDecks {
         startTiles = List.copyOf(startTiles);
         normalTiles = List.copyOf(normalTiles);
@@ -34,10 +35,23 @@ public record TileDecks(List<Tile> startTiles, List<Tile> normalTiles, List<Tile
             case MENHIR -> menhirTiles;
         };
     }
+
+    /**
+     * The size of the deck of a given tile kind.
+     *
+     * @param kind the kind of the tile
+     * @return the size of the deck of the given kind
+     */
     public int deckSize(Tile.Kind kind) {
         return deckKind(kind).size();
     }
 
+    /**
+     * The top tile of a given tile kind.
+     *
+     * @param kind the kind of the tile
+     * @return the top tile of the given kind
+     */
     public Tile topTile(Tile.Kind kind) {
         if (deckSize(kind) == 0) {
             return null;
@@ -45,6 +59,12 @@ public record TileDecks(List<Tile> startTiles, List<Tile> normalTiles, List<Tile
         return deckKind(kind).getFirst();
     }
 
+    /**
+     * The deck of a given tile kind without its top tile.
+     *
+     * @param kind the kind of the tile
+     * @return the deck of the given kind without its top tile
+     */
     public TileDecks withTopTileDrawn(Tile.Kind kind) {
         Preconditions.checkArgument(deckSize(kind) != 0);
 
@@ -55,11 +75,17 @@ public record TileDecks(List<Tile> startTiles, List<Tile> normalTiles, List<Tile
         };
     }
 
+    /**
+     * Returns a deck of a given tile kind without its top tile, until a given predicate is satisfied.
+     *
+     * @param kind the kind of the tile
+     * @param predicate the predicate to satisfy
+     * @return the deck of the given kind without its top tile, until the predicate is satisfied
+     */
     public TileDecks withTopTileDrawnUntil(Tile.Kind kind, Predicate<Tile> predicate) {
-        TileDecks tileDecks = this;
-        if (!predicate.test(tileDecks.topTile(kind)) && deckSize(kind) != 0) {
-            return tileDecks.withTopTileDrawn(kind).withTopTileDrawnUntil(kind, predicate);
+        if (!predicate.test(this.topTile(kind)) && deckSize(kind) != 0) {
+            return this.withTopTileDrawn(kind).withTopTileDrawnUntil(kind, predicate);
         }
-        return tileDecks;
+        return this;
     }
 }
