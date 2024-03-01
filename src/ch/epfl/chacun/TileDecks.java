@@ -44,13 +44,11 @@ public record TileDecks(List<Tile> startTiles, List<Tile> normalTiles, List<Tile
     public TileDecks withTopTileDrawn(Tile.Kind kind) {
         Preconditions.checkArgument(deckSize(kind) != 0);
 
-        switch (kind) {
-            case START -> startTiles.remove(0);
-            case NORMAL -> normalTiles.remove(0);
-            case MENHIR -> menhirTiles.remove(0);
-        }
-
-        return new TileDecks(startTiles, normalTiles, menhirTiles);
+        return switch (kind) {
+            case START -> new TileDecks(startTiles.subList(1, startTiles.size()), normalTiles, menhirTiles);
+            case NORMAL -> new TileDecks(startTiles, normalTiles.subList(1, normalTiles.size()), menhirTiles);
+            case MENHIR -> new TileDecks(startTiles, normalTiles, menhirTiles.subList(1, menhirTiles.size()));
+        };
     }
 
     public TileDecks withTopTileDrawnUntil(Tile.Kind kind, Predicate<Tile> predicate) {
