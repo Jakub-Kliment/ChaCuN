@@ -26,9 +26,8 @@ public record Area<Z> (Set<Z> zones, List<PlayerColor> occupants, int openConnec
      * @return true if an area contains a forest of kind menhir, false otherwise
      */
     public static boolean hasMenhir(Area<Zone.Forest> forest) {
-        for (Zone zone : forest.zones()) {
-            if (zone instanceof Zone.Forest forestZone &&
-                    forestZone.kind() == Zone.Forest.Kind.WITH_MENHIR) {
+        for (Zone.Forest zone : forest.zones()) {
+            if (zone.kind() == Zone.Forest.Kind.WITH_MENHIR) {
                 return true;
             }
         }
@@ -44,9 +43,8 @@ public record Area<Z> (Set<Z> zones, List<PlayerColor> occupants, int openConnec
      */
     public static int mushroomGroupCount(Area<Zone.Forest> forest) {
         int mushroomCount = 0;
-        for (Zone zone : forest.zones()) {
-            if (zone instanceof Zone.Forest forestZone &&
-                    forestZone.kind() == Zone.Forest.Kind.WITH_MUSHROOMS) {
+        for (Zone.Forest zone : forest.zones()) {
+            if (zone.kind() == Zone.Forest.Kind.WITH_MUSHROOMS) {
                 mushroomCount++;
             }
         }
@@ -57,24 +55,22 @@ public record Area<Z> (Set<Z> zones, List<PlayerColor> occupants, int openConnec
     public static Set<Animal> animals(Area<Zone.Meadow> meadow, Set<Animal> cancelledAnimals) {
         Set<Animal> animals = new HashSet<>();
 
-        for (Zone zone : meadow.zones()) {
-            if (zone instanceof Zone.Meadow meadowZone) {
+        for (Zone.Meadow zone : meadow.zones()) {
+            for (Animal animal : zone.animals()) {
+                boolean shouldBeAdded = true;
 
-                for (Animal animal : meadowZone.animals()) {
-                    boolean shouldBeAdded = true;
+                for (Animal cancelledAnimal : cancelledAnimals) {
 
-                    for (Animal cancelledAnimal : cancelledAnimals) {
-
-                        // If the animal is cancelled, it should not be added
-                        if (animal.kind() == cancelledAnimal.kind()) {
-                            shouldBeAdded = false;
-                            break;
-                        }
+                    // If the animal is cancelled, it should not be added
+                    //Marche surement sans le id()
+                    if (animal.id() == cancelledAnimal.id()) {
+                        shouldBeAdded = false;
+                        break;
                     }
+                }
 
-                    if (shouldBeAdded) {
-                        animals.add(animal);
-                    }
+                if (shouldBeAdded) {
+                    animals.add(animal);
                 }
             }
         }
@@ -91,15 +87,13 @@ public record Area<Z> (Set<Z> zones, List<PlayerColor> occupants, int openConnec
     public static int riverFishCount(Area<Zone.River> river) {
         int fishCount = 0;
         Set<Zone.Lake> countedLake = new HashSet<>();
-        for (Zone zone : river.zones()) {
-            if (zone instanceof Zone.River riverZone) {
-                fishCount += riverZone.fishCount();
+        for (Zone.River zone : river.zones()) {
+                fishCount += zone.fishCount();
 
                 // If the river is connected to a lake at both ends, the lake should only be counted once
-                if (riverZone.hasLake() && countedLake.add(riverZone.lake())) {
-                    fishCount += riverZone.lake().fishCount();
+                if (zone.hasLake() && countedLake.add(zone.lake())) {
+                    fishCount += zone.lake().fishCount();
                 }
-            }
         }
         return fishCount;
     }
@@ -113,10 +107,8 @@ public record Area<Z> (Set<Z> zones, List<PlayerColor> occupants, int openConnec
      */
     public static int riverSystemFishCount(Area<Zone.Water> riverSystem) {
         int fishCount = 0;
-        for (Zone zone : riverSystem.zones()) {
-            if (zone instanceof Zone.Water waterZone) {
-                fishCount += waterZone.fishCount();
-            }
+        for (Zone.Water zone : riverSystem.zones()) {
+                fishCount += zone.fishCount();
         }
         return fishCount;
     }
