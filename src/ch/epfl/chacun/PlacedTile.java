@@ -144,6 +144,7 @@ public record PlacedTile(Tile tile, PlayerColor placer, Rotation rotation, Pos p
                 occupants.add(new Occupant(Occupant.Kind.HUT, zone.id()));
             } else if (zone instanceof Zone.River river && !river.hasLake()) {
                 occupants.add(new Occupant(Occupant.Kind.HUT, zone.id()));
+                occupants.add(new Occupant(Occupant.Kind.PAWN, zone.id()));
             } else {
                 occupants.add(new Occupant(Occupant.Kind.PAWN, zone.id()));
             }
