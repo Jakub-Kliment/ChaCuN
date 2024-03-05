@@ -163,6 +163,11 @@ public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
             throw new IllegalArgumentException();
         }
 
+        /**
+         * Builds the zone partition.
+         *
+         * @return the zone partition
+         */
         public ZonePartition<Z> build(){
             return new ZonePartition<>(areaPartition);
         }
