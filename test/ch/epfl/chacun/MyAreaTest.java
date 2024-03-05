@@ -83,4 +83,21 @@ class MyAreaTest {
         Area<Zone.Forest> areaNothings = new Area<>(new HashSet<>(), new ArrayList<PlayerColor>(), 0);
         assertEquals(new HashSet<PlayerColor>(), areaNothings.majorityOccupants());
     }
+
+    @Test
+    void connectToTest(){
+        Zone.Forest forest1 = new Zone.Forest(1, Zone.Forest.Kind.PLAIN);
+        Zone.Forest forest2 = new Zone.Forest(2, Zone.Forest.Kind.PLAIN);
+        Zone.Forest forest3 = new Zone.Forest(3, Zone.Forest.Kind.PLAIN);
+        Zone.Forest forest4 = new Zone.Forest(4, Zone.Forest.Kind.PLAIN);
+        Area<Zone.Forest> area1 = new Area<Zone.Forest>(new HashSet<>(Set.of(forest1,forest2)), new ArrayList<>(), 2);
+        Area<Zone.Forest> area2 = new Area<Zone.Forest>(new HashSet<>(Set.of(forest3,forest4)), new ArrayList<>(), 3);
+        Area<Zone.Forest> area3 = area1.connectTo(area2);
+        Area<Zone.Forest> area4 = new Area<Zone.Forest>(new HashSet<>(Set.of(forest1, forest2, forest3, forest4)), new ArrayList<>(), 3);
+        Area<Zone.Forest> area5 = area2.connectTo(area2);
+        Area<Zone.Forest> area6 = new Area<Zone.Forest>(new HashSet<>(Set.of(forest3,forest4)), new ArrayList<>(), 1);
+        assertEquals(area4, area3);
+
+
+    }
 }
