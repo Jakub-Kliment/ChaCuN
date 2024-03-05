@@ -8,7 +8,7 @@ import java.util.*;
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
  */
-public record Area<Z> (Set<Z> zones, List<PlayerColor> occupants, int openConnections) {
+public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, int openConnections) {
 
     // Immutable constructor
     public Area {
@@ -220,16 +220,15 @@ public record Area<Z> (Set<Z> zones, List<PlayerColor> occupants, int openConnec
     public Set<Integer> tileIds() {
         Set<Integer> tileIds = new HashSet<>();
         for (Z zone : zones()) {
-            tileIds.add(Zone.tileId(((Zone)zone).id()));
+            tileIds.add(Zone.tileId(zone.id()));
         }
         return tileIds;
     }
 
     public Zone zoneWithSpecialPower(Zone.SpecialPower specialPower) {
         for (Z zone : zones()) {
-            //erquals() !!!!!!!!!!
-            if (zone instanceof Zone oneZone && oneZone.specialPower().equals(specialPower)) {
-                return oneZone;
+            if (zone.specialPower().equals(specialPower)) {
+                return zone;
             }
         }
         return null;
