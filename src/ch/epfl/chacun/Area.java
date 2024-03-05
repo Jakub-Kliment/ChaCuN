@@ -27,7 +27,8 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
      */
     public static boolean hasMenhir(Area<Zone.Forest> forest) {
         for (Zone.Forest zone : forest.zones()) {
-            if (zone.kind() == Zone.Forest.Kind.WITH_MENHIR) {
+            // equals ou == !!!!!!!!1
+            if (zone.kind().equals(Zone.Forest.Kind.WITH_MENHIR)) {
                 return true;
             }
         }
@@ -44,14 +45,20 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
     public static int mushroomGroupCount(Area<Zone.Forest> forest) {
         int mushroomCount = 0;
         for (Zone.Forest zone : forest.zones()) {
-            if (zone.kind() == Zone.Forest.Kind.WITH_MUSHROOMS) {
+            // !!!!!!!!! equals
+            if (zone.kind().equals(Zone.Forest.Kind.WITH_MUSHROOMS)) {
                 mushroomCount++;
             }
         }
         return mushroomCount;
     }
 
-    // Marche bien, mais moche !!!!!!!!!
+    /**
+     * Returns the number of animals in a meadow area
+     *
+     * @param meadow area of a meadow zone
+     * @return the set of animals in the meadow zone
+     */
     public static Set<Animal> animals(Area<Zone.Meadow> meadow, Set<Animal> cancelledAnimals) {
         Set<Animal> animals = new HashSet<>();
 
@@ -62,7 +69,6 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
                 for (Animal cancelledAnimal : cancelledAnimals) {
 
                     // If the animal is cancelled, it should not be added
-                    //Marche surement sans le id()
                     if (animal.id() == cancelledAnimal.id()) {
                         shouldBeAdded = false;
                         break;
@@ -181,6 +187,11 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
         return majorityOccupants;
     }
 
+    /**
+     * Adds two areas together to form a new area
+     *
+     * @return the new area formed by the two areas
+     */
     public Area<Z> connectTo(Area<Z> that) {
         // demander si on a besoin d une copie
         Set<Z> setArea = new HashSet<>(Set.copyOf(zones));
@@ -189,34 +200,52 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
         List<PlayerColor> listColor = new ArrayList<>(List.copyOf(occupants));
         listColor.addAll(that.occupants());
 
-        int nbConnections = openConnections;
-        if (this.equals(that)) {
-            nbConnections += that.openConnections - 2;
-        } else {
-            nbConnections -= 2;
+        // The number of open connections is the sum of the open connections of the two areas minus 2
+        int nbConnections = openConnections - 2;
+        if (!this.equals(that)) {
+            nbConnections += that.openConnections;
         }
-
         return new Area<>(setArea, listColor, nbConnections);
     }
 
+    /**
+     * Returns a new area with the initial occupant added
+     *
+     * @return the hash code of the area
+     */
     public Area<Z> withInitialOccupant(PlayerColor occupant) {
         Preconditions.checkArgument(occupants().isEmpty());
         List<PlayerColor> newOccupants = new ArrayList<>(List.copyOf(occupants()));
         newOccupants.add(occupant);
-        return new Area<Z>(zones(), newOccupants, openConnections());
+        return new Area<>(zones(), newOccupants, openConnections());
     }
 
+    /**
+     * Returns a new area without the specified occupant
+     *
+     * @return the new area without the specified occupant
+     */
     public Area<Z> withoutOccupant(PlayerColor occupant) {
         Preconditions.checkArgument(occupants().contains(occupant));
         List<PlayerColor> newOccupants = new ArrayList<>(List.copyOf(occupants()));
         newOccupants.remove(occupant);
-        return new Area<Z>(zones(), newOccupants, openConnections());
+        return new Area<>(zones(), newOccupants, openConnections());
     }
 
+    /**
+     * Returns a new area without any occupants
+     *
+     * @return the new area without any occupants
+     */
     public Area<Z> withoutOccupants() {
         return new Area<>(zones(), new ArrayList<>(), openConnections());
     }
 
+    /**
+     * Returns a set of tile ids of the area
+     *
+     * @return the tile ids of the area
+     */
     public Set<Integer> tileIds() {
         Set<Integer> tileIds = new HashSet<>();
         for (Z zone : zones()) {
@@ -225,6 +254,11 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
         return tileIds;
     }
 
+    /**
+     * Returns the zone with the specified special power if there is any
+     *
+     * @return the zone with the specified special power
+     */
     public Zone zoneWithSpecialPower(Zone.SpecialPower specialPower) {
         for (Z zone : zones()) {
             if (zone.specialPower().equals(specialPower)) {
