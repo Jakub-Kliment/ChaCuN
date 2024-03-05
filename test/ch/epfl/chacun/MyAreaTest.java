@@ -514,4 +514,78 @@ public class MyAreaTest {
         // Assert that the result contains both majority occupants (RED and BLUE)
         assertEquals(Set.of(PlayerColor.RED, PlayerColor.BLUE), result);
     }
+
+    @Test
+    void testConnectToWithNonOverlappingAreas() {
+        // Create two non-overlapping areas
+        Set<Zone> zones1 = new HashSet<>(Set.of(new Zone.Forest(1, Zone.Forest.Kind.PLAIN)));
+        Set<Zone> zones2 = new HashSet<>(Set.of(new Zone.Meadow(2, List.of(), null)));
+        List<PlayerColor> occupants1 = List.of(PlayerColor.RED, PlayerColor.GREEN);
+        List<PlayerColor> occupants2 = List.of(PlayerColor.BLUE);
+        int openConnections1 = 2;
+        int openConnections2 = 1;
+        Area<Zone> area1 = new Area<>(zones1, occupants1, openConnections1);
+        Area<Zone> area2 = new Area<>(zones2, occupants2, openConnections2);
+
+        // Connect the areas
+        Area<Zone> connectedArea = area1.connectTo(area2);
+
+        // Check the combined zones
+        assertEquals(2, connectedArea.zones().size());
+        assertTrue(connectedArea.zones().containsAll(zones1));
+        assertTrue(connectedArea.zones().containsAll(zones2));
+
+        // Check the combined occupants
+        assertEquals(3, connectedArea.occupants().size());
+        assertTrue(connectedArea.occupants().containsAll(occupants1));
+        assertTrue(connectedArea.occupants().containsAll(occupants2));
+
+        // Check the number of open connections
+        assertEquals(1, connectedArea.openConnections());
+    }
+
+    @Test
+    void testConnectToWithOverlappingAreas() {
+        // Create two overlapping areas
+        Set<Zone> commonZones = new HashSet<>(Set.of(new Zone.Forest(1, Zone.Forest.Kind.PLAIN)));
+        Set<Zone> zones1 = new HashSet<>(commonZones);
+        Set<Zone> zones2 = new HashSet<>(commonZones);
+        List<PlayerColor> occupants1 = List.of(PlayerColor.RED, PlayerColor.GREEN);
+        List<PlayerColor> occupants2 = List.of(PlayerColor.BLUE);
+        int openConnections1 = 2;
+        int openConnections2 = 1;
+        Area<Zone> area1 = new Area<>(zones1, occupants1, openConnections1);
+        Area<Zone> area2 = new Area<>(zones2, occupants2, openConnections2);
+
+        // Connect the areas
+        Area<Zone> connectedArea = area1.connectTo(area2);
+
+        // Check the combined zones
+        assertEquals(1, connectedArea.zones().size());
+        assertTrue(connectedArea.zones().containsAll(commonZones));
+
+        // Check the combined occupants
+        assertEquals(3, connectedArea.occupants().size());
+        assertTrue(connectedArea.occupants().containsAll(occupants1));
+        assertTrue(connectedArea.occupants().containsAll(occupants2));
+
+        // Check the number of open connections
+        assertEquals(1, connectedArea.openConnections());
+    }
+/*
+    @Test
+    void testConnectToWithNullArea() {
+        // Create an area
+        Set<Zone> zones = new HashSet<>(Set.of(new Zone.Forest(1, Zone.Forest.Kind.PLAIN)));
+        List<PlayerColor> occupants = List.of(PlayerColor.RED);
+        int openConnections = 1;
+        Area<Zone> area = new Area<>(zones, occupants, openConnections);
+
+        // Attempt to connect with a null area
+        assertThrows(IllegalArgumentException.class, () -> area.connectTo(null));
+    }
+
+
+ */
+
 }

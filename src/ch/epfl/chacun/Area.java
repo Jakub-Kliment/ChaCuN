@@ -27,7 +27,7 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
      */
     public static boolean hasMenhir(Area<Zone.Forest> forest) {
         for (Zone.Forest zone : forest.zones()) {
-            // equals ou == !!!!!!!!1
+            // equals ou == !!!!!!!!!
             if (zone.kind().equals(Zone.Forest.Kind.WITH_MENHIR)) {
                 return true;
             }
@@ -200,11 +200,10 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
         List<PlayerColor> listColor = new ArrayList<>(List.copyOf(occupants));
         listColor.addAll(that.occupants());
 
-        // The number of open connections is the sum of the open connections of the two areas minus 2
-        int nbConnections = openConnections - 2;
-        if (!this.equals(that)) {
-            nbConnections += that.openConnections;
-        }
+        // The number of open connections the number of open connections of this minus 2
+        // If they are not the same we
+        int nbConnections = openConnections - 2 + (!this.equals(that) ? that.openConnections : 0);
+
         return new Area<>(setArea, listColor, nbConnections);
     }
 
