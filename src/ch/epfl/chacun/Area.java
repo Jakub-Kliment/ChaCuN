@@ -214,7 +214,7 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
      * @return the hash code of the area
      */
     public Area<Z> withInitialOccupant(PlayerColor occupant) {
-        Preconditions.checkArgument(occupants().isEmpty());
+        Preconditions.checkArgument(!isOccupied());
         List<PlayerColor> newOccupants = new ArrayList<>(List.copyOf(occupants()));
         newOccupants.add(occupant);
         return new Area<>(zones(), newOccupants, openConnections());

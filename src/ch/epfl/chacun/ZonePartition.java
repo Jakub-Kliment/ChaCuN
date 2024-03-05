@@ -1,6 +1,8 @@
 package ch.epfl.chacun;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
@@ -18,11 +20,81 @@ public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
                 return area;
             }
         }
-        Preconditions.checkArgument(false);
-        return null;
+        throw new IllegalArgumentException();
     }
 
-    public static final class Builder<Z> {
-        //private HashSet<Area<Z>>
+    public static final class Builder<Z extends Zone> {
+        private HashSet<Area<Z>> areaPartition;
+        public Builder(ZonePartition<Z> zonePartition){
+            this.areaPartition = new HashSet<>(Set.copyOf(zonePartition.areas()));
+        }
+
+        public void addSingleton(Z zone, int openConnections){
+            Set<Z> setZone = new HashSet<Z>();
+            setZone.add(zone);
+            areaPartition.add(new Area<Z>(setZone, new ArrayList<>(), openConnections));
+        }
+
+        public void addInitialOccupant(Z zone, PlayerColor color){
+            for (Area<Z> area : areaPartition ){
+                if (area.zones().contains(zone) && !area.isOccupied()){
+                    List<PlayerColor> nextList = new ArrayList<>();
+                    nextList.add(color);
+                    areaPartition.add(new Area<Z>(area.zones(), nextList, area.openConnections()));
+                    areaPartition.remove(area);
+                    return;
+                }
+            }
+            throw new IllegalArgumentException();
+        }
+
+        public void removeOccupant(Z zone, PlayerColor color){
+            for (Area<Z> area : areaPartition ){
+                if (area.zones().contains(zone) && area.occupants().contains(color)){
+                    List<PlayerColor> nextList = new ArrayList<>(List.copyOf(area.occupants()));
+                    nextList.remove(color);
+                    areaPartition.add(new Area<Z>(area.zones(), nextList, area.openConnections()));
+                    areaPartition.remove(area);
+                    return;
+                }
+            }
+            throw new IllegalArgumentException();
+        }
+
+        public void removeAllOccupantsOf(Area<Z> area){
+            for (Area<Z> partitonArea : areaPartition ){
+                if (partitonArea.equals(area)){
+                    areaPartition.add(new Area<Z>(area.zones(), new ArrayList<PlayerColor>(), area.openConnections()));
+                    areaPartition.remove(area);
+                    return;
+                }
+            }
+            throw new IllegalArgumentException();
+        }
+
+        public void union(Z zone1, Z zone2){
+            Area<Z> area1 = null;
+            Area<Z> area2 = null;
+            for (Area<Z> partitonArea : areaPartition ){
+                if (partitonArea.zones().contains(zone1)){
+                    area1 = partitonArea;
+                }
+                if (partitonArea.zones().contains(zone2)){
+                    area2 = partitonArea;
+                }
+            }
+            if (area1 != null && area2 != null){
+                Area<Z> newArea = area1.connectTo(area2);
+                areaPartition.add(newArea);
+                areaPartition.remove(area1);
+                areaPartition.remove(area2);
+            } else {
+                throw new IllegalArgumentException();
+            }
+        }
+
+        public ZonePartition<Z> build(){
+            return new ZonePartition<Z>(areaPartition);
+        }
     }
 }
