@@ -182,7 +182,7 @@ public record Area<Z> (Set<Z> zones, List<PlayerColor> occupants, int openConnec
     }
 
     public Area<Z> connectTo(Area<Z> that) {
-        // demander si on a besoin dune copie
+        // demander si on a besoin d une copie
         Set<Z> setArea = new HashSet<>(Set.copyOf(zones));
         setArea.addAll(that.zones());
 
@@ -200,33 +200,36 @@ public record Area<Z> (Set<Z> zones, List<PlayerColor> occupants, int openConnec
     }
 
     public Area<Z> withInitialOccupant(PlayerColor occupant) {
-        Preconditions.checkArgument(occupants.size() == 1 && occupants.get(0) == occupant);
-        return this;
+        Preconditions.checkArgument(occupants().isEmpty());
+        List<PlayerColor> newOccupants = new ArrayList<>(List.copyOf(occupants()));
+        newOccupants.add(occupant);
+        return new Area<Z>(zones(), newOccupants, openConnections());
     }
 
     public Area<Z> withoutOccupant(PlayerColor occupant) {
-        Preconditions.checkArgument(occupants.contains(occupant));
-        return this;
+        Preconditions.checkArgument(occupants().contains(occupant));
+        List<PlayerColor> newOccupants = new ArrayList<>(List.copyOf(occupants()));
+        newOccupants.remove(occupant);
+        return new Area<Z>(zones(), newOccupants, openConnections());
     }
 
     public Area<Z> withoutOccupants() {
-        return new Area<>(zones, new ArrayList<>(), openConnections);
+        return new Area<>(zones(), new ArrayList<>(), openConnections());
     }
 
     public Set<Integer> tileIds() {
         Set<Integer> tileIds = new HashSet<>();
-        for (Z zone : zones) {
-            if (zone instanceof Zone oneZone) {
-                tileIds.add(Zone.tileId(oneZone.id()));
-            }
+        for (Z zone : zones()) {
+            tileIds.add(Zone.tileId(((Zone)zone).id()));
         }
         return tileIds;
     }
 
     public Zone zoneWithSpecialPower(Zone.SpecialPower specialPower) {
-        for (Z zone : zones) {
-            if (zone instanceof Zone oneZone && oneZone.specialPower() == specialPower) {
-                return (Zone) zone;
+        for (Z zone : zones()) {
+            //erquals() !!!!!!!!!!
+            if (zone instanceof Zone oneZone && oneZone.specialPower().equals(specialPower)) {
+                return oneZone;
             }
         }
         return null;
