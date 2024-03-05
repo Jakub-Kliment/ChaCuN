@@ -198,4 +198,37 @@ public record Area<Z> (Set<Z> zones, List<PlayerColor> occupants, int openConnec
 
         return new Area<>(setArea, listColor, nbConnections);
     }
+
+    public Area<Z> withInitialOccupant(PlayerColor occupant) {
+        Preconditions.checkArgument(occupants.size() == 1 && occupants.get(0) == occupant);
+        return this;
+    }
+
+    public Area<Z> withoutOccupant(PlayerColor occupant) {
+        Preconditions.checkArgument(occupants.contains(occupant));
+        return this;
+    }
+
+    public Area<Z> withoutOccupants() {
+        return new Area<>(zones, new ArrayList<>(), openConnections);
+    }
+
+    public Set<Integer> tileIds() {
+        Set<Integer> tileIds = new HashSet<>();
+        for (Z zone : zones) {
+            if (zone instanceof Zone oneZone) {
+                tileIds.add(Zone.tileId(oneZone.id()));
+            }
+        }
+        return tileIds;
+    }
+
+    public Zone zoneWithSpecialPower(Zone.SpecialPower specialPower) {
+        for (Z zone : zones) {
+            if (zone instanceof Zone oneZone && oneZone.specialPower() == specialPower) {
+                return (Zone) zone;
+            }
+        }
+        return null;
+    }
 }

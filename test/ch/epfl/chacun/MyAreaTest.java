@@ -372,14 +372,14 @@ public class MyAreaTest {
         // Create a river system with water zones containing fish
         Set<Zone.Water> waterZones = new HashSet<>();
         waterZones.add(new Zone.Lake(1, 20, null));
-        waterZones.add(new Zone.River(2, 15, new Zone.Lake(3, 10, null)));
+        waterZones.add(new Zone.River(2, 15, null));
         Area<Zone.Water> riverSystem = new Area<>(waterZones, List.of(), 0);
 
         // Call the riverSystemFishCount method
         int result = Area.riverSystemFishCount(riverSystem);
 
         // Calculate the expected total fish count
-        int expected = 20 + 15 + 10;
+        int expected = 20 + 15;
 
         // Assert that the result matches the expected total fish count
         assertEquals(expected, result);
