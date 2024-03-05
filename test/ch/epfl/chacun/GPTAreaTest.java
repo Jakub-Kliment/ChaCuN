@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -574,17 +575,148 @@ public class GPTAreaTest {
     }
 
     @Test
-    void testConnectToWithNullArea() {
-        // Create an area
-        Set<Zone> zones = new HashSet<>(Set.of(new Zone.Forest(1, Zone.Forest.Kind.PLAIN)));
-        List<PlayerColor> occupants = List.of(PlayerColor.RED);
+    void testWithInitialOccupantWhenAreaIsEmpty() {
+        // Create an empty area
+        Set<Zone> zones = new HashSet<>();
+        List<PlayerColor> occupants = List.of();
         int openConnections = 1;
         Area<Zone> area = new Area<>(zones, occupants, openConnections);
 
-        // Attempt to connect with a null area
-        assertThrows(IllegalArgumentException.class, () -> area.connectTo(null));
+        // Add initial occupant
+        PlayerColor newOccupant = PlayerColor.RED;
+        Area<Zone> newArea = area.withInitialOccupant(newOccupant);
+
+        // Check the new area
+        assertEquals(1, newArea.occupants().size());
+        assertEquals(newOccupant, newArea.occupants().get(0));
+    }
+
+    @Test
+    void testWithInitialOccupantWhenAreaIsNotEmpty() {
+        // Create a non-empty area
+        Set<Zone> zones = new HashSet<>();
+        List<PlayerColor> occupants = List.of(PlayerColor.BLUE, PlayerColor.GREEN);
+        int openConnections = 1;
+        Area<Zone> area = new Area<>(zones, occupants, openConnections);
+
+        // Attempt to add initial occupant
+        PlayerColor newOccupant = PlayerColor.RED;
+        assertThrows(IllegalArgumentException.class, () -> area.withInitialOccupant(newOccupant));
+    }
+
+    @Test
+    void testWithoutOccupantWhenOccupantExists() {
+        // Create an area with occupants
+        Set<Zone> zones = new HashSet<>();
+        List<PlayerColor> occupants = List.of(PlayerColor.RED, PlayerColor.BLUE, PlayerColor.GREEN);
+        int openConnections = 1;
+        Area<Zone> area = new Area<>(zones, occupants, openConnections);
+
+        // Remove an occupant
+        PlayerColor occupantToRemove = PlayerColor.BLUE;
+        Area<Zone> newArea = area.withoutOccupant(occupantToRemove);
+
+        // Check the new area
+        assertEquals(occupants.size() - 1, newArea.occupants().size());
+        assertFalse(newArea.occupants().contains(occupantToRemove));
+    }
+
+    @Test
+    void testWithoutOccupantWhenOccupantDoesNotExist() {
+        // Create an area with occupants
+        Set<Zone> zones = new HashSet<>();
+        List<PlayerColor> occupants = List.of(PlayerColor.RED, PlayerColor.GREEN);
+        int openConnections = 1;
+        Area<Zone> area = new Area<>(zones, occupants, openConnections);
+
+        // Attempt to remove a non-existing occupant
+        PlayerColor occupantToRemove = PlayerColor.BLUE;
+        assertThrows(IllegalArgumentException.class, () -> area.withoutOccupant(occupantToRemove));
+    }
+
+    @Test
+    void testWithoutOccupantsWhenAreaIsEmpty() {
+        // Create an empty area
+        Set<Zone> zones = new HashSet<>();
+        List<PlayerColor> occupants = List.of();
+        int openConnections = 1;
+        Area<Zone> area = new Area<>(zones, occupants, openConnections);
+
+        // Remove occupants
+        Area<Zone> newArea = area.withoutOccupants();
+
+        // Check the new area
+        assertEquals(0, newArea.occupants().size());
+    }
+
+    @Test
+    void testWithoutOccupantsWhenAreaIsNotEmpty() {
+        // Create an area with occupants
+        Set<Zone> zones = new HashSet<>();
+        List<PlayerColor> occupants = List.of(PlayerColor.RED, PlayerColor.BLUE, PlayerColor.GREEN);
+        int openConnections = 1;
+        Area<Zone> area = new Area<>(zones, occupants, openConnections);
+
+        // Remove occupants
+        Area<Zone> newArea = area.withoutOccupants();
+
+        // Check the new area
+        assertEquals(0, newArea.occupants().size());
     }
 
 
+    @Test
+    void testTileIdsWhenAreaIsEmpty() {
+        // Create an empty area
+        Set<Zone> zones = new HashSet<>();
+        List<PlayerColor> occupants = List.of();
+        int openConnections = 1;
+        Area<Zone> area = new Area<>(zones, occupants, openConnections);
 
+        // Get tile IDs
+        Set<Integer> tileIds = area.tileIds();
+
+        // Check if tileIds set is empty
+        assertTrue(tileIds.isEmpty());
+    }
+
+    @Test
+    void testTileIdsWhenAreaIsNotEmpty() {
+        // Create an area with zones having distinct tile IDs
+        Set<Zone> zones = new HashSet<>();
+        zones.add(new Zone.Forest(101, Zone.Forest.Kind.PLAIN));
+        zones.add(new Zone.Forest(202, Zone.Forest.Kind.WITH_MENHIR));
+        zones.add(new Zone.Meadow(303, List.of(), null));
+        int openConnections = 1;
+        Area<Zone> area = new Area<>(zones, List.of(), openConnections);
+
+        // Get tile IDs
+        Set<Integer> tileIds = area.tileIds();
+
+        // Check if all expected tile IDs are present
+        assertEquals(3, tileIds.size());
+        assertTrue(tileIds.contains(10)); // tile ID for zone 101
+        assertTrue(tileIds.contains(20)); // tile ID for zone 202
+        assertTrue(tileIds.contains(30)); // tile ID for zone 303
+    }
+
+
+    @Test
+    void testZoneWithSpecialPowerWhenSpecialPowerDoesNotExist() {
+        // Create an area with zones without the specified special power
+        Zone forestZoneWithoutPower = new Zone.Forest(101, Zone.Forest.Kind.PLAIN);
+        Zone riverZoneWithoutPower = new Zone.River(202, 5, null);
+        Zone lakeZoneWithoutPower = new Zone.Lake(303, 10, null);
+        Zone meadowZoneWithPower = new Zone.Meadow(404, List.of(), Zone.SpecialPower.HUNTING_TRAP);
+        Set<Zone> zones = Set.of(forestZoneWithoutPower, riverZoneWithoutPower, lakeZoneWithoutPower, meadowZoneWithPower);
+        List<PlayerColor> occupants = List.of();
+        int openConnections = 1;
+        Area<Zone> area = new Area<>(zones, occupants, openConnections);
+
+        // Search for zone with WILD_FIRE special power
+        Zone foundZone = area.zoneWithSpecialPower(Zone.SpecialPower.WILD_FIRE);
+
+        // Check if null is returned when no zone with the specified special power is found
+        assertNull(foundZone);
+    }
 }

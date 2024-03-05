@@ -5,15 +5,35 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Represents a partition of areas.
+ *
+ *
+ * @param <Z> the type of the zones
+ * @param areas the areas of the partition
+ *
+ *
+ * @author Alexis Grillet-Aubert (381587)
+ * @author Jakub Kliment (380660)
+ */
 public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
+
+    // Immutable constructor
     public ZonePartition {
         areas = Set.copyOf(areas);
     }
 
+    // Constructor without any areas
     public ZonePartition() {
         this(new HashSet<>());
     }
 
+    /**
+     * Checks whether a zone is in the area partition.
+     *
+     * @return the area containing the zone
+     * @throws IllegalArgumentException if the area is not in the partition
+     */
     public Area<Z> areaContaining(Z zone) {
         for (Area<Z> area : areas) {
             if (area.zones().contains(zone)) {
@@ -23,12 +43,30 @@ public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
         throw new IllegalArgumentException();
     }
 
+    /**
+     * Builder for the zone partition.
+     *
+     * @param <Z>
+     */
     public static final class Builder<Z extends Zone> {
+
         private final HashSet<Area<Z>> areaPartition;
+
+        /**
+         * Constructor for the builder.
+         *
+         * @param zonePartition the zone partition to build
+         */
         public Builder(ZonePartition<Z> zonePartition) {
             this.areaPartition = new HashSet<>(Set.copyOf(zonePartition.areas()));
         }
 
+        /**
+         * Adds a single zone to the partition of an area.
+         *
+         * @param zone the zone to add
+         * @param openConnections the number of open connections
+         */
         public void addSingleton(Z zone, int openConnections) {
             Set<Z> setZone = new HashSet<>();
             setZone.add(zone);
@@ -36,6 +74,13 @@ public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
         }
 
 
+        /**
+         * Adds an initial occupant to the area.
+         *
+         * @param zone the zone to add the occupant to
+         * @param color the color of the occupant
+         * @throws IllegalArgumentException if the zone is not in the partition
+         */
         public void addInitialOccupant(Z zone, PlayerColor color) {
             for (Area<Z> area : areaPartition) {
                 if (area.zones().contains(zone) && !area.isOccupied()) {
@@ -49,9 +94,15 @@ public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
             throw new IllegalArgumentException();
         }
 
-
+        /**
+         * Removes an occupant from the area.
+         *
+         * @param zone the zone to remove the occupant from
+         * @param color the color of the occupant
+         * @throws IllegalArgumentException if the zone is not in the partition
+         */
         public void removeOccupant(Z zone, PlayerColor color) {
-            for (Area<Z> area : areaPartition ) {
+            for (Area<Z> area : areaPartition) {
                 if (area.zones().contains(zone) && area.occupants().contains(color)) {
                     List<PlayerColor> newOccupants = new ArrayList<>(List.copyOf(area.occupants()));
                     newOccupants.remove(color);
@@ -64,6 +115,12 @@ public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
             throw new IllegalArgumentException();
         }
 
+        /**
+         * Removes all occupants from the area.
+         *
+         * @param area the area to remove the occupants from
+         * @throws IllegalArgumentException if the area is not in the partition
+         */
         public void removeAllOccupantsOf(Area<Z> area) {
             for (Area<Z> partitonArea : areaPartition) {
                 if (partitonArea.equals(area)) {
@@ -75,25 +132,35 @@ public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
             throw new IllegalArgumentException();
         }
 
+        /**
+         * Creates a union of two areas.
+         *
+         * @param zone1 the first zone
+         * @param zone2 the second zone
+         * @throws IllegalArgumentException if the zones are not in the partition
+         */
         public void union(Z zone1, Z zone2) {
             Area<Z> area1 = null;
             Area<Z> area2 = null;
-            for (Area<Z> partitonArea : areaPartition ) {
-                if (partitonArea.zones().contains(zone1)) {
-                    area1 = partitonArea;
+
+            for (Area<Z> onePartition : areaPartition ) {
+                if (onePartition.zones().contains(zone1)) {
+                    area1 = onePartition;
                 }
-                if (partitonArea.zones().contains(zone2)) {
-                    area2 = partitonArea;
+                if (onePartition.zones().contains(zone2)) {
+                    area2 = onePartition;
                 }
             }
+
+            // verifier si les aires appartiennent a la meme aire !!!!!!!!!!
             if (area1 != null && area2 != null) {
                 Area<Z> newArea = area1.connectTo(area2);
                 areaPartition.add(newArea);
                 areaPartition.remove(area1);
                 areaPartition.remove(area2);
-            } else {
-                throw new IllegalArgumentException();
+                return;
             }
+            throw new IllegalArgumentException();
         }
 
         public ZonePartition<Z> build(){
