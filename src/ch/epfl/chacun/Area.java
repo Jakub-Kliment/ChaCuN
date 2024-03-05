@@ -182,6 +182,20 @@ public record Area<Z> (Set<Z> zones, List<PlayerColor> occupants, int openConnec
     }
 
     public Area<Z> connectTo(Area<Z> that) {
-        return null;
+        // demander si on a besoin dune copie
+        Set<Z> setArea = new HashSet<>(Set.copyOf(zones));
+        setArea.addAll(that.zones());
+
+        List<PlayerColor> listColor = new ArrayList<>(List.copyOf(occupants));
+        listColor.addAll(that.occupants());
+
+        int nbConnections = openConnections;
+        if (this.equals(that)) {
+            nbConnections += that.openConnections - 2;
+        } else {
+            nbConnections -= 2;
+        }
+
+        return new Area<>(setArea, listColor, nbConnections);
     }
 }
