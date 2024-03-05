@@ -27,7 +27,6 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
      */
     public static boolean hasMenhir(Area<Zone.Forest> forest) {
         for (Zone.Forest zone : forest.zones()) {
-            // equals ou == !!!!!!!!!
             if (zone.kind().equals(Zone.Forest.Kind.WITH_MENHIR)) {
                 return true;
             }
@@ -260,7 +259,7 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
      */
     public Zone zoneWithSpecialPower(Zone.SpecialPower specialPower) {
         for (Z zone : zones()) {
-            if (zone.specialPower().equals(specialPower)) {
+            if (zone.specialPower() != null && zone.specialPower().equals(specialPower)) {
                 return zone;
             }
         }

@@ -24,7 +24,7 @@ public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
     }
 
     public static final class Builder<Z extends Zone> {
-        private HashSet<Area<Z>> areaPartition;
+        private final HashSet<Area<Z>> areaPartition;
         public Builder(ZonePartition<Z> zonePartition) {
             this.areaPartition = new HashSet<>(Set.copyOf(zonePartition.areas()));
         }
