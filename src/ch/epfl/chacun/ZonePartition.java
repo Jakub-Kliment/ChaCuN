@@ -144,21 +144,22 @@ public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
             Area<Z> area2 = null;
 
             for (Area<Z> onePartition : areaPartition ) {
-                if (onePartition.zones().contains(zone1)) {
+                if (onePartition.zones().contains(zone1))
                     area1 = onePartition;
-                }
-                if (onePartition.zones().contains(zone2)) {
+
+                if (onePartition.zones().contains(zone2))
                     area2 = onePartition;
-                }
             }
 
-            // verifier si les aires appartiennent a la meme aire !!!!!!!!!!
             if (area1 != null && area2 != null) {
 
                 Area<Z> newArea = area1.connectTo(area2);
                 areaPartition.add(newArea);
                 areaPartition.remove(area1);
-                areaPartition.remove(area2);
+
+                if (!area1.equals(area2))
+                    areaPartition.remove(area2);
+
                 return;
             }
             throw new IllegalArgumentException();
