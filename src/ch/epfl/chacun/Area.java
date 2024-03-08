@@ -197,7 +197,9 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
         setArea.addAll(that.zones());
 
         List<PlayerColor> listColor = new ArrayList<>(List.copyOf(occupants));
-        listColor.addAll(that.occupants());
+        if (!this.equals(that)){
+            listColor.addAll(that.occupants());
+        }
 
         // The number of open connections the number of open connections of this minus 2
         // If they are not the same we
