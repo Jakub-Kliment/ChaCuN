@@ -15,9 +15,9 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
         Preconditions.checkArgument(openConnections >= 0);
         zones = Set.copyOf(zones);
 
-        List<PlayerColor> unsortedOccupants = new ArrayList<>(List.copyOf(occupants));
+        List<PlayerColor> unsortedOccupants = new ArrayList<>(occupants);
         Collections.sort(unsortedOccupants);
-        occupants = unsortedOccupants;
+        occupants = List.copyOf(unsortedOccupants);
     }
 
     /**
