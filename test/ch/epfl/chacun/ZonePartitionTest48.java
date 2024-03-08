@@ -1,10 +1,9 @@
-package ch.epfl.chacun.test3.mytests;
+package ch.epfl.chacun;
 /*
  *	Author:      Rami El Mallah
  *	Date:   07/03/2024
  */
 
-import ch.epfl.chacun.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -12,7 +11,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ZonePartitionTest {
+public class ZonePartitionTest48 {
     @Test
     void constructorWorks() {
         var forest1 = new Zone.Forest(0, Zone.Forest.Kind.WITH_MENHIR);

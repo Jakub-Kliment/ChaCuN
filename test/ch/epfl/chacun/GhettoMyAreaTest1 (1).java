@@ -1,4 +1,4 @@
-package ch.epfl.chacun.Etape3;
+package ch.epfl.chacun;
 
 import ch.epfl.chacun.Animal;
 import ch.epfl.chacun.Area;

@@ -1,9 +1,5 @@
-package ch.epfl.chacun.Etape3;
+package ch.epfl.chacun;
 
-import ch.epfl.chacun.Animal;
-import ch.epfl.chacun.Area;
-import ch.epfl.chacun.PlayerColor;
-import ch.epfl.chacun.Zone;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -11,7 +7,7 @@ import java.util.*;
 import static ch.epfl.chacun.Area.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class MyAreaTests2 {
+public class MyAreaTests5 {
 
     /**
      * Compact constructor sorts the PlayerColor list correctly when it's empty

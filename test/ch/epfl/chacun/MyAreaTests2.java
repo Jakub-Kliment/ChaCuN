@@ -1,4 +1,4 @@
-package ch.epfl.chacun.Etape3;
+package ch.epfl.chacun;
 
 import ch.epfl.chacun.Animal;
 import ch.epfl.chacun.Area;
@@ -11,7 +11,7 @@ import java.util.*;
 import static ch.epfl.chacun.Area.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class MyAreaTests {
+public class MyAreaTests2 {
 
     /**
      * Compact constructor sorts the PlayerColor list correctly when it's empty
@@ -199,8 +199,8 @@ public class MyAreaTests {
         Animal animal3 = new Animal(1, Animal.Kind.MAMMOTH);
         Animal animal4 = new Animal(0, Animal.Kind.DEER);
         List<Animal> animalsList2 = new ArrayList<>();
-        animalsList.add(animal3);
-        animalsList.add(animal4);
+        animalsList2.add(animal3);
+        animalsList2.add(animal4);
 
 
         Zone.Meadow meadowZone1 = new Zone.Meadow(1, animalsList, null);

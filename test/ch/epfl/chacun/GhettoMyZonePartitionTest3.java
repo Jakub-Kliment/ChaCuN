@@ -1,4 +1,4 @@
-package ch.epfl.chacun.Etape3;
+package ch.epfl.chacun;
 
 
 import ch.epfl.chacun.*;
@@ -12,7 +12,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class MyZonePartitionTest3 {
+class MyZonePartitionTest3 {
     // an arbitrary value for open connections for zones that are built separately
     private static final int OPEN_CONNECTIONS = 2;
     private static final PlayerColor NEW_PLAYER_COLOR = PlayerColor.GREEN;

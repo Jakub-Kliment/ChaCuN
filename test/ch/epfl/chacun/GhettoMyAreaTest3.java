@@ -1,4 +1,4 @@
-package ch.epfl.chacun.Etape3;
+package ch.epfl.chacun;
 
 
 
