@@ -197,7 +197,7 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
         setArea.addAll(that.zones());
 
         List<PlayerColor> listColor = new ArrayList<>(List.copyOf(occupants));
-        if (!this.equals(that)){
+        if (!this.equals(that)) {
             listColor.addAll(that.occupants());
         }
 
