@@ -155,8 +155,6 @@ public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
             // verifier si les aires appartiennent a la meme aire !!!!!!!!!!
             if (area1 != null && area2 != null) {
 
-                if (area1.equals(area2)) return;
-
                 Area<Z> newArea = area1.connectTo(area2);
                 areaPartition.add(newArea);
                 areaPartition.remove(area1);

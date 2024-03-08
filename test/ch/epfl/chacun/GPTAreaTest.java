@@ -367,7 +367,6 @@ public class GPTAreaTest {
     }
 
     // Does not pass, because of a lake inside a river
-    // Ask an assistant !!!!!!!!!!!
     @Test
     void testRiverSystemFishCountWithFishInRiverAndLake() {
         // Create a river system with water zones containing fish

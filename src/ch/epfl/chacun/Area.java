@@ -44,7 +44,6 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
     public static int mushroomGroupCount(Area<Zone.Forest> forest) {
         int mushroomCount = 0;
         for (Zone.Forest zone : forest.zones()) {
-            // !!!!!!!!! equals
             if (zone.kind().equals(Zone.Forest.Kind.WITH_MUSHROOMS)) {
                 mushroomCount++;
             }
@@ -81,7 +80,6 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
         }
         return animals;
     }
-
 
     /**
      * Returns the number of fish in a river area

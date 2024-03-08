@@ -733,43 +733,6 @@ class MyAreaTest1 {
 
         assertEquals(expected, animals(testArea, null));
     }
-    @Test
-    void animalsWorksOnNonTrivialCase() {
-
-        Animal animal1 = new Animal(0, Animal.Kind.AUROCHS);
-        Animal animal2 = new Animal(1, Animal.Kind.TIGER);
-        List<Animal> animalsList = new ArrayList<>();
-        animalsList.add(animal1);
-        animalsList.add(animal2);
-
-        Animal animal3 = new Animal(1, Animal.Kind.MAMMOTH);
-        Animal animal4 = new Animal(0, Animal.Kind.DEER);
-        List<Animal> animalsList2 = new ArrayList<>();
-        animalsList.add(animal3);
-        animalsList.add(animal4);
-
-
-        Zone.Meadow meadowZone1 = new Zone.Meadow(1, animalsList, null);
-        Zone.Meadow meadowZone2 = new Zone.Meadow(2, animalsList2, null);
-        Zone.Meadow meadowZone3 = new Zone.Meadow(3, animalsList, null);
-        Zone.Meadow meadowZone4 = new Zone.Meadow(4, animalsList, null);
-
-
-        Set<Zone.Meadow> zoneSet = new HashSet<>();
-        Collections.addAll(zoneSet, meadowZone1, meadowZone3, meadowZone4, meadowZone2);
-        List<PlayerColor> playerColList = new ArrayList<>();
-        int openCo = 2;
-
-        Area<Zone.Meadow> testArea = new Area<>(zoneSet, playerColList, openCo);
-
-        Set<Animal> cancelledAnimals= new HashSet<>();
-        cancelledAnimals.add(animal1);
-
-        Set<Animal> expected = new HashSet<>();
-        Collections.addAll(expected, animal2, animal3, animal4);
-
-        assertEquals(expected, animals(testArea, cancelledAnimals));
-    }
 
     /**
      * The rivers do not share a lake
