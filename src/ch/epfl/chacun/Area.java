@@ -190,7 +190,7 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
      * @return the new area formed by the two areas
      */
     public Area<Z> connectTo(Area<Z> that) {
-        // demander si on a besoin d une copie
+        // demander si on a besoin d une copie !!!!!!!!
         Set<Z> setArea = new HashSet<>(Set.copyOf(zones));
         setArea.addAll(that.zones());
 
