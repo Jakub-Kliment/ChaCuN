@@ -5,9 +5,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-public record Message(TextMaker textMaker, List<Message> messages) {
+public record MessageBoard(TextMaker textMaker, List<Message> messages) {
 
-    public Message {
+    public MessageBoard {
         // Besoin immuabilite !!!!!!!
         messages = List.copyOf(messages);
     }
@@ -56,12 +56,12 @@ public record Message(TextMaker textMaker, List<Message> messages) {
         return null;
     }
 
-    public record MessageBoard(String text, int points, Set<PlayerColor> scorers, Set<Integer> tileIds) {
-        public MessageBoard {
+    public record Message(String text, int points, Set<PlayerColor> scorers, Set<Integer> tileIds) {
+        public Message {
             Objects.requireNonNull(text);
             Preconditions.checkArgument(points >= 0);
             scorers = Set.copyOf(scorers);
             tileIds = Set.copyOf(tileIds);
         }
     }
- }
+}
