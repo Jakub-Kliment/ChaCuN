@@ -78,7 +78,7 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests, ZonePartition<Z
                     meadows.union(m3, m5);
                     meadows.union(m4, m6);
 
-                    // faut verifier si les rivieres ont plusieurs lacs
+                    // faut verifier si les rivieres ont plusieurs lacs !!!!!!!
                     if (r1.hasLake() || r2.hasLake())
                         riverSystem.union(r1, r2);
 
@@ -91,7 +91,59 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests, ZonePartition<Z
         }
 
         public void addInitialOccupant(PlayerColor player, Occupant.Kind occupantKind, Zone occupiedZone) {
+            switch (occupiedZone) {
+                case Zone.Forest forest -> {
+                    Preconditions.checkArgument(occupantKind.equals(Occupant.Kind.PAWN));
+                    forests.addInitialOccupant(forest, player);
+                }
 
+                case Zone.Meadow meadow -> {
+                    Preconditions.checkArgument(occupantKind.equals(Occupant.Kind.PAWN));
+                    meadows.addInitialOccupant(meadow, player);
+                }
+
+                case Zone.River river -> {
+                    if (!river.hasLake())
+                        rivers.addInitialOccupant(river, player);
+
+                    else {
+                        riverSystem.addInitialOccupant(river, player);
+                        riverSystem.addInitialOccupant(river.lake(), player);
+                    }
+                }
+
+                default -> throw new IllegalArgumentException();
+            }
+        }
+
+        public void removePawn(PlayerColor player, Zone occupiedZone) {
+            switch (occupiedZone) {
+                case Zone.Forest forest ->
+                    forests.removeOccupant(forest, player);
+
+                case Zone.Meadow meadow ->
+                    meadows.removeOccupant(meadow, player);
+
+                case Zone.River river -> {
+                    rivers.removeOccupant(river, player);
+                    riverSystem.removeOccupant(river, player);
+                }
+
+                default -> throw new IllegalArgumentException();
+            }
+        }
+
+        public void clearGatherers(Area<Zone.Forest> forest) {
+            forests.removeAllOccupantsOf(forest);
+        }
+
+        public void clearFishers(Area<Zone.River> river) {
+            rivers.removeAllOccupantsOf(river);
+        }
+
+        public ZonePartitions build() {
+            return new ZonePartitions(forests.build(), meadows.build(),
+                    rivers.build(), riverSystem.build());
         }
     }
 }
