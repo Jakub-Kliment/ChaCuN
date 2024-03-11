@@ -1,9 +1,6 @@
 package ch.epfl.chacun;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public record MessageBoard(TextMaker textMaker, List<Message> messages) {
 
@@ -17,15 +14,51 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
     }
 
     public MessageBoard withScoredForest(Area<Zone.Forest> forest) {
-        return null;
+
+        if (!forest.isOccupied())
+            return this;
+
+        // essayer de trouver mieux pour tileCount !!!!!!!
+        int points = Points.forClosedForest(forest.tileIds().size(), Area.mushroomGroupCount(forest));
+        messages.add(new Message(
+                textMaker.playersScoredForest(forest.majorityOccupants(),
+                        points,
+                        Area.mushroomGroupCount(forest),
+                        forest.tileIds().size()),
+                points,
+                forest.majorityOccupants(),
+                forest.tileIds()));
+
+        return new MessageBoard(textMaker, messages);
     }
 
     public MessageBoard withClosedForestWithMenhir(PlayerColor player, Area<Zone.Forest> forest) {
-        return null;
+        int points = Points.forClosedForest(forest.tileIds().size(), Area.mushroomGroupCount(forest));
+        messages.add(new Message(
+                textMaker.playerClosedForestWithMenhir(player),
+                points,
+                forest.majorityOccupants(),
+                forest.tileIds()));
+
+        return new MessageBoard(textMaker, messages);
     }
 
     public MessageBoard withScoredRiver(Area<Zone.River> river) {
-        return null;
+        if (!river.isOccupied())
+            return this;
+
+        // essayer de trouver mieux pour tileCount !!!!!!!
+        int points = Points.forClosedRiver(river.tileIds().size(), Area.riverFishCount(river));
+        messages.add(new Message(
+                textMaker.playersScoredRiver(river.majorityOccupants(),
+                        points,
+                        Area.riverFishCount(river),
+                        river.tileIds().size()),
+                points,
+                river.majorityOccupants(),
+                river.tileIds()));
+
+        return new MessageBoard(textMaker, messages);
     }
 
     public MessageBoard withScoredHuntingTrap(PlayerColor scorer, Area<Zone.Meadow> adjacentMeadow) {
