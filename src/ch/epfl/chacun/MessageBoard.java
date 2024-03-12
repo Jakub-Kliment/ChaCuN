@@ -159,7 +159,6 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
     }
 
     public MessageBoard withWinners(Set<PlayerColor> winners, int points) {
-        // no tiles !!!!!!!
         messages.add(new Message(textMaker.playersWon(winners, points), points, winners, new HashSet<>()));
         return new MessageBoard(textMaker, messages);
     }
@@ -167,7 +166,6 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
     public record Message(String text, int points, Set<PlayerColor> scorers, Set<Integer> tileIds) {
         public Message {
             Objects.requireNonNull(text);
-            // !!!!!!!! pas erreur
             Preconditions.checkArgument(points >= 0);
             scorers = Set.copyOf(scorers);
             tileIds = Set.copyOf(tileIds);

@@ -92,28 +92,17 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests, ZonePartition<Z
 
         public void addInitialOccupant(PlayerColor player, Occupant.Kind occupantKind, Zone occupiedZone) {
             switch (occupiedZone) {
-                case Zone.Forest forest -> {
-                    Preconditions.checkArgument(occupantKind.equals(Occupant.Kind.PAWN));
+                case Zone.Forest forest when occupantKind.equals(Occupant.Kind.PAWN) ->
                     forests.addInitialOccupant(forest, player);
-                }
 
-                case Zone.Meadow meadow -> {
-                    Preconditions.checkArgument(occupantKind.equals(Occupant.Kind.PAWN));
+                case Zone.Meadow meadow when occupantKind.equals(Occupant.Kind.PAWN) ->
                     meadows.addInitialOccupant(meadow, player);
-                }
 
-                case Zone.Lake lake -> {
-                    Preconditions.checkArgument(occupantKind.equals(Occupant.Kind.PAWN));
-                    riverSystem.addInitialOccupant(lake, player);
-                }
+                case Zone.Water water when occupantKind.equals(Occupant.Kind.HUT) ->
+                    riverSystem.addInitialOccupant(water, player);
 
-                case Zone.River river -> {
-                    if (!river.hasLake())
-                        rivers.addInitialOccupant(river, player);
-
-                    else
-                        riverSystem.addInitialOccupant(river, player);
-                }
+                case Zone.River river when occupantKind.equals(Occupant.Kind.PAWN) ->
+                    rivers.addInitialOccupant(river, player);
 
                 default -> throw new IllegalArgumentException();
             }
@@ -127,10 +116,8 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests, ZonePartition<Z
                 case Zone.Meadow meadow ->
                     meadows.removeOccupant(meadow, player);
 
-                case Zone.River river -> {
+                case Zone.River river ->
                     rivers.removeOccupant(river, player);
-                    riverSystem.removeOccupant(river, player);
-                }
 
                 default -> throw new IllegalArgumentException();
             }
