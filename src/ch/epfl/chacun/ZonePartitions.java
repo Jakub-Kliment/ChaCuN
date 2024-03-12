@@ -43,6 +43,7 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests, ZonePartition<Z
                 else if (zone instanceof Zone.Meadow meadow)
                     meadows.addSingleton(meadow, localOpenZones[meadow.localId()]);
 
+                // revoir !!!!!!
                 else if (zone instanceof Zone.Water water) {
 
                     if (water instanceof Zone.River river && !river.hasLake())
@@ -81,7 +82,6 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests, ZonePartition<Z
                     // faut verifier si les rivieres ont plusieurs lacs !!!!!!!
                     if (r1.hasLake() || r2.hasLake())
                         riverSystem.union(r1, r2);
-
                     else
                         rivers.union(r1, r2);
 

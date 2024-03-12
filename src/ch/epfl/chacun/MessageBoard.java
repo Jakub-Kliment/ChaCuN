@@ -76,9 +76,9 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
 
     public MessageBoard withScoredHuntingTrap(PlayerColor scorer, Area<Zone.Meadow> adjacentMeadow) {
 
-        Map<Animal.Kind, Integer> animalMap= meadowMap(adjacentMeadow, new HashSet<>());
+        Map<Animal.Kind, Integer> animalMap = animalCountMap(adjacentMeadow, new HashSet<>());
 
-        int points = meadowPoint(animalMap);
+        int points = meadowPoints(animalMap);
 
         if (points <= 0)
             return this;
@@ -110,9 +110,9 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
         if (!meadow.isOccupied())
             return this;
 
-        Map<Animal.Kind, Integer> animalMap= meadowMap(meadow, cancelledAnimals);
+        Map<Animal.Kind, Integer> animalMap = animalCountMap(meadow, cancelledAnimals);
 
-        int points = meadowPoint(animalMap);
+        int points = meadowPoints(animalMap);
 
         if (points <= 0)
             return this;
@@ -150,9 +150,9 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
         if (!adjacentMeadow.isOccupied())
             return this;
 
-        Map<Animal.Kind, Integer> animalMap= meadowMap(adjacentMeadow, cancelledAnimals);
+        Map<Animal.Kind, Integer> animalMap = animalCountMap(adjacentMeadow, cancelledAnimals);
 
-        int points = meadowPoint(animalMap);
+        int points = meadowPoints(animalMap);
 
         if (points <= 0)
             return this;
@@ -188,17 +188,17 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
         return new MessageBoard(textMaker, messages);
     }
 
-    private Map<Animal.Kind, Integer> meadowMap(Area<Zone.Meadow> meadow, Set<Animal> cancelledAnimals){
+    private Map<Animal.Kind, Integer> animalCountMap(Area<Zone.Meadow> meadow, Set<Animal> cancelledAnimals) {
         Set<Animal> animals = Area.animals(meadow, cancelledAnimals);
-        Map<Animal.Kind, Integer> animalPoints = new HashMap<>();
+        Map<Animal.Kind, Integer> animalCount = new HashMap<>();
 
         for (Animal animal : animals)
-            animalPoints.put(animal.kind(), animalPoints.getOrDefault(animal.kind(), 0) + 1);
+            animalCount.put(animal.kind(), animalCount.getOrDefault(animal.kind(), 0) + 1);
 
-        return animalPoints;
+        return animalCount;
     }
 
-    private int meadowPoint(Map<Animal.Kind, Integer> animalPoints) {
+    private int meadowPoints(Map<Animal.Kind, Integer> animalPoints) {
         return Points.forMeadow(
                 animalPoints.get(Animal.Kind.MAMMOTH),
                 animalPoints.get(Animal.Kind.AUROCHS),
