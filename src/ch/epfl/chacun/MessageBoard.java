@@ -12,7 +12,6 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
     public Map<PlayerColor, Integer> points() {
         Map<PlayerColor, Integer> map = new HashMap<>();
 
-
         for (Message message : messages) {
             for (PlayerColor player : message.scorers) {
                 if (map.containsKey(player))
@@ -21,7 +20,6 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
                     map.put(player, message.points);
             }
         }
-
         return map;
     }
 
@@ -78,32 +76,26 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
 
     public MessageBoard withScoredHuntingTrap(PlayerColor scorer, Area<Zone.Meadow> adjacentMeadow) {
         Set<Animal> animals = Area.animals(adjacentMeadow, new HashSet<>());
-        int mammothCount = 0;
-        int aurochsCount = 0;
-        int deerCount = 0;
-
-        for (Animal animal : animals) {
-            if (animal.kind().equals(Animal.Kind.MAMMOTH))
-                mammothCount++;
-            else if (animal.kind().equals(Animal.Kind.AUROCHS))
-                aurochsCount++;
-            else if (animal.kind().equals(Animal.Kind.DEER))
-                deerCount++;
-        }
-
         Map<Animal.Kind, Integer> animalPoints = new HashMap<>();
 
-        for (Animal animal : animals) {
-            animalPoints.
-        }
+        for (Animal animal : animals)
+            animalPoints.put(animal.kind(), animalPoints.getOrDefault(animal.kind(), 0) + 1);
 
-        int points = Points.forMeadow(mammothCount, aurochsCount, deerCount);
+        int points = Points.forMeadow(
+                animalPoints.get(Animal.Kind.MAMMOTH),
+                animalPoints.get(Animal.Kind.AUROCHS),
+                animalPoints.get(Animal.Kind.DEER));
 
         if (points <= 0)
             return this;
 
         messages.add(new Message(
-                textMaker.playerScoredHuntingTrap(scorer, points, )))
+                textMaker.playerScoredHuntingTrap(scorer, points, animalPoints),
+                points,
+                new HashSet<>(Set.of(scorer)),
+                adjacentMeadow.tileIds()));
+
+        return new MessageBoard(textMaker, messages);
     }
 
     public MessageBoard withScoredLogboat(PlayerColor scorer, Area<Zone.Water> riverSystem) {
