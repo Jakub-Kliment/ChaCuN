@@ -10,7 +10,19 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
     }
 
     public Map<PlayerColor, Integer> points() {
-        return null;
+        Map<PlayerColor, Integer> map = new HashMap<>();
+
+
+        for (Message message : messages) {
+            for (PlayerColor player : message.scorers) {
+                if (map.containsKey(player))
+                    map.put(player, message.points + map.get(player));
+                else
+                    map.put(player, message.points);
+            }
+        }
+
+        return map;
     }
 
     public MessageBoard withScoredForest(Area<Zone.Forest> forest) {
@@ -65,16 +77,7 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
     }
 
     public MessageBoard withScoredHuntingTrap(PlayerColor scorer, Area<Zone.Meadow> adjacentMeadow) {
-/*
-        Set<Animal> cancelledAnimals = new HashSet<>();
-        for (Zone.Meadow meadow : adjacentMeadow.zones()) {
-            if (meadow.animals().contains(Animal.Kind.TIGER)) {
-                cancelledAnimals.add(meadow.animals());
-            }
-        }
-
-        Set<Animal> animals = Area.animals(adjacentMeadow, );
-
+        Set<Animal> animals = Area.animals(adjacentMeadow, new HashSet<>());
         int mammothCount = 0;
         int aurochsCount = 0;
         int deerCount = 0;
@@ -88,13 +91,19 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
                 deerCount++;
         }
 
+        Map<Animal.Kind, Integer> animalPoints = new HashMap<>();
 
+        for (Animal animal : animals) {
+            animalPoints.
+        }
 
         int points = Points.forMeadow(mammothCount, aurochsCount, deerCount);
 
+        if (points <= 0)
+            return this;
 
- */
-        return null;
+        messages.add(new Message(
+                textMaker.playerScoredHuntingTrap(scorer, points, )))
     }
 
     public MessageBoard withScoredLogboat(PlayerColor scorer, Area<Zone.Water> riverSystem) {
