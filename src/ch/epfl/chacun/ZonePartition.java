@@ -58,7 +58,7 @@ public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
          * @param zonePartition the zone partition to build
          */
         public Builder(ZonePartition<Z> zonePartition) {
-            this.areaPartition = new HashSet<>(Set.copyOf(zonePartition.areas()));
+            this.areaPartition = new HashSet<>(zonePartition.areas());
         }
 
         /**
@@ -104,7 +104,7 @@ public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
         public void removeOccupant(Z zone, PlayerColor color) {
             for (Area<Z> area : areaPartition) {
                 if (area.zones().contains(zone) && area.occupants().contains(color)) {
-                    List<PlayerColor> newOccupants = new ArrayList<>(List.copyOf(area.occupants()));
+                    List<PlayerColor> newOccupants = new ArrayList<>(area.occupants());
                     newOccupants.remove(color);
 
                     areaPartition.add(new Area<>(area.zones(), newOccupants, area.openConnections()));

@@ -75,8 +75,8 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests, ZonePartition<Z
                 case TileSide.River(Zone.Meadow m3, Zone.River r1, Zone.Meadow m4)
                         when s2 instanceof TileSide.River(Zone.Meadow m5, Zone.River r2, Zone.Meadow m6) -> {
                     // pas sure si il faut verifier la rotation !!!!!!!!!!
-                    meadows.union(m3, m5);
-                    meadows.union(m4, m6);
+                    meadows.union(m3, m6);
+                    meadows.union(m4, m5);
 
                     // faut verifier si les rivieres ont plusieurs lacs !!!!!!!
                     if (r1.hasLake() || r2.hasLake())
@@ -102,14 +102,17 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests, ZonePartition<Z
                     meadows.addInitialOccupant(meadow, player);
                 }
 
+                case Zone.Lake lake -> {
+                    Preconditions.checkArgument(occupantKind.equals(Occupant.Kind.PAWN));
+                    riverSystem.addInitialOccupant(lake, player);
+                }
+
                 case Zone.River river -> {
                     if (!river.hasLake())
                         rivers.addInitialOccupant(river, player);
 
-                    else {
+                    else
                         riverSystem.addInitialOccupant(river, player);
-                        riverSystem.addInitialOccupant(river.lake(), player);
-                    }
                 }
 
                 default -> throw new IllegalArgumentException();
