@@ -51,7 +51,7 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
     }
 
     /**
-     * Returns the number of animals in a meadow area
+     * Returns the set of animals in a meadow area
      *
      * @param meadow area of a meadow zone
      * @return the set of animals in the meadow zone
