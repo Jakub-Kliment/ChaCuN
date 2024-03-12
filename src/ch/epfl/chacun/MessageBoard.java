@@ -49,15 +49,14 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
 
     public MessageBoard withClosedForestWithMenhir(PlayerColor player, Area<Zone.Forest> forest) {
 
-        int points = Points.forClosedForest(forest.tileIds().size(), Area.mushroomGroupCount(forest));
-
         List<Message> newMessages = new ArrayList<>(messages);
 
+        // demander !!!!!
         newMessages.add(new Message(
                 textMaker.playerClosedForestWithMenhir(player),
-                points,
-                forest.majorityOccupants(),
-                forest.tileIds()));
+                0,
+                new HashSet<>(),
+                new HashSet<>()));
 
         return new MessageBoard(textMaker, newMessages);
     }
