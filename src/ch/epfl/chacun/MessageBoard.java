@@ -112,11 +112,30 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
     }
 
     public MessageBoard withScoredMeadow(Area<Zone.Meadow> meadow, Set<Animal> cancelledAnimals) {
-
         if (!meadow.isOccupied())
             return this;
 
-        return null;
+        Set<Animal> animals = Area.animals(meadow, cancelledAnimals);
+        Map<Animal.Kind, Integer> animalPoints = new HashMap<>();
+
+        for (Animal animal : animals)
+            animalPoints.put(animal.kind(), animalPoints.getOrDefault(animal.kind(), 0) + 1);
+
+        int points = Points.forMeadow(
+                animalPoints.get(Animal.Kind.MAMMOTH),
+                animalPoints.get(Animal.Kind.AUROCHS),
+                animalPoints.get(Animal.Kind.DEER));
+
+        if (points <= 0)
+            return this;
+
+        messages.add(new Message(
+                textMaker().playersScoredMeadow(meadow.majorityOccupants(), points, animalPoints),
+                points,
+                meadow.majorityOccupants(),
+                meadow.tileIds()));
+
+        return new MessageBoard(textMaker, messages);
     }
 
     public MessageBoard withScoredRiverSystem(Area<Zone.Water> riverSystem) {
