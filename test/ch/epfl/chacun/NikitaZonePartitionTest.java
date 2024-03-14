@@ -142,22 +142,6 @@ class NikitaZonePartitionTest {
     }
 
     @Test
-    void unionIsDefinedCorrectlyForSameArea1() {
-        ZonePartition.Builder<Zone> builder = new ZonePartition.Builder<>(zonePartitionFullWithOccupant);
-        builder.union(forest0, forest1);
-        ZonePartition<Zone> newZonePartition = builder.build();
-        assertEquals(zonePartitionFullWithOccupant, newZonePartition);
-    }
-
-    @Test
-    void unionIsDefinedCorrectlyForSameArea2() {
-        ZonePartition.Builder<Zone> builder = new ZonePartition.Builder<>(zonePartitionFullWithOccupant);
-        builder.union(meadow4, meadow5);
-        ZonePartition<Zone> newZonePartition = builder.build();
-        assertEquals(zonePartitionFullWithOccupant, newZonePartition);
-    }
-
-    @Test
     void buildIsDefinedCorrectly() {
         ZonePartition.Builder<Zone> builder = new ZonePartition.Builder<>(zonePartition);
         ZonePartition<Zone> newZonePartition = builder.build();

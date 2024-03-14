@@ -80,12 +80,10 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests, ZonePartition<Z
                     meadows.union(m4, m5);
 
                     // faut verifier si les rivieres ont plusieurs lacs !!!!!!!
-                    if (r1.hasLake() || r2.hasLake())
-                        riverSystem.union(r1, r2);
-                    else
-                        rivers.union(r1, r2);
-
+                    riverSystem.union(r1, r2);
+                    rivers.union(r1, r2);
                 }
+
                 default -> throw new IllegalArgumentException();
             }
         }
