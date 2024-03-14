@@ -68,6 +68,6 @@ public class MyZonePartitionsTest {
                 zonePartitionsBuilder.build().riverSystems());
 
         ZonePartition<Zone.Forest> forestZonePartition =  new ZonePartition<Zone.Forest>();
-        Assertions.assertEquals(, zonePartitions.forests());
+        //Assertions.assertEquals(, zonePartitions.forests());
     }
 }

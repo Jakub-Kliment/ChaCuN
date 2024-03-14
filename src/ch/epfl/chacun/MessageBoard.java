@@ -221,12 +221,6 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
     private Map<Animal.Kind, Integer> animalCountMap(Area<Zone.Meadow> meadow, Set<Animal> cancelledAnimals) {
         Set<Animal> animals = Area.animals(meadow, cancelledAnimals);
         Map<Animal.Kind, Integer> animalCount = new HashMap<>();
-        animalCount.put(Animal.Kind.MAMMOTH, 0);
-        animalCount.put(Animal.Kind.AUROCHS, 0);
-        animalCount.put(Animal.Kind.DEER, 0);
-
-        for (Animal.Kind kind : Animal.Kind.values())
-            animalCount.put(kind, 0);
 
         for (Animal animal : animals)
             animalCount.put(animal.kind(), animalCount.get(animal.kind()) + 1);
@@ -236,9 +230,9 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
 
     private int meadowPoints(Map<Animal.Kind, Integer> animalPoints) {
         return Points.forMeadow(
-                animalPoints.get(Animal.Kind.MAMMOTH),
-                animalPoints.get(Animal.Kind.AUROCHS),
-                animalPoints.get(Animal.Kind.DEER));
+                animalPoints.getOrDefault(Animal.Kind.MAMMOTH, 0),
+                animalPoints.getOrDefault(Animal.Kind.AUROCHS, 0),
+                animalPoints.getOrDefault(Animal.Kind.DEER, 0));
     }
 
     public record Message(String text, int points, Set<PlayerColor> scorers, Set<Integer> tileIds) {
