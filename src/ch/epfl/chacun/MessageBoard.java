@@ -221,6 +221,9 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
     private Map<Animal.Kind, Integer> animalCountMap(Area<Zone.Meadow> meadow, Set<Animal> cancelledAnimals) {
         Set<Animal> animals = Area.animals(meadow, cancelledAnimals);
         Map<Animal.Kind, Integer> animalCount = new HashMap<>();
+        animalCount.put(Animal.Kind.MAMMOTH, 0);
+        animalCount.put(Animal.Kind.AUROCHS, 0);
+        animalCount.put(Animal.Kind.DEER, 0);
 
         for (Animal animal : animals)
             animalCount.put(animal.kind(), animalCount.getOrDefault(animal.kind(), 0) + 1);
