@@ -1,5 +1,6 @@
 package ch.epfl.chacun;
 
+
 public record ZonePartitions(ZonePartition<Zone.Forest> forests, ZonePartition<Zone.Meadow> meadows,
                              ZonePartition<Zone.River> rivers, ZonePartition<Zone.Water> riverSystems) {
 
@@ -43,19 +44,16 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests, ZonePartition<Z
                 else if (zone instanceof Zone.Meadow meadow)
                     meadows.addSingleton(meadow, localOpenZones[meadow.localId()]);
 
-                // revoir !!!!!!
-                else if (zone instanceof Zone.Water water) {
+                else if (zone instanceof Zone.Lake lake)
+                    riverSystem.addSingleton(lake, localOpenZones[lake.localId()]);
 
-                    if (water instanceof Zone.River river && !river.hasLake())
+                else if (zone instanceof Zone.River river) {
+                    if (river.hasLake())
+                        rivers.addSingleton(river, localOpenZones[river.localId()] - 1);
+                    else
                         rivers.addSingleton(river, localOpenZones[river.localId()]);
 
-                    else if (water instanceof Zone.River river) {
-                        rivers.addSingleton(river, localOpenZones[river.localId()] - 1);
-                        riverSystem.addSingleton(river, localOpenZones[river.localId()]);
-                    }
-
-                    else
-                        riverSystem.addSingleton(water, localOpenZones[water.localId()]);
+                    riverSystem.addSingleton(river, localOpenZones[river.localId()]);
                 }
             }
 
@@ -75,13 +73,10 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests, ZonePartition<Z
 
                 case TileSide.River(Zone.Meadow m3, Zone.River r1, Zone.Meadow m4)
                         when s2 instanceof TileSide.River(Zone.Meadow m5, Zone.River r2, Zone.Meadow m6) -> {
-                    // pas sure si il faut verifier la rotation !!!!!!!!!!
                     meadows.union(m3, m6);
                     meadows.union(m4, m5);
-
-                    // faut verifier si les rivieres ont plusieurs lacs !!!!!!!
-                    riverSystem.union(r1, r2);
                     rivers.union(r1, r2);
+                    riverSystem.union(r1, r2);
                 }
 
                 default -> throw new IllegalArgumentException();

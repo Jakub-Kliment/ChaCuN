@@ -124,8 +124,8 @@ public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
         public void removeAllOccupantsOf(Area<Z> area) {
             for (Area<Z> partitonArea : areaPartition) {
                 if (partitonArea.equals(area)) {
-                    areaPartition.add(new Area<>(area.zones(), new ArrayList<>(), area.openConnections()));
                     areaPartition.remove(area);
+                    areaPartition.add(new Area<>(area.zones(), new ArrayList<>(), area.openConnections()));
                     return;
                 }
             }
@@ -143,7 +143,7 @@ public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
             Area<Z> area1 = null;
             Area<Z> area2 = null;
 
-            for (Area<Z> onePartition : areaPartition ) {
+            for (Area<Z> onePartition : areaPartition) {
                 if (onePartition.zones().contains(zone1))
                     area1 = onePartition;
 
