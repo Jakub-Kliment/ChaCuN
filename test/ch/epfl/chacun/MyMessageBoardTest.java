@@ -96,12 +96,36 @@ class MyMessageBoardTest {
     }
 
     @Test
+    void withScoredLogboat2Lake() {
+        MessageBoard messageBoard = new MessageBoard(new textTest(), new ArrayList<>());
+        Area<Zone.Water> water = new Area<>(new HashSet<>(Set.of(new Zone.River(10, 1, null), new Zone.Lake(20, 2, null), new Zone.Lake(30, 2, null))), new ArrayList<>(), 0);
+        MessageBoard newMessageBoard = messageBoard.withScoredLogboat(PlayerColor.RED, water);
+        assertEquals(newMessageBoard.messages().size(), 1);
+        assertEquals(newMessageBoard.messages().getFirst().text(), "RED 4 2");
+        assertEquals(newMessageBoard.messages().getFirst().points(), 4);
+        assertEquals(newMessageBoard.messages().getFirst().scorers(), Set.of(PlayerColor.RED));
+        assertEquals(newMessageBoard.messages().getFirst().tileIds(), Set.of(2, 3));
+    }
+
+    @Test
+    void withScoredLogboat() {
+        MessageBoard messageBoard = new MessageBoard(new textTest(), new ArrayList<>());
+        Area<Zone.Water> water = new Area<>(new HashSet<>(Set.of(new Zone.River(10, 1, null), new Zone.Lake(20, 2, null))), new ArrayList<>(), 0);
+        MessageBoard newMessageBoard = messageBoard.withScoredLogboat(PlayerColor.GREEN, water);
+        assertEquals(newMessageBoard.messages().size(), 1);
+        assertEquals(newMessageBoard.messages().getFirst().text(), "GREEN 2 1");
+        assertEquals(newMessageBoard.messages().getFirst().points(), 2);
+        assertEquals(newMessageBoard.messages().getFirst().scorers(), Set.of(PlayerColor.GREEN));
+        assertEquals(newMessageBoard.messages().getFirst().tileIds(), Set.of(2));
+    }
+
+    @Test
     void withScoredHuntingTrap() {
         MessageBoard messageBoard = new MessageBoard(new textTest(), new ArrayList<>());
-        Area<Zone.Meadow> meadow = new Area<>(new HashSet<>(Set.of(new Zone.Meadow(10, List.of(new Animal(101, Animal.Kind.DEER)/*, new Animal(102, Animal.Kind.MAMMOTH)*/), null), new Zone.Meadow(20, List.of(new Animal(201, Animal.Kind.DEER), new Animal(202, Animal.Kind.AUROCHS)), null))), new ArrayList<>(), 0);
+        Area<Zone.Meadow> meadow = new Area<>(new HashSet<>(Set.of(new Zone.Meadow(10, List.of(new Animal(101, Animal.Kind.DEER)), null), new Zone.Meadow(20, List.of(new Animal(201, Animal.Kind.DEER), new Animal(202, Animal.Kind.AUROCHS)), null))), new ArrayList<>(), 0);
         MessageBoard newMessageBoard = messageBoard.withScoredHuntingTrap(PlayerColor.RED, meadow);
         assertEquals(newMessageBoard.messages().size(), 1);
-        //assertEquals(newMessageBoard.messages().getFirst().text(), "RED 7 {AUROCHS=1, DEER=2, MAMMOTH=1}");
+        assertEquals(newMessageBoard.messages().getFirst().text(), "RED 4 {AUROCHS=1, DEER=2}");
         assertEquals(newMessageBoard.messages().getFirst().points(), 4);
         assertEquals(newMessageBoard.messages().getFirst().scorers(), Set.of(PlayerColor.RED));
         assertEquals(newMessageBoard.messages().getFirst().tileIds(), Set.of(1, 2));
@@ -113,7 +137,123 @@ class MyMessageBoardTest {
         Area<Zone.Meadow> meadow = new Area<>(new HashSet<>(Set.of(new Zone.Meadow(10, List.of(), null), new Zone.Meadow(20, List.of(), null))), new ArrayList<>(), 0);
         MessageBoard newMessageBoard = messageBoard.withScoredHuntingTrap(PlayerColor.RED, meadow);
         assertEquals(messageBoard, newMessageBoard);
+    }
 
+    @Test
+    void withScoredMeadowNoOccupant() {
+        MessageBoard messageBoard = new MessageBoard(new textTest(), new ArrayList<>());
+        Area<Zone.Meadow> meadow = new Area<>(new HashSet<>(Set.of(new Zone.Meadow(10, List.of(new Animal(101, Animal.Kind.DEER)), null), new Zone.Meadow(20, List.of(new Animal(201, Animal.Kind.DEER), new Animal(202, Animal.Kind.AUROCHS)), null))), new ArrayList<>(), 0);
+        MessageBoard newMessageBoard = messageBoard.withScoredMeadow(meadow, new HashSet<>());
+        assertEquals(messageBoard, newMessageBoard);
+    }
+
+    @Test
+    void withScoredMeadowNoPoint() {
+        MessageBoard messageBoard = new MessageBoard(new textTest(), new ArrayList<>());
+        Area<Zone.Meadow> meadow = new Area<>(new HashSet<>(Set.of(new Zone.Meadow(10, new ArrayList<>(), null), new Zone.Meadow(20, new ArrayList<>(), null))), List.of(PlayerColor.RED, PlayerColor.RED, PlayerColor.GREEN), 0);
+        MessageBoard newMessageBoard = messageBoard.withScoredMeadow(meadow, new HashSet<>());
+        assertEquals(messageBoard, newMessageBoard);
+    }
+
+    @Test
+    void withScoredMeadow1Winner() {
+        MessageBoard messageBoard = new MessageBoard(new textTest(), new ArrayList<>());
+        Area<Zone.Meadow> meadow = new Area<>(new HashSet<>(Set.of(new Zone.Meadow(10, List.of(new Animal(101, Animal.Kind.DEER)), null), new Zone.Meadow(20, List.of(new Animal(201, Animal.Kind.DEER), new Animal(202, Animal.Kind.AUROCHS)), null))), List.of(PlayerColor.RED, PlayerColor.RED, PlayerColor.GREEN), 0);
+        MessageBoard newMessageBoard = messageBoard.withScoredMeadow(meadow, new HashSet<>(Set.of(new Animal(101, Animal.Kind.DEER))));
+        assertEquals(newMessageBoard.messages().size(), 1);
+        assertEquals(newMessageBoard.messages().getFirst().text(), "[RED] 3 {AUROCHS=1, DEER=1}");
+        assertEquals(newMessageBoard.messages().getFirst().points(), 3);
+        assertEquals(newMessageBoard.messages().getFirst().scorers(), Set.of(PlayerColor.RED));
+        assertEquals(newMessageBoard.messages().getFirst().tileIds(), Set.of(1, 2));
+    }
+
+    @Test
+    void withScoredMeadow2Winner() {
+        MessageBoard messageBoard = new MessageBoard(new textTest(), new ArrayList<>());
+        Area<Zone.Meadow> meadow = new Area<>(new HashSet<>(Set.of(new Zone.Meadow(10, List.of(new Animal(101, Animal.Kind.DEER)), null), new Zone.Meadow(20, List.of(new Animal(201, Animal.Kind.DEER), new Animal(202, Animal.Kind.AUROCHS)), null))), List.of(PlayerColor.RED, PlayerColor.RED, PlayerColor.GREEN, PlayerColor.GREEN), 0);
+        MessageBoard newMessageBoard = messageBoard.withScoredMeadow(meadow, new HashSet<>(Set.of(new Animal(101, Animal.Kind.DEER), new Animal(202, Animal.Kind.AUROCHS))));
+        assertEquals(newMessageBoard.messages().size(), 1);
+        assertEquals(newMessageBoard.messages().getFirst().text(), "[RED, GREEN] 1 {DEER=1}");
+        assertEquals(newMessageBoard.messages().getFirst().points(), 1);
+        assertEquals(newMessageBoard.messages().getFirst().scorers(), Set.of(PlayerColor.RED, PlayerColor.GREEN));
+        assertEquals(newMessageBoard.messages().getFirst().tileIds(), Set.of(1, 2));
+    }
+
+    @Test
+    void withScoredMeadowAllAnimalDelete() {
+        MessageBoard messageBoard = new MessageBoard(new textTest(), new ArrayList<>());
+        Area<Zone.Meadow> meadow = new Area<>(new HashSet<>(Set.of(new Zone.Meadow(10, List.of(new Animal(101, Animal.Kind.DEER)), null), new Zone.Meadow(20, List.of(new Animal(201, Animal.Kind.DEER), new Animal(202, Animal.Kind.AUROCHS)), null))), List.of(PlayerColor.RED, PlayerColor.RED, PlayerColor.GREEN, PlayerColor.GREEN), 0);
+        MessageBoard newMessageBoard = messageBoard.withScoredMeadow(meadow, new HashSet<>(Set.of(new Animal(101, Animal.Kind.DEER), new Animal(201, Animal.Kind.DEER), new Animal(202, Animal.Kind.AUROCHS))));
+        assertEquals(messageBoard, newMessageBoard);
+    }
+
+    @Test
+    void withScoredRiverSystemNoOccupant() {
+        MessageBoard messageBoard = new MessageBoard(new textTest(), new ArrayList<>());
+        Area<Zone.Water> water = new Area<>(new HashSet<>(Set.of(new Zone.River(10, 1, null), new Zone.Lake(20, 2, null))), new ArrayList<>(), 0);
+        MessageBoard newMessageBoard = messageBoard.withScoredRiverSystem(water);
+        assertEquals(messageBoard, newMessageBoard);
+    }
+
+    @Test
+    void withScoredRiverSystemNoPoint() {
+        MessageBoard messageBoard = new MessageBoard(new textTest(), new ArrayList<>());
+        Area<Zone.Water> water = new Area<>(new HashSet<>(Set.of(new Zone.River(10, 0, null), new Zone.Lake(20, 0, null))), List.of(PlayerColor.RED, PlayerColor.RED, PlayerColor.GREEN), 0);
+        MessageBoard newMessageBoard = messageBoard.withScoredRiverSystem(water);
+        assertEquals(messageBoard, newMessageBoard);
+    }
+
+    @Test
+    void withScoredRiverSystem3Winner() {
+        MessageBoard messageBoard = new MessageBoard(new textTest(), new ArrayList<>());
+        Area<Zone.Water> water = new Area<>(new HashSet<>(Set.of(new Zone.River(10, 1, null), new Zone.Lake(20, 2, null), new Zone.River(40, 1, null))), List.of(PlayerColor.RED, PlayerColor.RED, PlayerColor.GREEN, PlayerColor.GREEN, PlayerColor.PURPLE, PlayerColor.PURPLE), 0);
+        MessageBoard newMessageBoard = messageBoard.withScoredRiverSystem(water);
+        assertEquals(newMessageBoard.messages().size(), 1);
+        assertEquals(newMessageBoard.messages().getFirst().text(), "[RED, GREEN, PURPLE] 4 4");
+        assertEquals(newMessageBoard.messages().getFirst().points(), 4);
+        assertEquals(newMessageBoard.messages().getFirst().scorers(), Set.of(PlayerColor.RED, PlayerColor.GREEN, PlayerColor.PURPLE));
+        assertEquals(newMessageBoard.messages().getFirst().tileIds(), Set.of(1, 2, 4));
+    }
+
+    @Test
+    void withScoredRiverSystem() {
+        MessageBoard messageBoard = new MessageBoard(new textTest(), new ArrayList<>());
+        Area<Zone.Water> water = new Area<>(new HashSet<>(Set.of(new Zone.River(10, 1, null), new Zone.Lake(20, 2, null))), List.of(PlayerColor.RED, PlayerColor.RED, PlayerColor.GREEN), 0);
+        MessageBoard newMessageBoard = messageBoard.withScoredRiverSystem(water);
+        assertEquals(newMessageBoard.messages().size(), 1);
+        assertEquals(newMessageBoard.messages().getFirst().text(), "[RED] 3 3");
+        assertEquals(newMessageBoard.messages().getFirst().points(), 3);
+        assertEquals(newMessageBoard.messages().getFirst().scorers(), Set.of(PlayerColor.RED));
+        assertEquals(newMessageBoard.messages().getFirst().tileIds(), Set.of(1, 2));
+    }
+
+    //PAS SUR APRES ICI, DEMANDE SI IL FAUT DELETE LES ANIMAUX IL EN PARLE DANS LA DOC, JE COMPREND PAS TROP LA DIFFERNCE GRANDE ET PEITE FOSSE A PIEUX !!!!!!!!!!!!!
+    @Test
+    void withScoredPitTrapNoOccupant() {
+        MessageBoard messageBoard = new MessageBoard(new textTest(), new ArrayList<>());
+        Area<Zone.Meadow> meadow = new Area<>(new HashSet<>(Set.of(new Zone.Meadow(10, List.of(new Animal(101, Animal.Kind.DEER)), null), new Zone.Meadow(20, List.of(new Animal(201, Animal.Kind.DEER), new Animal(202, Animal.Kind.AUROCHS)), null))), new ArrayList<>(), 0);
+        MessageBoard newMessageBoard = messageBoard.withScoredPitTrap(meadow, new HashSet<>());
+        assertEquals(messageBoard, newMessageBoard);
+    }
+
+    @Test
+    void withScoredPitTrapAllAnimalCancelled() {
+        MessageBoard messageBoard = new MessageBoard(new textTest(), new ArrayList<>());
+        Area<Zone.Meadow> meadow = new Area<>(new HashSet<>(Set.of(new Zone.Meadow(10, List.of(new Animal(101, Animal.Kind.DEER)), null), new Zone.Meadow(20, List.of(new Animal(201, Animal.Kind.DEER), new Animal(202, Animal.Kind.AUROCHS)), null))), List.of(PlayerColor.RED, PlayerColor.RED, PlayerColor.GREEN, PlayerColor.GREEN), 0);
+        MessageBoard newMessageBoard = messageBoard.withScoredPitTrap(meadow, new HashSet<>(Set.of(new Animal(101, Animal.Kind.DEER), new Animal(201, Animal.Kind.DEER), new Animal(202, Animal.Kind.AUROCHS))));
+        assertEquals(messageBoard, newMessageBoard);
+    }
+
+    @Test
+    void withScoredPitTrap() {
+        MessageBoard messageBoard = new MessageBoard(new textTest(), new ArrayList<>());
+        Area<Zone.Meadow> meadow = new Area<>(new HashSet<>(Set.of(new Zone.Meadow(10, List.of(new Animal(101, Animal.Kind.DEER)), null), new Zone.Meadow(20, List.of(new Animal(201, Animal.Kind.DEER), new Animal(202, Animal.Kind.AUROCHS)), null))), List.of(PlayerColor.RED, PlayerColor.RED, PlayerColor.GREEN), 0);
+        MessageBoard newMessageBoard = messageBoard.withScoredPitTrap(meadow, new HashSet<>(Set.of(new Animal(101, Animal.Kind.DEER))));
+        assertEquals(newMessageBoard.messages().size(), 1);
+        assertEquals(newMessageBoard.messages().getFirst().text(), "[RED] 3 {AUROCHS=1, DEER=1}");
+        assertEquals(newMessageBoard.messages().getFirst().points(), 3);
+        assertEquals(newMessageBoard.messages().getFirst().scorers(), Set.of(PlayerColor.RED));
+        assertEquals(newMessageBoard.messages().getFirst().tileIds(), Set.of(1, 2));
     }
 
     private static class textTest implements TextMaker{

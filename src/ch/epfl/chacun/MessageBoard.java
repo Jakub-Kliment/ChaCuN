@@ -107,18 +107,25 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
 
     public MessageBoard withScoredLogboat(PlayerColor scorer, Area<Zone.Water> riverSystem) {
 
-        int points = Points.forRiverSystem(Area.riverSystemFishCount(riverSystem));
+        int point = Points.forLogboat(Area.lakeCount(riverSystem));
 
         List<Message> newMessages = new ArrayList<>(messages);
+
+        //permet d'avoir que les lacs, peu etre ameliorer
+        Set<Integer> tileIds = new HashSet<>();
+        for (Zone.Water zone : riverSystem.zones()){
+            if (zone instanceof Zone.Lake)
+                tileIds.add(zone.tileId());
+        }
 
         newMessages.add(new Message(
                 textMaker().playerScoredLogboat(
                         scorer,
-                        points,
-                        Area.riverSystemFishCount(riverSystem)),
-                points,
+                        point,
+                        Area.lakeCount(riverSystem)),
+                point,
                 new HashSet<>(Set.of(scorer)),
-                riverSystem.tileIds()));
+                tileIds));
         return new MessageBoard(textMaker, newMessages);
     }
 
@@ -149,6 +156,7 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
 
         int points = Points.forRiverSystem(Area.riverSystemFishCount(riverSystem));
 
+        //Peut etre faire ca pour les autre !!!!!!!!!!!
         if(!riverSystem.isOccupied() || points == 0)
             return this;
 
@@ -222,8 +230,12 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
         Set<Animal> animals = Area.animals(meadow, cancelledAnimals);
         Map<Animal.Kind, Integer> animalCount = new HashMap<>();
 
-        for (Animal animal : animals)
+        for (Animal animal : animals){
+            if (!animalCount.containsKey(animal.kind())){
+                animalCount.put(animal.kind(), 0);
+            }
             animalCount.put(animal.kind(), animalCount.get(animal.kind()) + 1);
+        }
 
         return animalCount;
     }
