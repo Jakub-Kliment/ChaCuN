@@ -123,7 +123,7 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
         newMessages.add(new Message(
                 textMaker.playerScoredHuntingTrap(scorer, points, animalMap),
                 points,
-                new HashSet<>(Set.of(scorer)),
+                Set.of(scorer),
                 adjacentMeadow.tileIds()));
 
         return new MessageBoard(textMaker, newMessages);
@@ -146,7 +146,7 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
                         point,
                         Area.lakeCount(riverSystem)),
                 point,
-                new HashSet<>(Set.of(scorer)),
+                Set.of(scorer),
                 riverSystem.tileIds()));
 
         return new MessageBoard(textMaker, newMessages);
@@ -271,8 +271,8 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
 
         newMessages.add(new Message(
                 textMaker.playersWon(winners, points),
-                points,
-                winners,
+                0,
+                new HashSet<>(),
                 new HashSet<>()));
 
         return new MessageBoard(textMaker, newMessages);

@@ -1,19 +1,35 @@
 package ch.epfl.chacun;
 
-
+/**
+ * Represents all the zone partitions.
+ *
+ *
+ * @param forests the partition of forests
+ * @param meadows the partition of meadows
+ * @param rivers the partition of rivers
+ * @param riverSystems the partition of river systems
+ *
+ * @author Alexis Grillet-Aubert (381587)
+ * @author Jakub Kliment (380660)
+ */
 public record ZonePartitions(ZonePartition<Zone.Forest> forests, ZonePartition<Zone.Meadow> meadows,
                              ZonePartition<Zone.River> rivers, ZonePartition<Zone.Water> riverSystems) {
 
+    // Empty zone partitions
     public final static ZonePartitions EMPTY = new ZonePartitions(
             new ZonePartition<>(), new ZonePartition<>(),
             new ZonePartition<>(), new ZonePartition<>());
 
+    /**
+     * Builder for the zone partitions.
+     */
     public final static class Builder {
         private ZonePartition.Builder<Zone.Forest> forests;
         private ZonePartition.Builder<Zone.Meadow> meadows;
         private ZonePartition.Builder<Zone.River> rivers;
         private ZonePartition.Builder<Zone.Water> riverSystem;
 
+        // Builder constructor
         public Builder(ZonePartitions initial) {
             forests = new ZonePartition.Builder<>(initial.forests());
             meadows = new ZonePartition.Builder<>(initial.meadows());
@@ -21,9 +37,15 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests, ZonePartition<Z
             riverSystem = new ZonePartition.Builder<>(initial.riverSystems());
         }
 
+        /**
+         * Adds a tile to the zone partitions.
+         *
+         * @param tile the tile to add
+         */
         public void addTile(Tile tile) {
             int[] localOpenZones = new int[10];
 
+            // Count the number of open zones for each zone
             for (TileSide side : tile.sides()) {
 
                 for (Zone zone : side.zones()) {
@@ -36,6 +58,7 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests, ZonePartition<Z
                 }
             }
 
+            // Add the zones to the partitions
             for (Zone zone : tile.zones()) {
 
                 if (zone instanceof Zone.Forest forest)
@@ -57,12 +80,19 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests, ZonePartition<Z
                 }
             }
 
+            // Connect the rivers to the lakes
             for (Zone zone : tile.zones()) {
                 if (zone instanceof Zone.River river && river.hasLake())
                     riverSystem.union(river, river.lake());
             }
         }
 
+        /**
+         * Connects two sides of a tiles.
+         *
+         * @param s1 the side of the first tile
+         * @param s2 the side of the second tile
+         */
         public void connectSides(TileSide s1, TileSide s2) {
             switch (s1) {
                 case TileSide.Forest(Zone.Forest f1)
@@ -83,6 +113,13 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests, ZonePartition<Z
             }
         }
 
+        /**
+         * Adds an initial occupant to the zone partitions.
+         *
+         * @param player the color of the player
+         * @param occupantKind the kind of the occupant
+         * @param occupiedZone the zone the occupant is in
+         */
         public void addInitialOccupant(PlayerColor player, Occupant.Kind occupantKind, Zone occupiedZone) {
             switch (occupiedZone) {
                 case Zone.Forest forest when occupantKind.equals(Occupant.Kind.PAWN) ->
@@ -101,6 +138,12 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests, ZonePartition<Z
             }
         }
 
+        /**
+         * Removes a pawn from the occupied zone
+         *
+         * @param player the color of the player
+         * @param occupiedZone the zone the occupant is in
+         */
         public void removePawn(PlayerColor player, Zone occupiedZone) {
             switch (occupiedZone) {
                 case Zone.Forest forest ->
@@ -116,14 +159,27 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests, ZonePartition<Z
             }
         }
 
+        /**
+         * Removes all gatherers from the forest area.
+         *
+         * @param forest the forest to remove the gatherers from
+         */
         public void clearGatherers(Area<Zone.Forest> forest) {
             forests.removeAllOccupantsOf(forest);
         }
 
+        /**
+         * Removes all fishers from the river area.
+         *
+         * @param river the river to remove the fishers from
+         */
         public void clearFishers(Area<Zone.River> river) {
             rivers.removeAllOccupantsOf(river);
         }
 
+        /**
+         * Builds the zone partitions.
+         */
         public ZonePartitions build() {
             return new ZonePartitions(forests.build(), meadows.build(),
                     rivers.build(), riverSystem.build());
