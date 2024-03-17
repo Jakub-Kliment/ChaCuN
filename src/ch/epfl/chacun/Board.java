@@ -80,7 +80,8 @@ public class Board {
     public Set<Occupant> occupants() {
         Set<Occupant> occupants = new HashSet<>();
         for (int i : index)
-            occupants.add(placedTiles[i].occupant());
+            if (placedTiles[i].occupant() != null)
+                occupants.add(placedTiles[i].occupant());
 
         return occupants;
     }
