@@ -407,7 +407,8 @@ public class Board {
      * @return the new board with more animals cancelled
      */
     public Board withMoreCancelledAnimals(Set<Animal> newlyCancelledAnimals) {
-        Set<Animal> newCancelledAnimals = cancelledAnimals();
+        Set<Animal> newCancelledAnimals = new HashSet<>();
+        newCancelledAnimals.addAll(cancelledAnimals());
         newCancelledAnimals.addAll(newlyCancelledAnimals);
         // est-ce quon doit ajouter les nouveaux animaux ou les remplacer !!!!!
 

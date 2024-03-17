@@ -1,11 +1,9 @@
 package ch.epfl.chacun;
 
-import java.util.Random;
+import java.util.*;
+
 import org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -49,7 +47,7 @@ public class MyBoardTest {
     }
 
     @Test
-    void tileReturnsNullForPositionWhereNoTileIsPlaced() {
+    void tileAtReturnsNullForPositionWhereNoTileIsPlaced() {
         for (int i = -12; i < 13; i++) {
             for (int j = -12; j < 13; j++) {
                 if (i != 0 && j != 0)
@@ -59,7 +57,36 @@ public class MyBoardTest {
     }
 
     @Test
-    void tileReturnsNullForValuesOffTheBoard() {
+    void tileAtReturnsCorrectPositionForPlacedTile() {
+        Board board = Board.EMPTY;
+        List<PlacedTile> placedTiles = new ArrayList<>();
+        int index = 0;
+        for (int i = -12; i < 13; i++) {
+            for (int j = -12; j < 13; j++) {
+                PlacedTile newTile = new PlacedTile(new Tile(
+                        index, Tile.Kind.NORMAL,
+                        new TileSide.Meadow(new Zone.Meadow(1, new ArrayList<>(), null)),
+                        new TileSide.Meadow(new Zone.Meadow(2, new ArrayList<>(), null)),
+                        new TileSide.Meadow(new Zone.Meadow(3, new ArrayList<>(), null)),
+                        new TileSide.Meadow(new Zone.Meadow(4, new ArrayList<>(), null))),
+                        null, Rotation.NONE, new Pos(i, j));
+
+                placedTiles.add(newTile);
+                board = board.withNewTile(newTile);
+                index++;
+            }
+        }
+        index = 0;
+        for (int i = -12; i < 13; i++) {
+            for (int j = -12; j < 13; j++) {
+                assertEquals(placedTiles.get(index), board.tileAt(new Pos(i, j)));
+                index++;
+            }
+        }
+    }
+
+    @Test
+    void tileAtReturnsNullForValuesOffTheBoard() {
         for (int i = 0; i < 100; i++) {
             int x = rand.nextInt(13, 100);
             int y = rand.nextInt(13, 100);
@@ -102,4 +129,97 @@ public class MyBoardTest {
         assertEquals(placedStartingTile, startingBoard.tileWithId(56));
     }
 
+    @Test
+    void tileWithIdThrowsIllegalArgumentExceptionForNotFoundIds() {
+        for (int i = -20; i < 125; i++) {
+            if (i != 56) {
+                int tileId = i;
+                assertThrows(IllegalArgumentException.class, () -> startingBoard.tileWithId(tileId));
+            }
+        }
+    }
+
+    @Test
+    void tileWithIdWorksForAllValues() {
+        Board board = Board.EMPTY;
+        List<PlacedTile> placedTiles = new ArrayList<>();
+        int index = 0;
+        for (int i = -12; i < 13; i++) {
+            for (int j = -12; j < 13; j++) {
+                PlacedTile newTile = new PlacedTile(new Tile(
+                        index, Tile.Kind.NORMAL,
+                        new TileSide.Meadow(new Zone.Meadow(1, new ArrayList<>(), null)),
+                        new TileSide.Meadow(new Zone.Meadow(2, new ArrayList<>(), null)),
+                        new TileSide.Meadow(new Zone.Meadow(3, new ArrayList<>(), null)),
+                        new TileSide.Meadow(new Zone.Meadow(4, new ArrayList<>(), null))),
+                        null, Rotation.NONE, new Pos(i, j));
+
+                placedTiles.add(newTile);
+                board = board.withNewTile(newTile);
+                index++;
+            }
+        }
+
+        for (int i = 0; i < 625; i++)
+            assertEquals(placedTiles.get(i), board.tileWithId(i));
+    }
+
+    @Test
+    void tileWithIdThrowsIllegalArgumentExceptionIfTileIsNotFound() {
+        Board board = Board.EMPTY;
+        int index = 0;
+        for (int i = 0; i < 7; i++) {
+            for (int j = 0; j < 6; j++) {
+                PlacedTile newTile = new PlacedTile(new Tile(
+                        index, Tile.Kind.NORMAL,
+                        new TileSide.Meadow(new Zone.Meadow(1, new ArrayList<>(), null)),
+                        new TileSide.Meadow(new Zone.Meadow(2, new ArrayList<>(), null)),
+                        new TileSide.Meadow(new Zone.Meadow(3, new ArrayList<>(), null)),
+                        new TileSide.Meadow(new Zone.Meadow(4, new ArrayList<>(), null))),
+                        null, Rotation.NONE, new Pos(i, j));
+
+                board = board.withNewTile(newTile);
+                index++;
+            }
+        }
+        for (int i = 43; i < 96; i++) {
+            int a = i;
+            Board finalBoard = board;
+            if (i != 56) {
+                assertThrows(IllegalArgumentException.class, () -> finalBoard.tileWithId(a));
+            }
+        }
+    }
+
+    @Test
+    void tileWithIdThrowsIllegalArgumentExceptionForOutOfBoundsIndex() {
+        for (int i = 0; i < 100; i++) {
+            int r = rand.nextInt(625, 1000);
+            assertThrows(IllegalArgumentException.class, () -> startingBoard.tileWithId(r));
+        }
+    }
+
+    @Test
+    void canceledAnimalsCreatesImmutableCopyCorrectly() {
+        Set<Animal> cancelledAnimalSet = new HashSet<>();
+        for (int i = 0; i < 100; i++) {
+            if (i % 3 == 0)
+                cancelledAnimalSet.add(new Animal(i, Animal.Kind.DEER));
+            else if (i % 3 == 1)
+                cancelledAnimalSet.add(new Animal(i, Animal.Kind.MAMMOTH));
+            else
+                cancelledAnimalSet.add(new Animal(i, Animal.Kind.AUROCHS));
+        }
+        Board board = startingBoard.withMoreCancelledAnimals(cancelledAnimalSet);
+
+        for (int i = 100; i < 200; i++) {
+            if (i % 3 == 0)
+                cancelledAnimalSet.add(new Animal(i, Animal.Kind.DEER));
+            else if (i % 3 == 1)
+                cancelledAnimalSet.add(new Animal(i, Animal.Kind.MAMMOTH));
+            else
+                cancelledAnimalSet.add(new Animal(i, Animal.Kind.AUROCHS));
+        }
+        assertNotEquals(cancelledAnimalSet, board.cancelledAnimals());
+    }
 }
