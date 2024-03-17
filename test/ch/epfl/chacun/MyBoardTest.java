@@ -97,4 +97,9 @@ public class MyBoardTest {
         }
     }
 
+    @Test
+    void tileWithIdWorksForStartingTile() {
+        assertEquals(placedStartingTile, startingBoard.tileWithId(56));
+    }
+
 }

@@ -43,7 +43,7 @@ public class Board {
     public PlacedTile tileAt(Pos pos) {
         int position = indexFromPosition(pos);
 
-        if (position < 0 || position > BOARD_SIZE || placedTiles[position] == null)
+        if (position < 0 || position > BOARD_SIZE - 1 || placedTiles[position] == null)
             return null;
         return placedTiles[position];
     }
@@ -325,7 +325,7 @@ public class Board {
 
         // Defensive copy of index with the new index added
         int[] newIndex = Arrays.copyOf(index, index.length + 1);
-        newIndex[newIndex.length - 1] = tile.id();
+        newIndex[newIndex.length - 1] = indexFromPosition(tile.pos());
 
         // Defensive copy of zonePartitions with the new tile and its partitions added
         ZonePartitions.Builder newZonePartitionsBuilder = new ZonePartitions.Builder(zonePartitions);
