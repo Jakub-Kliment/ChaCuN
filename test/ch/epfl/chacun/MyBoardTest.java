@@ -309,4 +309,65 @@ public class MyBoardTest {
         assertEquals(new HashSet<>(), board.occupants());
     }
 
+    @Test
+    void occupantCountWorksForNormalValues() {
+        Board board = Board.EMPTY;
+        Set<Occupant> occupants = new HashSet<>();
+
+        for (int i = 0; i < 100; i++) {
+            Occupant occupant = new Occupant(Occupant.Kind.PAWN, i * 10 + i);
+            PlacedTile placedTile = new PlacedTile(
+                    new Tile(i, Tile.Kind.NORMAL,
+                            new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null)),
+                            new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null)),
+                            new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null)),
+                            new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null))),
+                    PlayerColor.RED, Rotation.NONE, new Pos(i % 25 - 12, i / 25 - 12), occupant);
+
+            board = board.withNewTile(placedTile);
+            occupants.add(occupant);
+        }
+        assertEquals(occupants.size(), board.occupantCount(PlayerColor.RED, Occupant.Kind.PAWN));
+    }
+
+    @Test
+    void occupantCountWorksForDifferentColorValues() {
+        Board board = Board.EMPTY;
+        List<Occupant> redOccupants = new ArrayList<>();
+        List<Occupant> blueOccupants = new ArrayList<>();
+        List<Occupant> greenOccupants = new ArrayList<>();
+
+        for (int i = 0; i < 100; i++) {
+            PlayerColor color;
+            if (i % 3 == 0)
+                color = PlayerColor.BLUE;
+            else if (i % 3 == 1)
+                color = PlayerColor.RED;
+            else
+                color = PlayerColor.GREEN;
+
+            Occupant occupant = new Occupant(Occupant.Kind.PAWN, i * 10 + i);
+            PlacedTile placedTile = new PlacedTile(
+                    new Tile(i, Tile.Kind.NORMAL,
+                            new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null)),
+                            new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null)),
+                            new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null)),
+                            new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null))),
+                    color, Rotation.NONE, new Pos(i % 25 - 12, i / 25 - 12), occupant);
+
+            board = board.withNewTile(placedTile);
+
+            switch (color) {
+                case RED -> redOccupants.add(occupant);
+                case BLUE -> blueOccupants.add(occupant);
+                case GREEN -> greenOccupants.add(occupant);
+            }
+
+        }
+        assertEquals(blueOccupants.size(), board.occupantCount(PlayerColor.BLUE, Occupant.Kind.PAWN));
+        assertEquals(redOccupants.size(), board.occupantCount(PlayerColor.RED, Occupant.Kind.PAWN));
+        assertEquals(greenOccupants.size(), board.occupantCount(PlayerColor.GREEN, Occupant.Kind.PAWN));
+        assertEquals(0, board.occupantCount(PlayerColor.YELLOW, Occupant.Kind.PAWN));
+    }
+
 }
