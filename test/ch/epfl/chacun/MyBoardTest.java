@@ -254,4 +254,59 @@ public class MyBoardTest {
         }
         assertEquals(occupants, board.occupants());
     }
+
+    @Test
+    void occupantsProducesSetOfOccupantsCorrectlyAfterAddingOccupantsOffBoard() {
+        Board board = Board.EMPTY;
+        Set<Occupant> occupants = new HashSet<>();
+        int index = 0;
+
+        for (int i = 0; i < 100; i++) {
+            PlayerColor color;
+            Occupant occupant = new Occupant(Occupant.Kind.PAWN, i * 10 + i);
+
+            if (i % 3 == 0)
+                color = PlayerColor.BLUE;
+            else if (i % 3 == 1) {
+                color = PlayerColor.RED;
+                occupant = null;
+            } else
+                color = PlayerColor.GREEN;
+
+            PlacedTile placedTile = new PlacedTile(
+                    new Tile(i, Tile.Kind.NORMAL,
+                            new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null)),
+                            new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null)),
+                            new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null)),
+                            new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null))),
+                    color, Rotation.NONE, new Pos(index % 25 - 12, index / 25 - 12), occupant);
+
+            if (i % 7 == 4) {
+                board = board.withNewTile(placedTile);
+                index++;
+            }
+            if (occupant != null)
+                occupants.add(occupant);
+        }
+        assertNotEquals(occupants, board.occupants());
+    }
+
+    @Test
+    void occupantsWorksForBoardWithNoOccupants() {
+        Board board = Board.EMPTY;
+
+        for (int i = 0; i < 100; i++) {
+            PlacedTile placedTile = new PlacedTile(
+                    new Tile(i, Tile.Kind.NORMAL,
+                            new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null)),
+                            new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null)),
+                            new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null)),
+                            new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null))),
+                    PlayerColor.RED, Rotation.NONE, new Pos(i % 25 - 12, i / 25 - 12));
+
+            board = board.withNewTile(placedTile);
+        }
+        assertEquals(new HashSet<>(), board.occupants());
+    }
+
 }

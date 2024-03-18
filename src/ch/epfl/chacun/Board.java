@@ -42,9 +42,9 @@ public class Board {
      */
     public PlacedTile tileAt(Pos pos) {
         int position = indexFromPosition(pos);
-
         if (position < 0 || position > BOARD_SIZE - 1 || placedTiles[position] == null)
             return null;
+
         return placedTiles[position];
     }
 
@@ -56,10 +56,10 @@ public class Board {
      * @return placed tile to which corresponds the id
      */
     public PlacedTile tileWithId(int tileId) {
-        for (int i : index) {
+        for (int i : index)
             if (placedTiles[i].id() == tileId)
                 return placedTiles[i];
-        }
+
         throw new IllegalArgumentException();
     }
 
@@ -86,7 +86,7 @@ public class Board {
         return occupants;
     }
 
-    // demander si on peut lancer une exception dans une autre methode
+    // demander si on peut lancer une exception dans une autre methode !!!!!
     /**
      * Returns the area of the forest containing the given forest zone
      *
@@ -167,12 +167,10 @@ public class Board {
             for (int j = -1; j < 2; j++) {
                 Pos adjacentPos = pos.translated(i, j);
 
-                if (tileAt(adjacentPos) != null) {
-                    for (Zone.Meadow zone : tileAt(adjacentPos).meadowZones()) {
+                if (tileAt(adjacentPos) != null)
+                    for (Zone.Meadow zone : tileAt(adjacentPos).meadowZones())
                         if (meadowArea.zones().contains(zone))
                             adjacentMeadow.add(zone);
-                    }
-                }
             }
         }
         return new Area<>(adjacentMeadow, meadowArea.occupants(), 0);
@@ -240,10 +238,10 @@ public class Board {
             return new HashSet<>();
 
         Set<Area<Zone.Forest>> forestAreas = new HashSet<>();
-        for (Zone.Forest forestZone : placedTiles[index[index.length - 1]].forestZones()) {
+        for (Zone.Forest forestZone : placedTiles[index[index.length - 1]].forestZones())
             if (forestArea(forestZone).isClosed())
                 forestAreas.add(forestArea(forestZone));
-        }
+
         return forestAreas;
     }
 
@@ -257,10 +255,10 @@ public class Board {
             return new HashSet<>();
 
         Set<Area<Zone.River>> riverAreas = new HashSet<>();
-        for (Zone.River riverZone : placedTiles[index[index.length - 1]].riverZones()) {
+        for (Zone.River riverZone : placedTiles[index[index.length - 1]].riverZones())
             if (riverArea(riverZone).isClosed())
                 riverAreas.add(riverArea(riverZone));
-        }
+
         return riverAreas;
     }
 
@@ -345,14 +343,13 @@ public class Board {
      * @return the new board with the occupant placed
      */
     public Board withOccupant(Occupant occupant) {
-        for (int i : index) {
+        for (int i : index)
             if (placedTiles[i].id() == occupant.zoneId() / 10)
                 placedTiles[i].withOccupant(occupant);
-        }
 
         PlacedTile[] newPlacedTiles = placedTiles.clone();
         int[] newIndex = index.clone();
-        // demander si l'occupant doit etre ajoute a zonePartitions !!!!!
+        // demander si l'occupant doit etre ajouter a zonePartitions !!!!!
         ZonePartitions newZonePartitions = new ZonePartitions.Builder(zonePartitions).build();
 
         return new Board(newPlacedTiles, newIndex, newZonePartitions, cancelledAnimals());
@@ -365,10 +362,9 @@ public class Board {
      * @return the new board without the occupant
      */
     public Board withoutOccupant(Occupant occupant) {
-        for (int i : index) {
+        for (int i : index)
             if (placedTiles[i].id() == occupant.zoneId() / 10)
                 placedTiles[i].withNoOccupant();
-        }
 
         PlacedTile[] newPlacedTiles = placedTiles.clone();
         int[] newIndex = index.clone();
