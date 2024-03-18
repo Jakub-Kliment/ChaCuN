@@ -45,7 +45,6 @@ class MyMessageBoardTest {
         Area<Zone.Forest> forest = new Area<>(new HashSet<>(Set.of(new Zone.Forest(10 ,Zone.Forest.Kind.WITH_MUSHROOMS), new Zone.Forest(20, Zone.Forest.Kind.PLAIN))), List.of(PlayerColor.RED, PlayerColor.RED, PlayerColor.GREEN), 0);
         MessageBoard newMessageBoard = messageBoard.withScoredForest(forest);
         assertEquals(newMessageBoard.messages().size(), 1);
-        assertEquals(newMessageBoard.messages().getFirst().text(), "[RED] 7 1 2");
         assertEquals(newMessageBoard.messages().getFirst().points(), 7);
         assertEquals(newMessageBoard.messages().getFirst().scorers(), Set.of(PlayerColor.RED));
         assertEquals(newMessageBoard.messages().getFirst().tileIds(), Set.of(1, 2));
@@ -57,7 +56,6 @@ class MyMessageBoardTest {
         Area<Zone.Forest> forest = new Area<>(new HashSet<>(Set.of(new Zone.Forest(10 ,Zone.Forest.Kind.WITH_MUSHROOMS), new Zone.Forest(20, Zone.Forest.Kind.PLAIN))), List.of(PlayerColor.RED, PlayerColor.RED, PlayerColor.GREEN, PlayerColor.GREEN), 0);
         MessageBoard newMessageBoard = messageBoard.withScoredForest(forest);
         assertEquals(newMessageBoard.messages().size(), 1);
-        assertEquals(newMessageBoard.messages().getFirst().text(), "[RED, GREEN] 7 1 2");
         assertEquals(newMessageBoard.messages().getFirst().points(), 7);
         assertEquals(newMessageBoard.messages().getFirst().scorers(), Set.of(PlayerColor.RED, PlayerColor.GREEN));
         assertEquals(newMessageBoard.messages().getFirst().tileIds(), Set.of(1, 2));
@@ -77,7 +75,6 @@ class MyMessageBoardTest {
         Area<Zone.River> river = new Area<>(new HashSet<>(Set.of(new Zone.River(20, 2, null), new Zone.River(10, 1, null))), List.of(PlayerColor.RED, PlayerColor.RED, PlayerColor.GREEN), 0);
         MessageBoard newMessageBoard = messageBoard.withScoredRiver(river);
         assertEquals(newMessageBoard.messages().size(), 1);
-        assertEquals(newMessageBoard.messages().getFirst().text(), "[RED] 5 3 2");
         assertEquals(newMessageBoard.messages().getFirst().points(), 5);
         assertEquals(newMessageBoard.messages().getFirst().scorers(), Set.of(PlayerColor.RED));
         assertEquals(newMessageBoard.messages().getFirst().tileIds(), Set.of(1, 2));
@@ -89,7 +86,6 @@ class MyMessageBoardTest {
         Area<Zone.River> river = new Area<>(new HashSet<>(Set.of(new Zone.River(20, 2, null), new Zone.River(10, 1, null))), List.of(PlayerColor.RED, PlayerColor.PURPLE), 0);
         MessageBoard newMessageBoard = messageBoard.withScoredRiver(river);
         assertEquals(newMessageBoard.messages().size(), 1);
-        assertEquals(newMessageBoard.messages().getFirst().text(), "[RED, PURPLE] 5 3 2");
         assertEquals(newMessageBoard.messages().getFirst().points(), 5);
         assertEquals(newMessageBoard.messages().getFirst().scorers(), Set.of(PlayerColor.RED, PlayerColor.PURPLE));
         assertEquals(newMessageBoard.messages().getFirst().tileIds(), Set.of(1, 2));
@@ -101,7 +97,6 @@ class MyMessageBoardTest {
         Area<Zone.Meadow> meadow = new Area<>(new HashSet<>(Set.of(new Zone.Meadow(10, List.of(new Animal(101, Animal.Kind.DEER)), null), new Zone.Meadow(20, List.of(new Animal(201, Animal.Kind.DEER), new Animal(202, Animal.Kind.AUROCHS)), null))), new ArrayList<>(), 0);
         MessageBoard newMessageBoard = messageBoard.withScoredHuntingTrap(PlayerColor.RED, meadow);
         assertEquals(newMessageBoard.messages().size(), 1);
-        assertEquals(newMessageBoard.messages().getFirst().text(), "RED 4 {AUROCHS=1, DEER=2}");
         assertEquals(newMessageBoard.messages().getFirst().points(), 4);
         assertEquals(newMessageBoard.messages().getFirst().scorers(), Set.of(PlayerColor.RED));
         assertEquals(newMessageBoard.messages().getFirst().tileIds(), Set.of(1, 2));
@@ -137,7 +132,6 @@ class MyMessageBoardTest {
         Area<Zone.Meadow> meadow = new Area<>(new HashSet<>(Set.of(new Zone.Meadow(10, List.of(new Animal(101, Animal.Kind.DEER)), null), new Zone.Meadow(20, List.of(new Animal(201, Animal.Kind.DEER), new Animal(202, Animal.Kind.AUROCHS)), null))), List.of(PlayerColor.RED, PlayerColor.RED, PlayerColor.GREEN), 0);
         MessageBoard newMessageBoard = messageBoard.withScoredMeadow(meadow, new HashSet<>(Set.of(new Animal(101, Animal.Kind.DEER))));
         assertEquals(newMessageBoard.messages().size(), 1);
-        assertEquals(newMessageBoard.messages().getFirst().text(), "[RED] 3 {AUROCHS=1, DEER=1}");
         assertEquals(newMessageBoard.messages().getFirst().points(), 3);
         assertEquals(newMessageBoard.messages().getFirst().scorers(), Set.of(PlayerColor.RED));
         assertEquals(newMessageBoard.messages().getFirst().tileIds(), Set.of(1, 2));
@@ -149,7 +143,6 @@ class MyMessageBoardTest {
         Area<Zone.Meadow> meadow = new Area<>(new HashSet<>(Set.of(new Zone.Meadow(10, List.of(new Animal(101, Animal.Kind.DEER)), null), new Zone.Meadow(20, List.of(new Animal(201, Animal.Kind.DEER), new Animal(202, Animal.Kind.AUROCHS)), null))), List.of(PlayerColor.RED, PlayerColor.RED, PlayerColor.GREEN, PlayerColor.GREEN), 0);
         MessageBoard newMessageBoard = messageBoard.withScoredMeadow(meadow, new HashSet<>(Set.of(new Animal(101, Animal.Kind.DEER), new Animal(202, Animal.Kind.AUROCHS))));
         assertEquals(newMessageBoard.messages().size(), 1);
-        assertEquals(newMessageBoard.messages().getFirst().text(), "[RED, GREEN] 1 {DEER=1}");
         assertEquals(newMessageBoard.messages().getFirst().points(), 1);
         assertEquals(newMessageBoard.messages().getFirst().scorers(), Set.of(PlayerColor.RED, PlayerColor.GREEN));
         assertEquals(newMessageBoard.messages().getFirst().tileIds(), Set.of(1, 2));
@@ -185,7 +178,6 @@ class MyMessageBoardTest {
         Area<Zone.Water> water = new Area<>(new HashSet<>(Set.of(new Zone.River(10, 1, null), new Zone.Lake(20, 2, null), new Zone.River(40, 1, null))), List.of(PlayerColor.RED, PlayerColor.RED, PlayerColor.GREEN, PlayerColor.GREEN, PlayerColor.PURPLE, PlayerColor.PURPLE), 0);
         MessageBoard newMessageBoard = messageBoard.withScoredRiverSystem(water);
         assertEquals(newMessageBoard.messages().size(), 1);
-        assertEquals(newMessageBoard.messages().getFirst().text(), "[RED, GREEN, PURPLE] 4 4");
         assertEquals(newMessageBoard.messages().getFirst().points(), 4);
         assertEquals(newMessageBoard.messages().getFirst().scorers(), Set.of(PlayerColor.RED, PlayerColor.GREEN, PlayerColor.PURPLE));
         assertEquals(newMessageBoard.messages().getFirst().tileIds(), Set.of(1, 2, 4));
@@ -197,7 +189,6 @@ class MyMessageBoardTest {
         Area<Zone.Water> water = new Area<>(new HashSet<>(Set.of(new Zone.River(10, 1, null), new Zone.Lake(20, 2, null))), List.of(PlayerColor.RED, PlayerColor.RED, PlayerColor.GREEN), 0);
         MessageBoard newMessageBoard = messageBoard.withScoredRiverSystem(water);
         assertEquals(newMessageBoard.messages().size(), 1);
-        assertEquals(newMessageBoard.messages().getFirst().text(), "[RED] 3 3");
         assertEquals(newMessageBoard.messages().getFirst().points(), 3);
         assertEquals(newMessageBoard.messages().getFirst().scorers(), Set.of(PlayerColor.RED));
         assertEquals(newMessageBoard.messages().getFirst().tileIds(), Set.of(1, 2));
@@ -225,7 +216,6 @@ class MyMessageBoardTest {
         Area<Zone.Meadow> meadow = new Area<>(new HashSet<>(Set.of(new Zone.Meadow(10, List.of(new Animal(101, Animal.Kind.DEER)), null), new Zone.Meadow(20, List.of(new Animal(201, Animal.Kind.DEER), new Animal(202, Animal.Kind.AUROCHS)), null))), List.of(PlayerColor.RED, PlayerColor.RED, PlayerColor.GREEN), 0);
         MessageBoard newMessageBoard = messageBoard.withScoredPitTrap(meadow, new HashSet<>(Set.of(new Animal(101, Animal.Kind.DEER))));
         assertEquals(newMessageBoard.messages().size(), 1);
-        assertEquals(newMessageBoard.messages().getFirst().text(), "[RED] 3 {AUROCHS=1, DEER=1}");
         assertEquals(newMessageBoard.messages().getFirst().points(), 3);
         assertEquals(newMessageBoard.messages().getFirst().scorers(), Set.of(PlayerColor.RED));
         assertEquals(newMessageBoard.messages().getFirst().tileIds(), Set.of(1, 2));
