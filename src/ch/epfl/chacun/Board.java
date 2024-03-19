@@ -341,17 +341,23 @@ public class Board {
      */
     public Board withOccupant(Occupant occupant) {
         PlacedTile[] newPlacedTiles = placedTiles.clone();
+        PlacedTile tileWithOccupant = null;
 
         for (int i : index)
-            // trouver mieux pour / 10 !!!!!!
-            if (placedTiles[i].id() == Zone.tileId(occupant.zoneId()))
-                newPlacedTiles[i] = placedTiles[i].withOccupant(occupant);
+            if (placedTiles[i].id() == Zone.tileId(occupant.zoneId())) {
+                tileWithOccupant = placedTiles[i].withOccupant(occupant);
+                newPlacedTiles[i] = tileWithOccupant;
+            }
 
         int[] newIndex = index.clone();
         // l'occupant doit etre ajouter a zonePartitions !!!!!
-        ZonePartitions newZonePartitions = new ZonePartitions.Builder(zonePartitions).build();
+        ZonePartitions.Builder newZonePartitions = new ZonePartitions.Builder(zonePartitions);
+        if (tileWithOccupant != null)
+            newZonePartitions.addInitialOccupant(tileWithOccupant.placer(),
+                    occupant.kind(),
+                    tileWithOccupant.zoneWithId(occupant.zoneId()));
 
-        return new Board(newPlacedTiles, newIndex, newZonePartitions, cancelledAnimals());
+        return new Board(newPlacedTiles, newIndex, newZonePartitions.build(), cancelledAnimals());
     }
 
     /**
@@ -362,16 +368,22 @@ public class Board {
      */
     public Board withoutOccupant(Occupant occupant) {
         PlacedTile[] newPlacedTiles = placedTiles.clone();
+        PlacedTile tileWithoutOccupant = null;
 
         for (int i : index)
-            if (placedTiles[i].id() == Zone.tileId(occupant.zoneId()))
-                newPlacedTiles[i] =  placedTiles[i].withNoOccupant();
+            if (placedTiles[i].id() == Zone.tileId(occupant.zoneId())) {
+                tileWithoutOccupant = placedTiles[i].withNoOccupant();
+                newPlacedTiles[i] = tileWithoutOccupant;
+            }
 
         int[] newIndex = index.clone();
-        // retirer l'occupant de zone !!!!!
-        ZonePartitions newZonePartitions = new ZonePartitions.Builder(zonePartitions).build();
+        // retirer l'occupant de zone !!!!! une hute peut etre retiree???
+        ZonePartitions.Builder newZonePartitions = new ZonePartitions.Builder(zonePartitions);
+        if (tileWithoutOccupant != null)
+            newZonePartitions.removePawn(tileWithoutOccupant.placer(),
+                    tileWithoutOccupant.zoneWithId(occupant.zoneId()));
 
-        return new Board(newPlacedTiles, newIndex, newZonePartitions, cancelledAnimals());
+        return new Board(newPlacedTiles, newIndex, newZonePartitions.build(), cancelledAnimals());
     }
 
     /**
@@ -383,16 +395,21 @@ public class Board {
      */
     public Board withoutGatherersOrFishersIn(Set<Area<Zone.Forest>> forests, Set<Area<Zone.River>> rivers) {
         ZonePartitions.Builder newZonePartitions = new ZonePartitions.Builder(zonePartitions);
-        for (Area<Zone.Forest> forestArea : forests)
-            newZonePartitions.clearGatherers(forestArea);
-
-        for (Area<Zone.River> riverArea : rivers)
-            newZonePartitions.clearFishers(riverArea);
-
+        int[] newIndex = index.clone();
         // doit enlever les pions de PlacedTile aussi !!!!!
         PlacedTile[] newPlacedTiles = placedTiles.clone();
-        int[] newIndex = index.clone();
 
+        for (Area<Zone.Forest> forestArea : forests) {
+            newZonePartitions.clearGatherers(forestArea);
+            for (Zone.Forest forest : forestArea.zones())
+                newPlacedTiles[forest.tileId()].withNoOccupant();
+        }
+
+        for (Area<Zone.River> riverArea : rivers) {
+            newZonePartitions.clearFishers(riverArea);
+            for (Zone.River river : riverArea.zones())
+                newPlacedTiles[river.tileId()].withNoOccupant();
+        }
         return new Board(newPlacedTiles, newIndex, newZonePartitions.build(), cancelledAnimals());
     }
 
