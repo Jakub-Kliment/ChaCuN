@@ -14,7 +14,6 @@ public class Board {
     private ZonePartitions zonePartitions;
     private Set<Animal> cancelledAnimals;
 
-    // demander -> constante 625 !!!!!!!!
     // The number of possible tile placements (board of size 25 x 25)
     private static final int BOARD_SIZE = 625;
     public static final int REACH = 12;
@@ -42,7 +41,7 @@ public class Board {
      */
     public PlacedTile tileAt(Pos pos) {
         int position = indexFromPosition(pos);
-        if (position < 0 || position > BOARD_SIZE - 1 || placedTiles[position] == null)
+        if (position < 0 || position >= BOARD_SIZE || placedTiles[position] == null)
             return null;
 
         return placedTiles[position];
@@ -86,7 +85,6 @@ public class Board {
         return occupants;
     }
 
-    // demander si on peut lancer une exception dans une autre methode !!!!!
     /**
      * Returns the area of the forest containing the given forest zone
      *
@@ -94,8 +92,6 @@ public class Board {
      * @return the area of the forest containing the given forest zone
      */
     public Area<Zone.Forest> forestArea(Zone.Forest forest) {
-        // Area<Zone.Forest> newArea = zonePartitions.forests().areaContaining(forest);
-        // return newArea;
         return zonePartitions.forests().areaContaining(forest);
     }
 
@@ -129,7 +125,7 @@ public class Board {
         return zonePartitions.riverSystems().areaContaining(water);
     }
 
-    // verifier !!!!!!
+
     /**
      * Returns the set of all meadow areas on the board
      *
@@ -140,7 +136,7 @@ public class Board {
         return meadowAreas.areas();
     }
 
-    // verifier !!!!!!
+
     /**
      * Returns the set of all river system areas on the board
      *
@@ -227,7 +223,6 @@ public class Board {
         return placedTiles[index[index.length - 1]];
     }
 
-    // verifier !!!!!!!
     /**
      * Returns the set of all forest areas closed by the last placed tile
      *
@@ -238,7 +233,7 @@ public class Board {
             return new HashSet<>();
 
         Set<Area<Zone.Forest>> forestAreas = new HashSet<>();
-        for (Zone.Forest forestZone : placedTiles[index[index.length - 1]].forestZones())
+        for (Zone.Forest forestZone : lastPlacedTile().forestZones())
             if (forestArea(forestZone).isClosed())
                 forestAreas.add(forestArea(forestZone));
 
@@ -255,7 +250,7 @@ public class Board {
             return new HashSet<>();
 
         Set<Area<Zone.River>> riverAreas = new HashSet<>();
-        for (Zone.River riverZone : placedTiles[index[index.length - 1]].riverZones())
+        for (Zone.River riverZone : lastPlacedTile().riverZones())
             if (riverArea(riverZone).isClosed())
                 riverAreas.add(riverArea(riverZone));
 
@@ -306,7 +301,6 @@ public class Board {
         return false;
     }
 
-    // est-ce que throws doit etre dans les commentaires !!!!!!
     /**
      * Adds a tile to the board and returns the new board with the tile placed
      *
@@ -334,7 +328,6 @@ public class Board {
         return new Board(newPlacedTiles, newIndex, newZonePartitions, cancelledAnimals());
     }
 
-    // autre methode lance exception !!!!!!
     /**
      * Adds an occupant to the board and returns the new board with the occupant placed
      *
@@ -343,13 +336,14 @@ public class Board {
      * @return the new board with the occupant placed
      */
     public Board withOccupant(Occupant occupant) {
+        PlacedTile[] newPlacedTiles = placedTiles.clone();
+
         for (int i : index)
             if (placedTiles[i].id() == occupant.zoneId() / 10)
-                placedTiles[i].withOccupant(occupant);
+                newPlacedTiles[i] = placedTiles[i].withOccupant(occupant);
 
-        PlacedTile[] newPlacedTiles = placedTiles.clone();
         int[] newIndex = index.clone();
-        // demander si l'occupant doit etre ajouter a zonePartitions !!!!!
+        // l'occupant doit etre ajouter a zonePartitions !!!!!
         ZonePartitions newZonePartitions = new ZonePartitions.Builder(zonePartitions).build();
 
         return new Board(newPlacedTiles, newIndex, newZonePartitions, cancelledAnimals());
@@ -362,19 +356,19 @@ public class Board {
      * @return the new board without the occupant
      */
     public Board withoutOccupant(Occupant occupant) {
+        PlacedTile[] newPlacedTiles = placedTiles.clone();
+
         for (int i : index)
             if (placedTiles[i].id() == occupant.zoneId() / 10)
-                placedTiles[i].withNoOccupant();
+                newPlacedTiles[i] =  placedTiles[i].withNoOccupant();
 
-        PlacedTile[] newPlacedTiles = placedTiles.clone();
         int[] newIndex = index.clone();
-        // demander si le occupant doit etre enleve de zonePartitions !!!!!
+        // retirer l'occupant de zone
         ZonePartitions newZonePartitions = new ZonePartitions.Builder(zonePartitions).build();
 
         return new Board(newPlacedTiles, newIndex, newZonePartitions, cancelledAnimals());
     }
 
-    // erreur dans l'enonce !!!!!! (zone)
     /**
      * Returns a new board with all gatherers or fishers removed from the given areas
      *
@@ -404,19 +398,16 @@ public class Board {
      * @return the new board with more animals cancelled
      */
     public Board withMoreCancelledAnimals(Set<Animal> newlyCancelledAnimals) {
-        Set<Animal> newCancelledAnimals = new HashSet<>();
-        newCancelledAnimals.addAll(cancelledAnimals());
-        newCancelledAnimals.addAll(newlyCancelledAnimals);
-        // est-ce quon doit ajouter les nouveaux animaux ou les remplacer !!!!!
+        Set<Animal> allCancelledAnimals = cancelledAnimals();
+        allCancelledAnimals.addAll(newlyCancelledAnimals);
 
         PlacedTile[] newPlacedTiles = placedTiles.clone();
         int[] newIndex = index.clone();
         ZonePartitions newZonePartitions = new ZonePartitions.Builder(zonePartitions).build();
 
-        return new Board(newPlacedTiles, newIndex, newZonePartitions, newCancelledAnimals);
+        return new Board(newPlacedTiles, newIndex, newZonePartitions, allCancelledAnimals);
     }
 
-    // Demander si Object ou Board en parametre !!!!!! et si elle doit etre statique !!!!!!
     /**
      * Returns true if the board is equal to the given object
      *
@@ -428,7 +419,6 @@ public class Board {
         if (that instanceof Board board)
             return Arrays.equals(placedTiles, board.placedTiles) &&
                     Arrays.equals(index, board.index) &&
-                    // Normalement pas de probleme (car immuables), mais demander si on peut comparer !!!!!
                     zonePartitions.equals(board.zonePartitions) &&
                     cancelledAnimals().equals(board.cancelledAnimals);
 

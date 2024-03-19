@@ -155,12 +155,13 @@ public record PlacedTile(Tile tile, PlayerColor placer, Rotation rotation, Pos p
     /**
      * Returns a place tile with a given occupant.
      *
+     * @throws IllegalArgumentException if this placed tile is already occupied
      * @return the placed tile with the given occupant
      */
     public PlacedTile withOccupant(Occupant occupant) {
-        if (occupant() != null) {
+        if (occupant() != null)
             throw new IllegalArgumentException();
-        }
+
         return new PlacedTile(tile, placer, rotation, pos, occupant);
     }
 

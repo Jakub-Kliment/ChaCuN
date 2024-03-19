@@ -463,4 +463,100 @@ public class MyBoardTest {
         assertEquals(0, board.occupantCount(PlayerColor.RED, Occupant.Kind.PAWN));
         assertEquals(0, board.occupantCount(PlayerColor.RED, Occupant.Kind.HUT));
     }
+
+    @Test
+    void couldPlaceTileWorksForStartingBoard() {
+        for (int i = 0; i < 100; i++) {
+            Tile tile = new Tile(i, Tile.Kind.NORMAL,
+                    new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null)),
+                    new TileSide.Forest(new Zone.Forest(i, Zone.Forest.Kind.PLAIN)),
+                    new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null)),
+                    new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null)));
+
+            assertTrue(startingBoard.couldPlaceTile(tile));
+        }
+    }
+
+    @Test
+    void couldPlaceTileReturnsFalseForTrivialExample() {
+        Board b = Board.EMPTY;
+
+        Tile tile = new Tile(100, Tile.Kind.NORMAL,
+                    new TileSide.Meadow(new Zone.Meadow(101, new ArrayList<>(), null)),
+                    new TileSide.Forest(new Zone.Forest(102, Zone.Forest.Kind.PLAIN)),
+                    new TileSide.Meadow(new Zone.Meadow(103, new ArrayList<>(), null)),
+                    new TileSide.Meadow(new Zone.Meadow(104, new ArrayList<>(), null)));
+
+        assertFalse(b.couldPlaceTile(tile));
+
+        b = b.withNewTile(new PlacedTile(tile, null, Rotation.NONE, Pos.ORIGIN));
+
+        Tile tile2 = new Tile(200, Tile.Kind.NORMAL, w, w, w, w);
+        assertFalse(b.couldPlaceTile(tile2));
+    }
+
+    @Test
+    void couldPlaceTileWorksForWholeBoard() {
+        Board board = Board.EMPTY;
+        for (int i = 0; i < 625; i++) {
+
+            Tile tile = new Tile(i, Tile.Kind.NORMAL,
+                    new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null)),
+                    new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null)),
+                    new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null)),
+                    new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null)));
+
+            PlacedTile placedTile = new PlacedTile(tile, null, Rotation.NONE, new Pos(i % 25 - 12, i / 25 - 12));
+
+
+            board = board.withNewTile(placedTile);
+            assertTrue(board.couldPlaceTile(tile));
+        }
+    }
+
+    @Test
+    void couldPlaceTileReturnsFalseForWholeBoard() {
+        Board board = Board.EMPTY;
+        for (int i = 0; i < 625; i++) {
+
+            Tile tile = new Tile(i, Tile.Kind.NORMAL,
+                    new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null)),
+                    new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null)),
+                    new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null)),
+                    new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null)));
+
+            Tile tile2 = new Tile(200, Tile.Kind.NORMAL, w, w, w, w);
+            PlacedTile placedTile = new PlacedTile(tile, null, Rotation.NONE, new Pos(i % 25 - 12, i / 25 - 12));
+
+
+            board = board.withNewTile(placedTile);
+            assertFalse(board.couldPlaceTile(tile2));
+        }
+    }
+
+    @Test
+    void couldPlaceTileWorksForOutsideOfTheBoardTiles() {
+        Board board = Board.EMPTY;
+        Tile tile;
+        tile = new Tile(
+                0, Tile.Kind.NORMAL,
+                new TileSide.Meadow(new Zone.Meadow(1, new ArrayList<>(), null)),
+                new TileSide.Meadow(new Zone.Meadow(2, new ArrayList<>(), null)),
+                new TileSide.Meadow(new Zone.Meadow(3, new ArrayList<>(), null)),
+                new TileSide.Meadow(new Zone.Meadow(4, new ArrayList<>(), null)));
+
+        PlacedTile starter = new PlacedTile(tile, null, Rotation.NONE, Pos.ORIGIN);
+        board = board.withNewTile(starter);
+
+        Tile tile2 = new Tile(
+                0, Tile.Kind.NORMAL,
+                new TileSide.Forest(new Zone.Forest(1, Zone.Forest.Kind.PLAIN)),
+                new TileSide.Forest(new Zone.Forest(2, Zone.Forest.Kind.PLAIN)),
+                new TileSide.Forest(new Zone.Forest(3, Zone.Forest.Kind.PLAIN)),
+                new TileSide.Forest(new Zone.Forest(4, Zone.Forest.Kind.PLAIN)));
+
+        assertFalse(board.couldPlaceTile(tile2));
+    }
+
+
 }
