@@ -344,7 +344,7 @@ public class Board {
 
         for (int i : index)
             // trouver mieux pour / 10 !!!!!!
-            if (placedTiles[i].id() == occupant.zoneId() / 10)
+            if (placedTiles[i].id() == Zone.tileId(occupant.zoneId()))
                 newPlacedTiles[i] = placedTiles[i].withOccupant(occupant);
 
         int[] newIndex = index.clone();
@@ -364,7 +364,7 @@ public class Board {
         PlacedTile[] newPlacedTiles = placedTiles.clone();
 
         for (int i : index)
-            if (placedTiles[i].id() == occupant.zoneId() / 10)
+            if (placedTiles[i].id() == Zone.tileId(occupant.zoneId()))
                 newPlacedTiles[i] =  placedTiles[i].withNoOccupant();
 
         int[] newIndex = index.clone();
