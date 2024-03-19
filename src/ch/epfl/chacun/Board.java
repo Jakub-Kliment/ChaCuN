@@ -403,8 +403,9 @@ public class Board {
      * @return the new board with more animals cancelled
      */
     public Board withMoreCancelledAnimals(Set<Animal> newlyCancelledAnimals) {
-        Set<Animal> allCancelledAnimals = cancelledAnimals();
+        Set<Animal> allCancelledAnimals = new HashSet<>();
         allCancelledAnimals.addAll(newlyCancelledAnimals);
+        allCancelledAnimals.addAll(cancelledAnimals());
 
         PlacedTile[] newPlacedTiles = placedTiles.clone();
         int[] newIndex = index.clone();

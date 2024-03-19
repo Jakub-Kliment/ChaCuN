@@ -210,7 +210,8 @@ public class MyBoardTest {
             else
                 cancelledAnimalSet.add(new Animal(i, Animal.Kind.AUROCHS));
         }
-        Board board = startingBoard.withMoreCancelledAnimals(cancelledAnimalSet);
+        Board board = startingBoard;
+        board = board.withMoreCancelledAnimals(cancelledAnimalSet);
 
         for (int i = 100; i < 200; i++) {
             if (i % 3 == 0)
