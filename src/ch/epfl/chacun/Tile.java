@@ -36,9 +36,9 @@ public record Tile(int id, Kind kind, TileSide n, TileSide e, TileSide s, TileSi
      */
     public Set<Zone> sideZones() {
         Set<Zone> zones = new HashSet<>();
-        for (TileSide side : sides()) {
+        for (TileSide side : sides())
             zones.addAll(side.zones());
-        }
+
         return zones;
     }
 
@@ -52,9 +52,8 @@ public record Tile(int id, Kind kind, TileSide n, TileSide e, TileSide s, TileSi
         Set<Zone> zones = new HashSet<>();
         for (Zone zone : sideZones()) {
             zones.add(zone);
-            if (zone instanceof Zone.River river && river.hasLake()) {
+            if (zone instanceof Zone.River river && river.hasLake())
                 zones.add(river.lake());
-            }
         }
         return zones;
     }

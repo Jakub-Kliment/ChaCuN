@@ -16,6 +16,8 @@ public final class Points {
      *
      * @param tileCount the number of tiles
      * @param mushroomGroupCount the number of mushroom groups
+     * @throws IllegalArgumentException if the tile count is smaller or equal to one or
+     *                                  the number of mushroom groups is smaller than zero
      * @return the points of a closed forest
      */
     public static int forClosedForest(int tileCount, int mushroomGroupCount) {
@@ -28,6 +30,8 @@ public final class Points {
      *
      * @param tileCount the number of tiles
      * @param fishCount the number of fish
+     * @throws IllegalArgumentException if the tile count is smaller or equal to one or
+     *                                  the number of fish is smaller than zero
      * @return the points of the for a closed river
      */
     public static int forClosedRiver(int tileCount, int fishCount) {
@@ -41,6 +45,7 @@ public final class Points {
      * @param mammothCount the number of mammoths
      * @param aurochsCount the number of aurochs
      * @param deerCount the number of deer
+     * @throws IllegalArgumentException if the number of any animal kind is smaller than zero
      * @return the points for a meadow
      */
     public static int forMeadow(int mammothCount, int aurochsCount, int deerCount) {
@@ -52,6 +57,7 @@ public final class Points {
      * Computes the points of a river system.
      *
      * @param fishCount the number of fish
+     * @throws IllegalArgumentException if the number of fish is smaller than zero
      * @return the points for river system
      */
     public static int forRiverSystem(int fishCount) {
@@ -63,6 +69,7 @@ public final class Points {
      * Computes the points if a logboat is located in a water zone.
      *
      * @param lakeCount the number of lakes
+     * @throws IllegalArgumentException if the number of lakes is smaller or equal to zero
      * @return the additional points if a logboat is located in a water zone
      */
     public static int forLogboat(int lakeCount) {
@@ -74,6 +81,7 @@ public final class Points {
      * Computes the points if a raft is located in a water zone.
      *
      * @param lakeCount the number of lakes
+     * @throws IllegalArgumentException if the number of lakes is smaller or equal to zero
      * @return the additional points if a raft is located in a water zone
      */
     public static int forRaft(int lakeCount) {

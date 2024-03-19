@@ -6,16 +6,18 @@ import java.util.function.Predicate;
 /**
  * Lists of all decks of tiles (for each kind of tile)
  *
- * @param startTiles
- * @param normalTiles
- * @param menhirTiles
- *
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
  */
 public record TileDecks(List<Tile> startTiles, List<Tile> normalTiles, List<Tile> menhirTiles) {
 
-    // Constructor that copies the lists
+    /**
+     * Immutable constructor
+     *
+     * @param startTiles list of starting tiles
+     * @param normalTiles list of normal tiles
+     * @param menhirTiles list of tiles with a menhir
+     */
     public TileDecks {
         startTiles = List.copyOf(startTiles);
         normalTiles = List.copyOf(normalTiles);
@@ -53,9 +55,9 @@ public record TileDecks(List<Tile> startTiles, List<Tile> normalTiles, List<Tile
      * @return the top tile of the given kind
      */
     public Tile topTile(Tile.Kind kind) {
-        if (deckSize(kind) == 0) {
+        if (deckSize(kind) == 0)
             return null;
-        }
+
         return deckKind(kind).getFirst();
     }
 
@@ -63,6 +65,7 @@ public record TileDecks(List<Tile> startTiles, List<Tile> normalTiles, List<Tile
      * The deck of a given tile kind without its top tile.
      *
      * @param kind the kind of the tile
+     * @throws IllegalArgumentException if the deck size of a kind is not 0
      * @return the deck of the given kind without its top tile
      */
     public TileDecks withTopTileDrawn(Tile.Kind kind) {
@@ -83,9 +86,9 @@ public record TileDecks(List<Tile> startTiles, List<Tile> normalTiles, List<Tile
      * @return the deck of the given kind without its top tile, until the predicate is satisfied
      */
     public TileDecks withTopTileDrawnUntil(Tile.Kind kind, Predicate<Tile> predicate) {
-        if (!predicate.test(this.topTile(kind)) && deckSize(kind) != 0) {
+        if (!predicate.test(this.topTile(kind)) && deckSize(kind) != 0)
             return this.withTopTileDrawn(kind).withTopTileDrawnUntil(kind, predicate);
-        }
+
         return this;
     }
 }

@@ -25,7 +25,11 @@ public class Board {
             new ZonePartitions.Builder(ZonePartitions.EMPTY).build(),
             new HashSet<>());
 
-    // Private board constructor to keep the class immutable
+    /**
+     * Private board constructor to keep the class immutable
+     *
+     *
+      */
     private Board(PlacedTile[] placedTiles, int[] index, ZonePartitions zonePartitions, Set<Animal> cancelledAnimals) {
         this.placedTiles = placedTiles;
         this.index = index;
@@ -339,6 +343,7 @@ public class Board {
         PlacedTile[] newPlacedTiles = placedTiles.clone();
 
         for (int i : index)
+            // trouver mieux pour / 10 !!!!!!
             if (placedTiles[i].id() == occupant.zoneId() / 10)
                 newPlacedTiles[i] = placedTiles[i].withOccupant(occupant);
 
@@ -363,7 +368,7 @@ public class Board {
                 newPlacedTiles[i] =  placedTiles[i].withNoOccupant();
 
         int[] newIndex = index.clone();
-        // retirer l'occupant de zone
+        // retirer l'occupant de zone !!!!!
         ZonePartitions newZonePartitions = new ZonePartitions.Builder(zonePartitions).build();
 
         return new Board(newPlacedTiles, newIndex, newZonePartitions, cancelledAnimals());
@@ -384,7 +389,7 @@ public class Board {
         for (Area<Zone.River> riverArea : rivers)
             newZonePartitions.clearFishers(riverArea);
 
-        // demander si on doit enlever les pions de PlacedTile aussi !!!!!
+        // doit enlever les pions de PlacedTile aussi !!!!!
         PlacedTile[] newPlacedTiles = placedTiles.clone();
         int[] newIndex = index.clone();
 

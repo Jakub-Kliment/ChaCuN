@@ -13,7 +13,7 @@ public sealed interface TileSide {
     // The zones of the side
     List<Zone> zones();
 
-    // Methode to check if two sides are of the same kind
+    // Method to check if two sides are of the same kind
     boolean isSameKindAs(TileSide that);
 
     /**

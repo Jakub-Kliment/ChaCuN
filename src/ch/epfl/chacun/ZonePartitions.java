@@ -3,12 +3,6 @@ package ch.epfl.chacun;
 /**
  * Represents all the zone partitions.
  *
- *
- * @param forests the partition of forests
- * @param meadows the partition of meadows
- * @param rivers the partition of rivers
- * @param riverSystems the partition of river systems
- *
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
  */
@@ -29,7 +23,11 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests, ZonePartition<Z
         private ZonePartition.Builder<Zone.River> rivers;
         private ZonePartition.Builder<Zone.Water> riverSystem;
 
-        // Builder constructor
+        /**
+         * Builder constructor
+         *
+         * @param initial zone partitions
+         */
         public Builder(ZonePartitions initial) {
             forests = new ZonePartition.Builder<>(initial.forests());
             meadows = new ZonePartition.Builder<>(initial.meadows());
@@ -81,10 +79,9 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests, ZonePartition<Z
             }
 
             // Connect the rivers to the lakes
-            for (Zone zone : tile.zones()) {
+            for (Zone zone : tile.zones())
                 if (zone instanceof Zone.River river && river.hasLake())
                     riverSystem.union(river, river.lake());
-            }
         }
 
         /**
@@ -119,6 +116,7 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests, ZonePartition<Z
          * @param player the color of the player
          * @param occupantKind the kind of the occupant
          * @param occupiedZone the zone the occupant is in
+         * @throws IllegalArgumentException if the occupant cannot be added to the zone
          */
         public void addInitialOccupant(PlayerColor player, Occupant.Kind occupantKind, Zone occupiedZone) {
             switch (occupiedZone) {
@@ -143,6 +141,7 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests, ZonePartition<Z
          *
          * @param player the color of the player
          * @param occupiedZone the zone the occupant is in
+         * @throws IllegalArgumentException if there is no occupant in the zone or zone is a lake
          */
         public void removePawn(PlayerColor player, Zone occupiedZone) {
             switch (occupiedZone) {
@@ -163,6 +162,7 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests, ZonePartition<Z
          * Removes all gatherers from the forest area.
          *
          * @param forest the forest to remove the gatherers from
+         * @throws IllegalArgumentException if there are no gatherers in the forest area
          */
         public void clearGatherers(Area<Zone.Forest> forest) {
             forests.removeAllOccupantsOf(forest);
@@ -172,6 +172,7 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests, ZonePartition<Z
          * Removes all fishers from the river area.
          *
          * @param river the river to remove the fishers from
+         * @throws IllegalArgumentException if there are no fishers in the river area
          */
         public void clearFishers(Area<Zone.River> river) {
             rivers.removeAllOccupantsOf(river);

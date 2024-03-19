@@ -10,7 +10,9 @@ import java.util.Objects;
  */
 public record Occupant(Kind kind, int zoneId) {
 
-    // The kind of the occupant
+    /**
+     * The kind of occupant
+     */
     public enum Kind {
         PAWN,
         HUT

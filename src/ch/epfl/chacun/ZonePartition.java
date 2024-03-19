@@ -8,22 +8,23 @@ import java.util.Set;
 /**
  * Represents a partition of areas.
  *
- *
- * @param <Z> the type of the zones
- * @param areas the areas of the partition
- *
- *
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
  */
 public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
 
-    // Immutable constructor
+    /**
+     * Immutable constructor
+     *
+     * @param areas the areas of the partition
+     */
     public ZonePartition {
         areas = Set.copyOf(areas);
     }
 
-    // Constructor without any areas
+    /**
+     * Constructor without areas
+     */
     public ZonePartition() {
         this(new HashSet<>());
     }
@@ -31,22 +32,19 @@ public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
     /**
      * Checks whether a zone is in the area partition.
      *
-     * @return the area containing the zone
      * @throws IllegalArgumentException if the area is not in the partition
+     * @return the area containing the zone
      */
     public Area<Z> areaContaining(Z zone) {
-        for (Area<Z> area : areas) {
-            if (area.zones().contains(zone)) {
+        for (Area<Z> area : areas)
+            if (area.zones().contains(zone))
                 return area;
-            }
-        }
+
         throw new IllegalArgumentException();
     }
 
     /**
      * Builder for the zone partition.
-     *
-     * @param <Z>
      */
     public static final class Builder<Z extends Zone> {
 

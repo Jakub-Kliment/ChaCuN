@@ -10,7 +10,9 @@ import java.util.List;
  */
 public sealed interface Zone {
 
-    // The special powers
+    /**
+     * All special powers of a zone
+     */
     enum SpecialPower {
         SHAMAN,
         LOGBOAT,
@@ -82,7 +84,10 @@ public sealed interface Zone {
      * @param kind the kind of the forest
      */
     record Forest(int id, Kind kind) implements Zone {
-        // Different kinds of forests
+
+        /**
+         * All kinds of a forest
+         */
         public enum Kind {
             PLAIN,
             WITH_MENHIR,
@@ -99,7 +104,9 @@ public sealed interface Zone {
      */
     record Meadow(int id, List<Animal> animals, SpecialPower specialPower) implements Zone {
 
-        // Compact constructor
+        /**
+         * Compact constructor
+         */
         public Meadow {
             // Defensive copy of animals
             animals = List.copyOf(animals);

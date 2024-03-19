@@ -10,7 +10,12 @@ import java.util.*;
  */
 public record MessageBoard(TextMaker textMaker, List<Message> messages) {
 
-    // Immutable constructor
+    /**
+     * Immutable constructor
+     *
+     * @param textMaker creates the text for the message
+     * @param messages list of all messages of the message board
+     */
     public MessageBoard {
         messages = List.copyOf(messages);
     }
@@ -23,14 +28,13 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
     public Map<PlayerColor, Integer> points() {
         Map<PlayerColor, Integer> map = new HashMap<>();
 
-        for (Message message : messages) {
-            for (PlayerColor player : message.scorers) {
+        for (Message message : messages)
+            for (PlayerColor player : message.scorers)
                 if (map.containsKey(player))
                     map.put(player, message.points + map.get(player));
                 else
                     map.put(player, message.points);
-            }
-        }
+
         return map;
     }
 
@@ -310,15 +314,19 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
 
     /**
      * Represents a message that is displayed to the players
-     *
-     * @param text the text of the message
-     * @param points the points of the message
-     * @param scorers the players that scored the message
-     * @param tileIds the ids of the tiles that the message is about
      */
     public record Message(String text, int points, Set<PlayerColor> scorers, Set<Integer> tileIds) {
 
-        // Immutable constructor
+        /**
+         * Immutable constructor
+         *
+         * @param text the text of the message
+         * @param points the points that the action gains
+         * @param scorers the player(s) that scored the points
+         * @param tileIds the ids of the tiles that the message is about
+         * @throws IllegalArgumentException if the number of points is smaller than 0
+         * @throws NullPointerException if the text is null
+         */
         public Message {
             Objects.requireNonNull(text);
             Preconditions.checkArgument(points >= 0);

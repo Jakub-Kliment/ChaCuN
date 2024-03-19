@@ -10,7 +10,14 @@ import java.util.*;
  */
 public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, int openConnections) {
 
-    // Immutable constructor
+    /**
+     * Immutable constructor
+     *
+     * @param zones zones of the area
+     * @param occupants occupants of the area
+     * @param openConnections the number of open connections of this area
+     * @throws IllegalArgumentException if the number of open connections is smaller than zero
+     */
     public Area {
         Preconditions.checkArgument(openConnections >= 0);
         zones = Set.copyOf(zones);
@@ -26,10 +33,10 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
      * @return true if an area contains a forest of kind menhir, false otherwise
      */
     public static boolean hasMenhir(Area<Zone.Forest> forest) {
-        for (Zone.Forest zone : forest.zones()) {
+        for (Zone.Forest zone : forest.zones())
             if (zone.kind().equals(Zone.Forest.Kind.WITH_MENHIR))
                 return true;
-        }
+
         return false;
     }
 
@@ -42,11 +49,10 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
      */
     public static int mushroomGroupCount(Area<Zone.Forest> forest) {
         int mushroomCount = 0;
-        for (Zone.Forest zone : forest.zones()) {
+        for (Zone.Forest zone : forest.zones())
             if (zone.kind().equals(Zone.Forest.Kind.WITH_MUSHROOMS))
                 mushroomCount++;
 
-        }
         return mushroomCount;
     }
 
@@ -59,12 +65,11 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
     public static Set<Animal> animals(Area<Zone.Meadow> meadow, Set<Animal> cancelledAnimals) {
         Set<Animal> animals = new HashSet<>();
 
-        for (Zone.Meadow zone : meadow.zones()) {
-            for (Animal animal : zone.animals()) {
+        for (Zone.Meadow zone : meadow.zones())
+            for (Animal animal : zone.animals())
                 if (!cancelledAnimals.contains(animal))
                     animals.add(animal);
-            }
-        }
+
         return animals;
     }
 
@@ -77,6 +82,7 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
     public static int riverFishCount(Area<Zone.River> river) {
         int fishCount = 0;
         Set<Zone.Lake> countedLake = new HashSet<>();
+
         for (Zone.River zone : river.zones()) {
                 fishCount += zone.fishCount();
 
@@ -110,10 +116,10 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
      */
     public static int lakeCount(Area<Zone.Water> riverSystem) {
         int lakeCount = 0;
-        for (Zone zone : riverSystem.zones()) {
+        for (Zone zone : riverSystem.zones())
             if (zone instanceof Zone.Lake)
                 lakeCount++;
-        }
+
         return lakeCount;
     }
 
@@ -159,10 +165,10 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
 
         // Find the majority occupants
         Set<PlayerColor> majorityOccupants = new HashSet<>();
-        for (int i = 0; i < occupantCountsByColor.length; i++) {
+        for (int i = 0; i < occupantCountsByColor.length; i++)
             if (occupantCountsByColor[i] == max)
                 majorityOccupants.add(PlayerColor.ALL.get(i));
-        }
+
         return majorityOccupants;
     }
 
@@ -181,8 +187,8 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
             listColor.addAll(that.occupants());
 
 
-        // The number of open connections the number of open connections of this minus 2
-        // If they are not the same we
+        // The number of open connections of this minus 2
+        // If they are not the same we add the number of open connections of that
         int nbConnections = openConnections - 2 + (!this.equals(that) ? that.openConnections : 0);
 
         return new Area<>(setArea, listColor, nbConnections);
@@ -191,24 +197,28 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
     /**
      * Returns a new area with the initial occupant added
      *
+     * @throws IllegalArgumentException if the area is already occupied
      * @return the hash code of the area
      */
     public Area<Z> withInitialOccupant(PlayerColor occupant) {
         Preconditions.checkArgument(!isOccupied());
         List<PlayerColor> newOccupants = new ArrayList<>(occupants);
         newOccupants.add(occupant);
+
         return new Area<>(zones(), newOccupants, openConnections());
     }
 
     /**
      * Returns a new area without the specified occupant
      *
+     * @throws IllegalArgumentException if the occupant is not in the area
      * @return the new area without the specified occupant
      */
     public Area<Z> withoutOccupant(PlayerColor occupant) {
         Preconditions.checkArgument(occupants().contains(occupant));
         List<PlayerColor> newOccupants = new ArrayList<>(occupants);
         newOccupants.remove(occupant);
+
         return new Area<>(zones(), newOccupants, openConnections());
     }
 
@@ -240,10 +250,10 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
      * @return the zone with the specified special power
      */
     public Zone zoneWithSpecialPower(Zone.SpecialPower specialPower) {
-        for (Z zone : zones()) {
+        for (Z zone : zones())
             if (zone.specialPower() != null && zone.specialPower().equals(specialPower))
                 return zone;
-        }
+
         return null;
     }
 }
