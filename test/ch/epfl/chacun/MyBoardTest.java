@@ -2,6 +2,7 @@ package ch.epfl.chacun;
 
 import java.util.*;
 
+import ch.epfl.chacun.tile.Tiles;
 import org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
@@ -529,7 +530,6 @@ public class MyBoardTest {
             Tile tile2 = new Tile(200, Tile.Kind.NORMAL, w, w, w, w);
             PlacedTile placedTile = new PlacedTile(tile, null, Rotation.NONE, new Pos(i % 25 - 12, i / 25 - 12));
 
-
             board = board.withNewTile(placedTile);
             assertFalse(board.couldPlaceTile(tile2));
         }
@@ -559,5 +559,143 @@ public class MyBoardTest {
         assertFalse(board.couldPlaceTile(tile2));
     }
 
+    @Test
+    void couldPlaceTileWorksForRealGameScenario() {
+        Board b = Board.EMPTY;
+        //assertTrue(b.canAddTile(placedStartingTile));
 
+        b = b.withNewTile(placedStartingTile);
+        for (Tile tile : Tiles.TILES)
+            assertTrue(b.couldPlaceTile(tile));
+
+        b = b.withNewTile(new PlacedTile(Tiles.TILES.get(17), PlayerColor.RED, Rotation.NONE, new Pos(-1, 0)));
+        PlacedTile randomPlacedTile = new PlacedTile(Tiles.TILES.get(27), null, Rotation.NONE, new Pos(-1, 1));
+        assertFalse(b.canAddTile(randomPlacedTile));
+
+        b = b.withNewTile(new PlacedTile(Tiles.TILES.get(27), PlayerColor.RED, Rotation.NONE, new Pos(1, 0)));
+
+        for (Tile tile : Tiles.TILES)
+            assertTrue(b.couldPlaceTile(tile));
+    }
+
+    @Test
+    void couldPlaceTileReturnsFalseIfTileCannotBePlacedForRealScenario() {
+        Board b = Board.EMPTY;
+        b = b.withNewTile(new PlacedTile(Tiles.TILES.get(56), PlayerColor.RED, Rotation.NONE, new Pos(0, 0)));
+        b = b.withNewTile(new PlacedTile(Tiles.TILES.get(14), PlayerColor.RED, Rotation.RIGHT, new Pos(-1, 0)));
+        assertFalse(b.couldPlaceTile(Tiles.TILES.get(13)));
+    }
+
+    @Test
+    void canAddTileWorksForRandomExamples() {
+        Board b = startingBoard;
+        PlacedTile placedTile = new PlacedTile(Tiles.TILES.get(56), null, Rotation.HALF_TURN, new Pos(1, 0));
+        assertTrue(b.canAddTile(placedTile));
+
+        PlacedTile placedTile2 = new PlacedTile(Tiles.TILES.get(27), null, Rotation.RIGHT, new Pos(0, 1));
+        assertTrue(b.canAddTile(placedTile2));
+
+        PlacedTile placedTile3 = new PlacedTile(Tiles.TILES.get(2), null, Rotation.NONE, new Pos(-1, 0));
+        assertTrue(b.canAddTile(placedTile3));
+
+        for (Rotation rot : Rotation.values()) {
+            PlacedTile placedTile4 = new PlacedTile(Tiles.TILES.get(4), null, rot, new Pos(-1, 0));
+            PlacedTile placedTile5 = new PlacedTile(Tiles.TILES.get(4), null, rot, new Pos(1, 0));
+            PlacedTile placedTile6 = new PlacedTile(Tiles.TILES.get(4), null, rot, new Pos(0, 1));
+            PlacedTile placedTile7 = new PlacedTile(Tiles.TILES.get(4), null, rot, new Pos(0, -1));
+
+            switch (rot) {
+                case NONE -> {
+                    assertFalse(b.canAddTile(placedTile4));
+                    assertFalse(b.canAddTile(placedTile5));
+                    assertFalse(b.canAddTile(placedTile6));
+                    assertFalse(b.canAddTile(placedTile7));
+                }
+                case RIGHT -> {
+                    assertTrue(b.canAddTile(placedTile4));
+                    assertFalse(b.canAddTile(placedTile5));
+                    assertFalse(b.canAddTile(placedTile6));
+                    assertFalse(b.canAddTile(placedTile7));
+                }
+                case HALF_TURN -> {
+                    assertFalse(b.canAddTile(placedTile4));
+                    assertTrue(b.canAddTile(placedTile5));
+                    assertFalse(b.canAddTile(placedTile6));
+                    assertFalse(b.canAddTile(placedTile7));
+                }
+                case LEFT -> {
+                    assertTrue(b.canAddTile(placedTile4));
+                    assertFalse(b.canAddTile(placedTile5));
+                    assertTrue(b.canAddTile(placedTile6));
+                    assertTrue(b.canAddTile(placedTile7));
+                }
+                default -> fail();
+            }
+        }
+    }
+
+    @Test
+    void canAddTileWorksForOutsideOfBoardValues() {
+        Board b = startingBoard;
+        for (Tile tile : Tiles.TILES)
+            assertFalse(b.canAddTile(new PlacedTile(tile, null, Rotation.HALF_TURN, new Pos(20, -14))));
+    }
+
+    @Test
+    void canAddTileWorksForOccupiedSpaces() {
+        for (Tile tile : Tiles.TILES)
+            assertFalse(startingBoard.canAddTile(new PlacedTile(tile, null, Rotation.NONE, new Pos(0,0))));
+    }
+
+    @Test
+    void canAddTileWorksForClosedSpaces() {
+        Board b = startingBoard;
+        b = b.withNewTile(new PlacedTile(Tiles.TILES.get(76), null, Rotation.NONE, new Pos(1, 0)));
+        b = b.withNewTile(new PlacedTile(Tiles.TILES.get(79), null, Rotation.RIGHT, new Pos(0, 1)));
+        PlacedTile closedTile = new PlacedTile(Tiles.TILES.get(77), null, Rotation.LEFT, new Pos(1, 1));
+        assertTrue(b.canAddTile(closedTile));
+
+        b = b.withNewTile(new PlacedTile(Tiles.TILES.get(49), null, Rotation.NONE, new Pos(-1, 0)));
+        b = b.withNewTile(new PlacedTile(Tiles.TILES.get(46), null, Rotation.NONE, new Pos(-2, 0)));
+        b = b.withNewTile(new PlacedTile(Tiles.TILES.get(85), null, Rotation.NONE, new Pos(-2, -1)));
+        b = b.withNewTile(new PlacedTile(Tiles.TILES.get(92), null, Rotation.NONE, new Pos(0, -1)));
+        b = b.withNewTile(new PlacedTile(Tiles.TILES.get(35), null, Rotation.RIGHT, new Pos(0, -2)));
+        assertTrue(b.canAddTile(new PlacedTile(Tiles.TILES.get(61), null, Rotation.RIGHT, new Pos(-1, -1))));
+        assertFalse(b.canAddTile(new PlacedTile(Tiles.TILES.get(81), null, Rotation.HALF_TURN, new Pos(-1, -1))));
+        assertFalse(b.canAddTile(new PlacedTile(Tiles.TILES.get(81), null, Rotation.LEFT, new Pos(-1, -1))));
+    }
+
+    @Test
+    void lastPlacedTileWorksForTrivialExamples() {
+        Board board = Board.EMPTY;
+        List<PlacedTile> placedTiles = new ArrayList<>();
+        int index = 0;
+        for (int i = -12; i < 13; i++) {
+            for (int j = -12; j < 13; j++) {
+                PlacedTile newTile = new PlacedTile(new Tile(
+                        index, Tile.Kind.NORMAL,
+                        new TileSide.Meadow(new Zone.Meadow(1, new ArrayList<>(), null)),
+                        new TileSide.Meadow(new Zone.Meadow(2, new ArrayList<>(), null)),
+                        new TileSide.Meadow(new Zone.Meadow(3, new ArrayList<>(), null)),
+                        new TileSide.Meadow(new Zone.Meadow(4, new ArrayList<>(), null))),
+                        null, Rotation.NONE, new Pos(i, j));
+
+                placedTiles.add(newTile);
+                board = board.withNewTile(newTile);
+                index++;
+
+                assertEquals(placedTiles.getLast(), board.lastPlacedTile());
+            }
+        }
+    }
+
+    @Test
+    void lastPlacedTileReturnsNullForEmptyBoard() {
+        assertNull(Board.EMPTY.lastPlacedTile());
+    }
+
+    @Test
+    void adjacentMeadowWorksForBookExample() {
+
+    }
 }

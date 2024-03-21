@@ -280,7 +280,7 @@ public class Board {
 
                     // If there is one side that is not the same, the tile cannot be added
                     if (!canAddTile)
-                        return canAddTile;
+                        return false;
                 }
             }
         }
@@ -293,6 +293,7 @@ public class Board {
      * @param tile the tile to be placed
      * @return true if the tile can be placed, false otherwise
      */
+    // demander pour le cas de la premiere tuile !!!!!
     public boolean couldPlaceTile(Tile tile) {
         for (Pos pos : insertionPositions()) {
             // Looks for all possible rotation in an insertion position
@@ -350,7 +351,6 @@ public class Board {
             }
 
         int[] newIndex = index.clone();
-        // l'occupant doit etre ajouter a zonePartitions !!!!!
         ZonePartitions.Builder newZonePartitions = new ZonePartitions.Builder(zonePartitions);
         if (tileWithOccupant != null)
             newZonePartitions.addInitialOccupant(tileWithOccupant.placer(),
@@ -396,7 +396,6 @@ public class Board {
     public Board withoutGatherersOrFishersIn(Set<Area<Zone.Forest>> forests, Set<Area<Zone.River>> rivers) {
         ZonePartitions.Builder newZonePartitions = new ZonePartitions.Builder(zonePartitions);
         int[] newIndex = index.clone();
-        // doit enlever les pions de PlacedTile aussi !!!!!
         PlacedTile[] newPlacedTiles = placedTiles.clone();
 
         for (Area<Zone.Forest> forestArea : forests) {
