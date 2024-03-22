@@ -328,9 +328,8 @@ public class Board {
         // Defensive copy of zonePartitions with the new tile and its partitions added
         ZonePartitions.Builder newZonePartitionsBuilder = new ZonePartitions.Builder(zonePartitions);
         newZonePartitionsBuilder.addTile(tile.tile());
-        ZonePartitions newZonePartitions = newZonePartitionsBuilder.build();
 
-        return new Board(newPlacedTiles, newIndex, newZonePartitions, cancelledAnimals());
+        return new Board(newPlacedTiles, newIndex, newZonePartitionsBuilder.build(), cancelledAnimals());
     }
 
     /**

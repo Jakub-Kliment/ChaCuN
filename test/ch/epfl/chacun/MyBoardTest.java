@@ -696,6 +696,31 @@ public class MyBoardTest {
 
     @Test
     void adjacentMeadowWorksForBookExample() {
+        Board b = startingBoard;
+        Occupant red = new Occupant(Occupant.Kind.PAWN, 850);
+        Occupant blue = new Occupant(Occupant.Kind.PAWN, 760);
+        Occupant green = new Occupant(Occupant.Kind.PAWN, 490);
+        Occupant yellow = new Occupant(Occupant.Kind.PAWN, 462);
 
+        b = b.withNewTile(new PlacedTile(Tiles.TILES.get(76), PlayerColor.BLUE, Rotation.NONE, new Pos(1, 0), blue));
+        b = b.withNewTile(new PlacedTile(Tiles.TILES.get(79), null, Rotation.RIGHT, new Pos(0, 1)));
+        b = b.withNewTile(new PlacedTile(Tiles.TILES.get(49), PlayerColor.GREEN, Rotation.NONE, new Pos(-1, 0), green));
+        b = b.withNewTile(new PlacedTile(Tiles.TILES.get(46), PlayerColor.YELLOW, Rotation.NONE, new Pos(-2, 0), yellow));
+        b = b.withNewTile(new PlacedTile(Tiles.TILES.get(85), PlayerColor.RED, Rotation.NONE, new Pos(-2, -1), red));
+        b = b.withNewTile(new PlacedTile(Tiles.TILES.get(92), null, Rotation.NONE, new Pos(0, -1)));
+        b = b.withNewTile(new PlacedTile(Tiles.TILES.get(35), null, Rotation.RIGHT, new Pos(0, -2)));
+        b = b.withNewTile(new PlacedTile(Tiles.TILES.get(61), null, Rotation.RIGHT, new Pos(-1, -1)));
+
+        Zone.Meadow zoneWithHuntingTrap = new Zone.Meadow(921, new ArrayList<>(), Zone.SpecialPower.PIT_TRAP);
+        Area<Zone.Meadow> expectedMeadow = new Area<>(
+                Set.of(new Zone.Meadow(560, List.of(new Animal(0, Animal.Kind.AUROCHS)), null),
+                        zoneWithHuntingTrap,
+                        new Zone.Meadow(610, List.of(new Animal(0, Animal.Kind.MAMMOTH)), null),
+                        new Zone.Meadow(850, List.of(new Animal(0, Animal.Kind.TIGER)), Zone.SpecialPower.WILD_FIRE),
+                        new Zone.Meadow(490, List.of(new Animal(0, Animal.Kind.DEER)), null),
+                        new Zone.Meadow(460, new ArrayList<>(), null)),
+                List.of(PlayerColor.GREEN), 4);
+
+        assertEquals(expectedMeadow, b.adjacentMeadow(new Pos(-1, -1), zoneWithHuntingTrap));
     }
 }
