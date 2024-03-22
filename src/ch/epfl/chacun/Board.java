@@ -401,13 +401,17 @@ public class Board {
         for (Area<Zone.Forest> forestArea : forests) {
             newZonePartitions.clearGatherers(forestArea);
             for (Zone.Forest forest : forestArea.zones())
-                newPlacedTiles[forest.tileId()].withNoOccupant();
+                for (int i : index)
+                    if (newPlacedTiles[i].tile().id() == forest.tileId())
+                        newPlacedTiles[i].withNoOccupant();
         }
 
         for (Area<Zone.River> riverArea : rivers) {
             newZonePartitions.clearFishers(riverArea);
             for (Zone.River river : riverArea.zones())
-                newPlacedTiles[river.tileId()].withNoOccupant();
+                for (int i : index)
+                    if (newPlacedTiles[i].tile().id() == river.tileId())
+                        newPlacedTiles[i].withNoOccupant();
         }
         return new Board(newPlacedTiles, newIndex, newZonePartitions.build(), cancelledAnimals());
     }
