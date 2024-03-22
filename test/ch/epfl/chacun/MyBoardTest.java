@@ -716,7 +716,7 @@ public class MyBoardTest {
                 Set.of(new Zone.Meadow(560, List.of(new Animal(5600, Animal.Kind.AUROCHS)), null),
                         zoneWithHuntingTrap,
                         new Zone.Meadow(610, List.of(new Animal(6100, Animal.Kind.MAMMOTH)), null),
-                        new Zone.Meadow(850, List.of(new Animal(0, Animal.Kind.TIGER)), Zone.SpecialPower.WILD_FIRE),
+                        new Zone.Meadow(850, new ArrayList<>(), Zone.SpecialPower.WILD_FIRE),
                         new Zone.Meadow(490, List.of(new Animal(4900, Animal.Kind.DEER)), null),
                         new Zone.Meadow(460, new ArrayList<>(), null)),
                 List.of(PlayerColor.GREEN), 0);
