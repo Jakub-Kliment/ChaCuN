@@ -713,14 +713,22 @@ public class MyBoardTest {
 
         Zone.Meadow zoneWithHuntingTrap = new Zone.Meadow(921, new ArrayList<>(), Zone.SpecialPower.PIT_TRAP);
         Area<Zone.Meadow> expectedMeadow = new Area<>(
-                Set.of(new Zone.Meadow(560, List.of(new Animal(0, Animal.Kind.AUROCHS)), null),
+                Set.of(new Zone.Meadow(560, List.of(new Animal(5600, Animal.Kind.AUROCHS)), null),
                         zoneWithHuntingTrap,
-                        new Zone.Meadow(610, List.of(new Animal(0, Animal.Kind.MAMMOTH)), null),
+                        new Zone.Meadow(610, List.of(new Animal(6100, Animal.Kind.MAMMOTH)), null),
                         new Zone.Meadow(850, List.of(new Animal(0, Animal.Kind.TIGER)), Zone.SpecialPower.WILD_FIRE),
-                        new Zone.Meadow(490, List.of(new Animal(0, Animal.Kind.DEER)), null),
+                        new Zone.Meadow(490, List.of(new Animal(4900, Animal.Kind.DEER)), null),
                         new Zone.Meadow(460, new ArrayList<>(), null)),
-                List.of(PlayerColor.GREEN), 4);
+                List.of(PlayerColor.GREEN), 0);
 
         assertEquals(expectedMeadow, b.adjacentMeadow(new Pos(-1, -1), zoneWithHuntingTrap));
+    }
+
+    @Test
+    void withNewTile() {
+        Board b = startingBoard;
+        PlacedTile placedTile = new PlacedTile(Tiles.TILES.get(72), null, Rotation.NONE, new Pos(1, 0));
+        b = b.withNewTile(placedTile);
+        assertEquals(placedTile, b.tileAt(new Pos(1, 0)));
     }
 }
