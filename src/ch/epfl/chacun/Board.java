@@ -151,7 +151,6 @@ public class Board {
         return riverSystemAreas.areas();
     }
 
-    // peut être faite avec les directions, mais il faut ajouter les diagonales !!!!!
     /**
      * Returns the area of the meadow and all its adjacent meadows that are in the same area
      *
@@ -314,9 +313,7 @@ public class Board {
      * @return the new board with the tile placed
      */
     public Board withNewTile(PlacedTile tile) {
-        if (!this.equals(EMPTY) && !canAddTile(tile))
-            throw new IllegalArgumentException();
-
+        Preconditions.checkArgument(this.equals(EMPTY) || canAddTile(tile));
         // Defensive copy of placedTiles with the new tile added
         PlacedTile[] newPlacedTiles = placedTiles.clone();
         newPlacedTiles[indexFromPosition(tile.pos())] = tile;
@@ -328,9 +325,10 @@ public class Board {
         // Defensive copy of zonePartitions with the new tile and its partitions added
         ZonePartitions.Builder newZonePartitionsBuilder = new ZonePartitions.Builder(zonePartitions);
         newZonePartitionsBuilder.addTile(tile.tile());
-        for (Direction directions : Direction.ALL){
-            if (placedTiles[indexFromPosition(tile.pos().neighbor(directions))] != null){
-                newZonePartitionsBuilder.connectSides(tile.side(directions), placedTiles[indexFromPosition(tile.pos().neighbor(directions))].side(directions.opposite()));
+        for (Direction directions : Direction.ALL) {
+            if (tileAt(tile.pos().neighbor(directions)) != null) {
+                newZonePartitionsBuilder.connectSides(tile.side(directions),
+                        tileAt(tile.pos().neighbor(directions)).side(directions.opposite()));
             }
         }
         return new Board(newPlacedTiles, newIndex, newZonePartitionsBuilder.build(), cancelledAnimals());
@@ -380,7 +378,6 @@ public class Board {
             }
 
         int[] newIndex = index.clone();
-        // retirer l'occupant de zone !!!!! une hute peut etre retiree???
         ZonePartitions.Builder newZonePartitions = new ZonePartitions.Builder(zonePartitions);
         if (tileWithoutOccupant != null)
             newZonePartitions.removePawn(tileWithoutOccupant.placer(),
