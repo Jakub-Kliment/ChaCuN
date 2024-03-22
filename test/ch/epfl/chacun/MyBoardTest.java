@@ -1451,5 +1451,4 @@ public class MyBoardTest {
 
         assertEquals(expected, boardwithoutGatherers.occupants());
     }
-
 }

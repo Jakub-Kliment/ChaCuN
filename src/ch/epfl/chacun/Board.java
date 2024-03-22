@@ -403,7 +403,7 @@ public class Board {
             for (Zone.Forest forest : forestArea.zones())
                 for (int i : index)
                     if (newPlacedTiles[i].tile().id() == forest.tileId())
-                        newPlacedTiles[i].withNoOccupant();
+                        newPlacedTiles[i] = newPlacedTiles[i].withNoOccupant();
         }
 
         for (Area<Zone.River> riverArea : rivers) {
@@ -411,7 +411,7 @@ public class Board {
             for (Zone.River river : riverArea.zones())
                 for (int i : index)
                     if (newPlacedTiles[i].tile().id() == river.tileId())
-                        newPlacedTiles[i].withNoOccupant();
+                        newPlacedTiles[i] = newPlacedTiles[i].withNoOccupant();
         }
         return new Board(newPlacedTiles, newIndex, newZonePartitions.build(), cancelledAnimals());
     }
