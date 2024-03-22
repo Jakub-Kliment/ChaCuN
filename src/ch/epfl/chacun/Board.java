@@ -292,7 +292,6 @@ public class Board {
      * @param tile the tile to be placed
      * @return true if the tile can be placed, false otherwise
      */
-    // demander pour le cas de la premiere tuile !!!!!
     public boolean couldPlaceTile(Tile tile) {
         for (Pos pos : insertionPositions()) {
             // Looks for all possible rotation in an insertion position
