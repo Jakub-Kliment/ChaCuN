@@ -151,7 +151,7 @@ public class Board {
         return riverSystemAreas.areas();
     }
 
-    // peut etre faite avec les directions, mais il faut ajouter les diagonales !!!!!
+    // peut être faite avec les directions, mais il faut ajouter les diagonales !!!!!
     /**
      * Returns the area of the meadow and all its adjacent meadows that are in the same area
      *
@@ -328,7 +328,11 @@ public class Board {
         // Defensive copy of zonePartitions with the new tile and its partitions added
         ZonePartitions.Builder newZonePartitionsBuilder = new ZonePartitions.Builder(zonePartitions);
         newZonePartitionsBuilder.addTile(tile.tile());
-
+        for (Direction directions : Direction.ALL){
+            if (placedTiles[indexFromPosition(tile.pos().neighbor(directions))] != null){
+                newZonePartitionsBuilder.connectSides(tile.side(directions), placedTiles[indexFromPosition(tile.pos().neighbor(directions))].side(directions.opposite()));
+            }
+        }
         return new Board(newPlacedTiles, newIndex, newZonePartitionsBuilder.build(), cancelledAnimals());
     }
 
