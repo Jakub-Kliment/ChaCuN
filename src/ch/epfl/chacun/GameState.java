@@ -80,25 +80,64 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
                         animalCount.get(Animal.Kind.AUROCHS), deerPoints);
 
                 newBoard = newBoard.withMoreCancelledAnimals(animals);
-                newMessageBoard = messageBoard.withScoredHuntingTrap(players.getFirst(), adjacentMeadow);
+                newMessageBoard = messageBoard.withScoredHuntingTrap(currentPlayer(), adjacentMeadow);
 
             } else if (tile.specialPowerZone() instanceof Zone.Lake lake
                     && tile.specialPowerZone().specialPower().equals(Zone.SpecialPower.LOGBOAT)) {
                 points = Area.lakeCount(newBoard.riverSystemArea(lake));
-                newMessageBoard = messageBoard.withScoredLogboat(players.getFirst(), newBoard.riverSystemArea(lake));
+                newMessageBoard = messageBoard.withScoredLogboat(currentPlayer(), newBoard.riverSystemArea(lake));
             }
-
             hasShaman = tile.specialPowerZone().specialPower().equals(Zone.SpecialPower.SHAMAN);
         }
-        if (hasShaman)
-            return new GameState(players, tileDecks.withTopTileDrawn(tile.kind()), null,
-                    newBoard, Action.RETAKE_PAWN, newMessageBoard);
+        Action nextAction = hasShaman ? Action.RETAKE_PAWN : Action.OCCUPY_TILE;
+
+        boolean canContinue = false;
+        for (Zone zone : tile.tile().zones()) {
+            switch (zone) {
+                case Zone.Meadow meadow -> {
+                    if (!newBoard.meadowArea(meadow).isOccupied())
+                        canContinue = true;
+                }
+                case Zone.Forest forest -> {
+                    if (!newBoard.forestArea(forest).isOccupied())
+                        canContinue = true;
+                }
+                case Zone.Water water -> {
+                    if (!newBoard.riverSystemArea(water).isOccupied())
+                        canContinue = true;
+
+                    if (water instanceof Zone.River river && !newBoard.riverArea(river).isOccupied())
+                        canContinue = true;
+                }
+            }
+        }
+        if (canContinue)
+            return withTurnFinishedIfOccupationImpossible();
 
         return new GameState(players, tileDecks.withTopTileDrawn(tile.kind()), null,
-                newBoard, Action.OCCUPY_TILE, newMessageBoard);
+                newBoard, nextAction, newMessageBoard);
     }
 
     public GameState withOccupantRemoved(Occupant occupant) {
+        Preconditions.checkArgument(nextAction.equals(Action.RETAKE_PAWN)
+                && (occupant == null || occupant.kind().equals(Occupant.Kind.PAWN)));
+
+        if (occupant == null || freeOccupantsCount(currentPlayer(), occupant.kind()) == Occupant.occupantsCount(occupant.kind()))
+            return withTurnFinishedIfOccupationImpossible();
+
+        Board newBoard = board.withoutOccupant(occupant);
+        return new GameState(players, tileDecks, null,
+                newBoard, Action.OCCUPY_TILE, messageBoard);
+    }
+
+    public GameState withNewOccupant(Occupant occupant) {
+        Preconditions.checkArgument(nextAction.equals(Action.OCCUPY_TILE));
         return null;
     }
+
+    private GameState withTurnFinishedIfOccupationImpossible() {
+        return null;
+    }
+
+
 }
