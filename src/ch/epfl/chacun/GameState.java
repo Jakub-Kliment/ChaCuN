@@ -111,7 +111,7 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
                 }
             }
         }
-        if (canContinue)
+        if (!canContinue)
             return withTurnFinishedIfOccupationImpossible();
 
         return new GameState(players, tileDecks.withTopTileDrawn(tile.kind()), null,
@@ -139,5 +139,10 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
         return null;
     }
 
-
+    private GameState withTurnFinished() {
+        return null;
+    }
+    private GameState withFinalPointsCounted() {
+        return null;
+    }
 }
