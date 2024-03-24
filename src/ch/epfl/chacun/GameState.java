@@ -57,6 +57,48 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
     public GameState withPlacedTile(PlacedTile tile) {
         Preconditions.checkArgument(nextAction.equals(Action.PLACE_TILE) && tile.occupant() != null);
         Board newBoard = board.withNewTile(tile);
+        MessageBoard newMessageBoard = new MessageBoard(messageBoard.textMaker(), messageBoard.messages());
+        boolean hasShaman = false;
+        int points;
+
+        if (tile.specialPowerZone() != null) {
+            if (tile.specialPowerZone() instanceof Zone.Meadow meadow
+                    && tile.specialPowerZone().specialPower().equals(Zone.SpecialPower.HUNTING_TRAP)) {
+                Area<Zone.Meadow> adjacentMeadow = newBoard.adjacentMeadow(tile.pos(), meadow);
+                Set<Animal> animals = Area.animals(adjacentMeadow, new HashSet<>());
+                Map<Animal.Kind, Integer> animalCount = new HashMap<>();
+
+                for (Animal.Kind animalKind : Animal.Kind.values())
+                    animalCount.put(animalKind, 0);
+
+                for (Animal animal : animals)
+                    animalCount.put(animal.kind(), animalCount.get(animal.kind()) + 1);
+
+                int deerPoints = animalCount.get(Animal.Kind.TIGER) >= animalCount.get(Animal.Kind.DEER) ?
+                        0 : animalCount.get(Animal.Kind.DEER) - animalCount.get(Animal.Kind.TIGER);
+                points = Points.forMeadow(animalCount.get(Animal.Kind.MAMMOTH),
+                        animalCount.get(Animal.Kind.AUROCHS), deerPoints);
+
+                newBoard = newBoard.withMoreCancelledAnimals(animals);
+                newMessageBoard = messageBoard.withScoredHuntingTrap(players.getFirst(), adjacentMeadow);
+
+            } else if (tile.specialPowerZone() instanceof Zone.Lake lake
+                    && tile.specialPowerZone().specialPower().equals(Zone.SpecialPower.LOGBOAT)) {
+                points = Area.lakeCount(newBoard.riverSystemArea(lake));
+                newMessageBoard = messageBoard.withScoredLogboat(players.getFirst(), newBoard.riverSystemArea(lake));
+            }
+
+            hasShaman = tile.specialPowerZone().specialPower().equals(Zone.SpecialPower.SHAMAN);
+        }
+        if (hasShaman)
+            return new GameState(players, tileDecks.withTopTileDrawn(tile.kind()), null,
+                    newBoard, Action.RETAKE_PAWN, newMessageBoard);
+
+        return new GameState(players, tileDecks.withTopTileDrawn(tile.kind()), null,
+                newBoard, Action.OCCUPY_TILE, newMessageBoard);
+    }
+
+    public GameState withOccupantRemoved(Occupant occupant) {
         return null;
     }
 }
