@@ -206,7 +206,9 @@ public class Board {
             insertionPositions.add(pos);
 
             for (Direction direction : Direction.ALL)
-                insertionPositions.add(pos.neighbor(direction));
+                if (Math.abs(pos.neighbor(direction).x()) <= REACH
+                        && Math.abs(pos.neighbor(direction).y()) <= REACH )
+                    insertionPositions.add(pos.neighbor(direction));
         }
         for (int i : index)
             insertionPositions.remove(positionFromIndex(i));
