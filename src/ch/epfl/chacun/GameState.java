@@ -132,14 +132,17 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
 
     public GameState withNewOccupant(Occupant occupant) {
         Preconditions.checkArgument(nextAction.equals(Action.OCCUPY_TILE));
-        return null;
+        if (occupant == null)
+            return withTurnFinished(board);
+        Board newBoard = board.withOccupant(occupant);
+        return withTurnFinished(newBoard);
     }
 
     private GameState withTurnFinishedIfOccupationImpossible() {
         return null;
     }
 
-    private GameState withTurnFinished() {
+    private GameState withTurnFinished(Board modifiedBoard) {
         return null;
     }
     private GameState withFinalPointsCounted() {
