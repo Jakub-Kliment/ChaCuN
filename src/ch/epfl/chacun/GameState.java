@@ -64,7 +64,7 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
             if (tile.specialPowerZone() instanceof Zone.Meadow meadow
                     && tile.specialPowerZone().specialPower().equals(Zone.SpecialPower.HUNTING_TRAP)) {
                 Area<Zone.Meadow> adjacentMeadow = newBoard.adjacentMeadow(tile.pos(), meadow);
-                Set<Animal> animals = Area.animals(adjacentMeadow, new HashSet<>());
+                Set<Animal> animals = Area.animals(adjacentMeadow, board.cancelledAnimals());
                 Map<Animal.Kind, Integer> animalCount = new HashMap<>();
 
                 for (Animal animal : animals)
@@ -107,6 +107,7 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
                 }
             }
         }
+
         if (!canContinue)
             return withTurnFinishedIfOccupationImpossible();
 
@@ -139,9 +140,73 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
     }
 
     private GameState withTurnFinished(Board modifiedBoard) {
-        return null;
+        Board newBoard = modifiedBoard;
+        MessageBoard newMessageBoard = messageBoard();
+        boolean replay = false;
+        for (Zone zone : newBoard.lastPlacedTile().tile().zones()){
+            switch (zone){
+                case Zone.Meadow meadow-> {
+                    if (modifiedBoard.meadowArea(meadow).isClosed()){
+                        newBoard = newBoard.withMoreCancelledAnimals(cancelAnimalUpdate(newBoard.meadowArea(meadow), newBoard.cancelledAnimals()));
+                        newMessageBoard = newMessageBoard.withScoredMeadow(modifiedBoard.meadowArea(meadow), newBoard.cancelledAnimals());
+                    }
+                }
+                case Zone.Forest forest-> {
+                    if (modifiedBoard.forestArea(forest).isClosed()){
+                        if (Area.hasMenhir(modifiedBoard.forestArea(forest)))
+                            replay = true;
+                        newMessageBoard = newMessageBoard.withScoredForest(modifiedBoard.forestArea(forest));
+                    }
+                }
+                case Zone.River river -> {
+                    if (modifiedBoard.riverArea(river).isClosed() && !river.hasLake()){
+                        newMessageBoard = newMessageBoard.withScoredRiver(modifiedBoard.riverArea(river));
+                    }
+                }
+                case Zone.Water water -> {
+                    if (modifiedBoard.riverSystemArea(water).isClosed()){
+                        newMessageBoard = newMessageBoard.withScoredRiverSystem(modifiedBoard.riverSystemArea(water));
+                    }
+                }
+            }
+        }
+
+        Board finalNewBoard = newBoard;
+        if (replay){
+            TileDecks newTileDecks = tileDecks.withTopTileDrawnUntil(Tile.Kind.MENHIR, tile -> finalNewBoard.couldPlaceTile(tileDecks.topTile(Tile.Kind.MENHIR)));
+            if (newTileDecks.deckSize(Tile.Kind.MENHIR) != 0){
+                return new GameState(players, newTileDecks, newTileDecks.topTile(Tile.Kind.MENHIR), newBoard, Action.PLACE_TILE, newMessageBoard);
+            }
+        }
+        TileDecks newTileDecks = tileDecks.withTopTileDrawnUntil(Tile.Kind.NORMAL, tile -> finalNewBoard.couldPlaceTile(tileDecks.topTile(Tile.Kind.NORMAL)));
+        players.add(players.removeFirst());
+        if (newTileDecks.deckSize(Tile.Kind.NORMAL) != 0){
+            return new GameState(players, newTileDecks, newTileDecks.topTile(Tile.Kind.NORMAL), newBoard, Action.PLACE_TILE, newMessageBoard);
+        } else {
+            return new GameState(players, newTileDecks, null, newBoard, Action.END_GAME, newMessageBoard);
+        }
     }
     private GameState withFinalPointsCounted() {
         return null;
+    }
+
+    private Set<Animal> cancelAnimalUpdate(Area<Zone.Meadow> area, Set<Animal> cancelledAnimal){
+        int deerCount = 0;
+        int tigerCount = 0;
+        Set<Animal> nextCancel = new HashSet<>();
+        for (Animal animal : Area.animals(area, cancelledAnimal)){
+            switch (animal.kind()){
+                case DEER -> deerCount++;
+                case TIGER -> tigerCount++;
+            }
+        }
+        for (int i = 0; i < deerCount-tigerCount; i++){
+            for (Animal animal : Area.animals(area, cancelledAnimal)){
+                if (animal.kind() == Animal.Kind.DEER){
+                    nextCancel.add(animal);
+                }
+            }
+        }
+        return nextCancel;
     }
 }
