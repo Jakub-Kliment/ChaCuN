@@ -190,22 +190,22 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
         return null;
     }
 
-    private Set<Animal> cancelAnimalUpdate(Area<Zone.Meadow> area, Set<Animal> cancelledAnimal){
-        int deerCount = 0;
+    public static Set<Animal> cancelAnimalUpdate(Area<Zone.Meadow> area, Set<Animal> cancelledAnimal){
         int tigerCount = 0;
         Set<Animal> nextCancel = new HashSet<>();
         for (Animal animal : Area.animals(area, cancelledAnimal)){
-            switch (animal.kind()){
-                case DEER -> deerCount++;
-                case TIGER -> tigerCount++;
+            if (animal.kind() == Animal.Kind.TIGER){
+                tigerCount++;
             }
         }
-        for (int i = 0; i < deerCount-tigerCount; i++){
+        while(tigerCount>0){
             for (Animal animal : Area.animals(area, cancelledAnimal)){
-                if (animal.kind() == Animal.Kind.DEER){
+                if (animal.kind() == Animal.Kind.DEER && !nextCancel.contains(animal)){
                     nextCancel.add(animal);
+                    break;
                 }
             }
+            tigerCount--;
         }
         return nextCancel;
     }
