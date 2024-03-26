@@ -6,10 +6,9 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
                         Board board, Action nextAction, MessageBoard messageBoard) {
 
     public GameState {
-        //Peut-être être truc à faire pour être immuable
+        //Peut-être être truc à faire pour être immuable !!!!!
         Preconditions.checkArgument(players.size() >= 2);
         players = List.copyOf(players);
-        // Demander si cest un xor ou or !!!!!!
         Preconditions.checkArgument((tileToPlace == null) ^ nextAction.equals(Action.PLACE_TILE));
         Objects.requireNonNull(tileDecks);
         Objects.requireNonNull(board);
@@ -68,16 +67,13 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
                 Set<Animal> animals = Area.animals(adjacentMeadow, new HashSet<>());
                 Map<Animal.Kind, Integer> animalCount = new HashMap<>();
 
-                for (Animal.Kind animalKind : Animal.Kind.values())
-                    animalCount.put(animalKind, 0);
-
                 for (Animal animal : animals)
-                    animalCount.put(animal.kind(), animalCount.get(animal.kind()) + 1);
+                    animalCount.put(animal.kind(), animalCount.getOrDefault(animal.kind(), 0) + 1);
 
                 int deerPoints = animalCount.get(Animal.Kind.TIGER) >= animalCount.get(Animal.Kind.DEER) ?
                         0 : animalCount.get(Animal.Kind.DEER) - animalCount.get(Animal.Kind.TIGER);
-                points = Points.forMeadow(animalCount.get(Animal.Kind.MAMMOTH),
-                        animalCount.get(Animal.Kind.AUROCHS), deerPoints);
+                points = Points.forMeadow(animalCount.getOrDefault(Animal.Kind.MAMMOTH, 0),
+                        animalCount.getOrDefault(Animal.Kind.AUROCHS, 0), deerPoints);
 
                 newBoard = newBoard.withMoreCancelledAnimals(animals);
                 newMessageBoard = messageBoard.withScoredHuntingTrap(currentPlayer(), adjacentMeadow);
