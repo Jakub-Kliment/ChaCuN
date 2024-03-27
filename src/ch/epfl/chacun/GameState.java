@@ -113,19 +113,22 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
 
     private GameState withTurnFinished() {
         MessageBoard newMessageBoard = messageBoard;
-        boolean replay = false;
+        boolean hasMenhir = false;
 
         for (Area<Zone.Forest> forestArea : board.forestsClosedByLastTile()) {
-            if (Area.hasMenhir(forestArea))
-                replay = true;
-            newMessageBoard = newMessageBoard.withScoredForest(forestArea);
+            if (Area.hasMenhir(forestArea)) {
+                newMessageBoard = newMessageBoard.withClosedForestWithMenhir(currentPlayer(), forestArea);
+                hasMenhir = true;
+            }
+            else
+                newMessageBoard = newMessageBoard.withScoredForest(forestArea);
         }
         for (Area<Zone.River> riverArea : board.riversClosedByLastTile())
             newMessageBoard = newMessageBoard.withScoredRiver(riverArea);
 
         TileDecks newTileDecks;
         Board newBoard = board;
-        Tile.Kind kind = (replay && newBoard.lastPlacedTile().kind().equals(Tile.Kind.NORMAL)) ? Tile.Kind.MENHIR : Tile.Kind.NORMAL;
+        Tile.Kind kind = (hasMenhir && newBoard.lastPlacedTile().kind().equals(Tile.Kind.NORMAL)) ? Tile.Kind.MENHIR : Tile.Kind.NORMAL;
         newTileDecks = tileDecks.withTopTileDrawnUntil(kind, (tile) -> newBoard.couldPlaceTile(tileDecks.topTile(kind)));
 
         if (kind.equals(Tile.Kind.MENHIR) && newTileDecks.deckSize(Tile.Kind.MENHIR) != 0)
