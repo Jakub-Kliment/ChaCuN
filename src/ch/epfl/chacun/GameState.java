@@ -126,18 +126,21 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
         for (Area<Zone.River> riverArea : board.riversClosedByLastTile())
             newMessageBoard = newMessageBoard.withScoredRiver(riverArea);
 
-        TileDecks newTileDecks;
+        TileDecks newTileDecks = tileDecks;
         Board newBoard = board;
         Tile.Kind kind = (hasMenhir && newBoard.lastPlacedTile().kind().equals(Tile.Kind.NORMAL)) ? Tile.Kind.MENHIR : Tile.Kind.NORMAL;
-        newTileDecks = tileDecks.withTopTileDrawnUntil(kind, (tile) -> newBoard.couldPlaceTile(tileDecks.topTile(kind)));
 
-        if (kind.equals(Tile.Kind.MENHIR) && newTileDecks.deckSize(Tile.Kind.MENHIR) != 0)
+        if (kind.equals(Tile.Kind.MENHIR) && newTileDecks.deckSize(Tile.Kind.MENHIR) != 0) {
+            newTileDecks = tileDecks.withTopTileDrawnUntil(kind, (tile) -> newBoard.couldPlaceTile(tileDecks.topTile(kind)));
             return new GameState(players, newTileDecks, newTileDecks.topTile(kind), newBoard, Action.PLACE_TILE, newMessageBoard);
-        else if (newTileDecks.deckSize(Tile.Kind.MENHIR) != 0) {
-            players.add(players.removeFirst());
+        }
+
+        players.add(players.removeFirst());
+        newTileDecks = tileDecks.withTopTileDrawnUntil(Tile.Kind.NORMAL, (tile) -> newBoard.couldPlaceTile(tileDecks.topTile(Tile.Kind.NORMAL)));
+        if (newTileDecks.deckSize(Tile.Kind.NORMAL) != 0)
             return new GameState(players, newTileDecks, newTileDecks.topTile(Tile.Kind.NORMAL), newBoard, Action.PLACE_TILE, newMessageBoard);
-        } else
-            return withFinalPointsCounted();
+
+        return withFinalPointsCounted();
     }
     private GameState withFinalPointsCounted() {
         return null;
