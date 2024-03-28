@@ -89,7 +89,7 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
         Preconditions.checkArgument(nextAction.equals(Action.RETAKE_PAWN)
                 && (occupant == null || occupant.kind().equals(Occupant.Kind.PAWN)));
 
-        if (occupant == null || freeOccupantsCount(currentPlayer(), occupant.kind()) == Occupant.occupantsCount(occupant.kind()))
+        if (occupant == null || board.occupantCount(currentPlayer(), occupant.kind()) == 0)
             return withTurnFinishedIfOccupationImpossible();
 
         Board newBoard = board.withoutOccupant(occupant);
@@ -113,6 +113,7 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
 
     private GameState withTurnFinished() {
         MessageBoard newMessageBoard = messageBoard;
+        Board newBoard = board;
         boolean hasMenhir = false;
 
         for (Area<Zone.Forest> forestArea : board.forestsClosedByLastTile()) {
@@ -122,28 +123,53 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
             }
             else
                 newMessageBoard = newMessageBoard.withScoredForest(forestArea);
+            newBoard = newBoard.withoutGatherersOrFishersIn(Set.of(forestArea), new HashSet<>());
         }
-        for (Area<Zone.River> riverArea : board.riversClosedByLastTile())
+        for (Area<Zone.River> riverArea : board.riversClosedByLastTile()) {
             newMessageBoard = newMessageBoard.withScoredRiver(riverArea);
+            newBoard = newBoard.withoutGatherersOrFishersIn(new HashSet<>(), Set.of(riverArea));
+        }
 
         TileDecks newTileDecks = tileDecks;
-        Board newBoard = board;
         Tile.Kind kind = (hasMenhir && newBoard.lastPlacedTile().kind().equals(Tile.Kind.NORMAL)) ? Tile.Kind.MENHIR : Tile.Kind.NORMAL;
+        Board finalNewBoard = newBoard;
 
         if (kind.equals(Tile.Kind.MENHIR) && newTileDecks.deckSize(Tile.Kind.MENHIR) != 0) {
-            newTileDecks = tileDecks.withTopTileDrawnUntil(kind, (tile) -> newBoard.couldPlaceTile(tileDecks.topTile(kind)));
+            newTileDecks = tileDecks.withTopTileDrawnUntil(kind, (tile) -> finalNewBoard.couldPlaceTile(tileDecks.topTile(kind)));
             return new GameState(players, newTileDecks, newTileDecks.topTile(kind), newBoard, Action.PLACE_TILE, newMessageBoard);
         }
 
         players.add(players.removeFirst());
-        newTileDecks = tileDecks.withTopTileDrawnUntil(Tile.Kind.NORMAL, (tile) -> newBoard.couldPlaceTile(tileDecks.topTile(Tile.Kind.NORMAL)));
+        newTileDecks = tileDecks.withTopTileDrawnUntil(Tile.Kind.NORMAL, (tile) -> finalNewBoard.couldPlaceTile(tileDecks.topTile(Tile.Kind.NORMAL)));
         if (newTileDecks.deckSize(Tile.Kind.NORMAL) != 0)
             return new GameState(players, newTileDecks, newTileDecks.topTile(Tile.Kind.NORMAL), newBoard, Action.PLACE_TILE, newMessageBoard);
 
         return withFinalPointsCounted();
     }
     private GameState withFinalPointsCounted() {
-        return null;
+        for (Area<Zone.Meadow> meadowArea : board.meadowAreas()) {
+            Map<Animal.Kind, Integer> animalCount = new HashMap<>();
+            List<Zone.SpecialPower> specialPowers = new ArrayList<>();
+            for (Zone.Meadow meadow : meadowArea.zones()) {
+                if (meadow.specialPower() != null)
+                    specialPowers.add(meadow.specialPower());
+                for (Animal animal : meadow.animals())
+                    animalCount.put(animal.kind(), animalCount.getOrDefault(animal.kind(), 0) + 1);
+            }
+            for (Zone.SpecialPower specialPower : specialPowers) {
+                if (specialPower.equals(Zone.SpecialPower.WILD_FIRE))
+                    animalCount.put(Animal.Kind.TIGER, 0);
+                else if (specialPower.equals(Zone.SpecialPower.HUNTING_TRAP)) {
+
+                }
+            }
+        }
+
+        for (Area<Zone.Water> waterArea : board.riverSystemAreas()) {
+        }
+
+
+        return new GameState(players, tileDecks, null, board, Action.END_GAME, messageBoard);
     }
 
     public static Set<Animal> cancelAnimalUpdate(Area<Zone.Meadow> area, Set<Animal> cancelledAnimal){
