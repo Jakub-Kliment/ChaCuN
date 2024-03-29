@@ -121,8 +121,7 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
                 newMessageBoard = newMessageBoard.withClosedForestWithMenhir(currentPlayer(), forestArea);
                 hasMenhir = true;
             }
-            else
-                newMessageBoard = newMessageBoard.withScoredForest(forestArea);
+            newMessageBoard = newMessageBoard.withScoredForest(forestArea);
             newBoard = newBoard.withoutGatherersOrFishersIn(Set.of(forestArea), new HashSet<>());
         }
         for (Area<Zone.River> riverArea : board.riversClosedByLastTile()) {
@@ -134,9 +133,10 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
         Tile.Kind kind = (hasMenhir && newBoard.lastPlacedTile().kind().equals(Tile.Kind.NORMAL)) ? Tile.Kind.MENHIR : Tile.Kind.NORMAL;
         Board finalNewBoard = newBoard;
 
-        if (kind.equals(Tile.Kind.MENHIR) && newTileDecks.deckSize(Tile.Kind.MENHIR) != 0) {
+        if (kind.equals(Tile.Kind.MENHIR)) {
             newTileDecks = tileDecks.withTopTileDrawnUntil(kind, (tile) -> finalNewBoard.couldPlaceTile(tileDecks.topTile(kind)));
-            return new GameState(players, newTileDecks, newTileDecks.topTile(kind), newBoard, Action.PLACE_TILE, newMessageBoard);
+            if (newTileDecks.deckSize(Tile.Kind.MENHIR) != 0)
+                return new GameState(players, newTileDecks, newTileDecks.topTile(kind), newBoard, Action.PLACE_TILE, newMessageBoard);
         }
 
         players.add(players.removeFirst());
