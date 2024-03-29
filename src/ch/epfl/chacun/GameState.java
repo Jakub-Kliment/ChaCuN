@@ -150,6 +150,7 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
         for (Area<Zone.Meadow> meadowArea : board.meadowAreas()) {
             Map<Animal.Kind, Integer> animalCount = new HashMap<>();
             List<Zone.SpecialPower> specialPowers = new ArrayList<>();
+
             for (Zone.Meadow meadow : meadowArea.zones()) {
                 if (meadow.specialPower() != null)
                     specialPowers.add(meadow.specialPower());
