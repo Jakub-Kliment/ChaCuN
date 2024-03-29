@@ -129,7 +129,7 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
             newBoard = newBoard.withoutGatherersOrFishersIn(new HashSet<>(), Set.of(riverArea));
         }
 
-        TileDecks newTileDecks = tileDecks;
+        TileDecks newTileDecks;
         Tile.Kind kind = (hasMenhir && newBoard.lastPlacedTile().kind().equals(Tile.Kind.NORMAL)) ? Tile.Kind.MENHIR : Tile.Kind.NORMAL;
         Board finalNewBoard = newBoard;
 
@@ -144,9 +144,11 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
         if (newTileDecks.deckSize(Tile.Kind.NORMAL) != 0)
             return new GameState(players, newTileDecks, newTileDecks.topTile(Tile.Kind.NORMAL), newBoard, Action.PLACE_TILE, newMessageBoard);
 
-        return withFinalPointsCounted();
+        return new GameState(players, newTileDecks, null, newBoard,
+                Action.END_GAME, newMessageBoard).withFinalPointsCounted();
     }
     private GameState withFinalPointsCounted() {
+        MessageBoard newMessageBoard = messageBoard;
         for (Area<Zone.Meadow> meadowArea : board.meadowAreas()) {
             Map<Animal.Kind, Integer> animalCount = new HashMap<>();
             List<Zone.SpecialPower> specialPowers = new ArrayList<>();
@@ -167,10 +169,19 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
         }
 
         for (Area<Zone.Water> waterArea : board.riverSystemAreas()) {
+            if (waterArea.zoneWithSpecialPower(Zone.SpecialPower.RAFT) != null)
+                newMessageBoard = newMessageBoard.withScoredRaft(waterArea);
+            newMessageBoard = newMessageBoard.withScoredRiverSystem(waterArea);
         }
 
+        Set<PlayerColor> winners = new HashSet<>();
+        int maxPoints = Collections.max(newMessageBoard.points().values());
+        for (PlayerColor playerColor : newMessageBoard.points().keySet())
+            if (newMessageBoard.points().get(playerColor) == maxPoints)
+                winners.add(playerColor);
 
-        return new GameState(players, tileDecks, null, board, Action.END_GAME, messageBoard);
+        newMessageBoard = newMessageBoard.withWinners(winners, maxPoints);
+        return new GameState(players, tileDecks, null, board, Action.END_GAME, newMessageBoard);
     }
 
     public static Set<Animal> cancelAnimalUpdate(Area<Zone.Meadow> area, Set<Animal> cancelledAnimal){

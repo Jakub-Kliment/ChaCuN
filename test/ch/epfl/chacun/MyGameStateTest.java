@@ -131,4 +131,7 @@ class MyGameStateTest {
         assertNull(gameState2.currentPlayer());
     }
 
+    @Test
+    void freeOccupantCountReturnsCorrectOccupantCount() {
+    }
 }
