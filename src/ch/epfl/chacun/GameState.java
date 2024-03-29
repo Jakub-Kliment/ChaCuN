@@ -129,7 +129,7 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
             newBoard = newBoard.withoutGatherersOrFishersIn(new HashSet<>(), Set.of(riverArea));
         }
 
-        TileDecks newTileDecks;
+        TileDecks newTileDecks = tileDecks;
         Tile.Kind kind = (hasMenhir && newBoard.lastPlacedTile().kind().equals(Tile.Kind.NORMAL)) ? Tile.Kind.MENHIR : Tile.Kind.NORMAL;
         Board finalNewBoard = newBoard;
 
@@ -148,27 +148,51 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
                 Action.END_GAME, newMessageBoard).withFinalPointsCounted();
     }
     private GameState withFinalPointsCounted() {
+        Board newBoard = board;
         MessageBoard newMessageBoard = messageBoard;
-        for (Area<Zone.Meadow> meadowArea : board.meadowAreas()) {
+        for (Area<Zone.Meadow> meadowArea : newBoard.meadowAreas()) {
             Map<Animal.Kind, Integer> animalCount = new HashMap<>();
-            List<Zone.SpecialPower> specialPowers = new ArrayList<>();
+            Area<Zone.Meadow> adjacentArea = null;
+            boolean wildFire = false;
 
             for (Zone.Meadow meadow : meadowArea.zones()) {
-                if (meadow.specialPower() != null)
-                    specialPowers.add(meadow.specialPower());
+                    if (meadow.specialPower() == Zone.SpecialPower.HUNTING_TRAP)
+                        adjacentArea = newBoard.adjacentMeadow(newBoard.tileWithId(meadow.tileId()).pos(), meadow);
+                    if (meadow.specialPower() == Zone.SpecialPower.WILD_FIRE)
+                        wildFire = true;
                 for (Animal animal : meadow.animals())
                     animalCount.put(animal.kind(), animalCount.getOrDefault(animal.kind(), 0) + 1);
             }
-            for (Zone.SpecialPower specialPower : specialPowers) {
-                if (specialPower.equals(Zone.SpecialPower.WILD_FIRE))
-                    animalCount.put(Animal.Kind.TIGER, 0);
-                else if (specialPower.equals(Zone.SpecialPower.HUNTING_TRAP)) {
-
+            if (wildFire)
+                animalCount.put(Animal.Kind.TIGER, 0);
+            while (animalCount.get(Animal.Kind.TIGER) > 0 || animalCount.get(Animal.Kind.DEER) > 0){
+                boolean remove = false;
+                Set<Animal> setAnimal = Area.animals(meadowArea, newBoard.cancelledAnimals());
+                if (adjacentArea != null){
+                    Set<Animal> trapSet = Area.animals(adjacentArea, newBoard.cancelledAnimals());
+                    for(Animal animal : setAnimal){
+                        if (animal.kind() == Animal.Kind.DEER && !trapSet.contains(animal)){
+                            remove = true;
+                            newBoard = newBoard.withMoreCancelledAnimals(Set.of(animal));
+                            animalCount.put(Animal.Kind.DEER, animalCount.getOrDefault(Animal.Kind.DEER, 0) - 1);
+                            animalCount.put(Animal.Kind.TIGER, animalCount.getOrDefault(Animal.Kind.TIGER, 0) - 1);
+                            break;
+                        }
+                    }
+                }
+                if (!remove){
+                    for(Animal animal : setAnimal){
+                        if (animal.kind() == Animal.Kind.DEER) {
+                            newBoard = newBoard.withMoreCancelledAnimals(Set.of(animal));
+                            animalCount.put(Animal.Kind.DEER, animalCount.getOrDefault(Animal.Kind.DEER, 0) - 1);
+                            animalCount.put(Animal.Kind.TIGER, animalCount.getOrDefault(Animal.Kind.TIGER, 0) - 1);
+                            break;
+                        }
+                    }
                 }
             }
         }
-
-        for (Area<Zone.Water> waterArea : board.riverSystemAreas()) {
+        for (Area<Zone.Water> waterArea : newBoard.riverSystemAreas()) {
             if (waterArea.zoneWithSpecialPower(Zone.SpecialPower.RAFT) != null)
                 newMessageBoard = newMessageBoard.withScoredRaft(waterArea);
             newMessageBoard = newMessageBoard.withScoredRiverSystem(waterArea);
