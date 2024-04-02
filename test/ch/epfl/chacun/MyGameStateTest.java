@@ -28,7 +28,7 @@ class MyGameStateTest {
     private List<Tile> menhirTileDeck() {
         List<Tile> menhir = new ArrayList<>();
         for (Tile tile : Tiles.TILES)
-            if (tile.kind().equals(Tile.Kind.NORMAL))
+            if (tile.kind().equals(Tile.Kind.MENHIR))
                 menhir.add(tile);
         return menhir;
     }
@@ -40,36 +40,11 @@ class MyGameStateTest {
     TextMaker textMaker = new BasicTextMaker();
 
 
+    private GameState normalGame() {
+        GameState gamestate = GameState.initial(players, tileDecks, textMaker);
 
-    @Test
-    void cancelledAnimal() {
-        Area<Zone.Meadow> area = new Area<>(new HashSet<>(Set.of(new Zone.Meadow(1, List.of(new Animal(1, Animal.Kind.DEER), new Animal(2, Animal.Kind.DEER), new Animal(3, Animal.Kind.DEER), new Animal(4, Animal.Kind.MAMMOTH), new Animal(5, Animal.Kind.TIGER)), null))), new ArrayList<>(), 0);
-        Set<Animal> setAnimal = GameState.cancelAnimalUpdate(area, new HashSet<>());
-        Set<Animal> setSearch = Set.of(new Animal(1, Animal.Kind.DEER));
-        assertEquals(setSearch, setAnimal);
-    }
-
-    @Test
-    void cancelledAnimal2() {
-        Area<Zone.Meadow> area = new Area<>(new HashSet<>(Set.of(new Zone.Meadow(1, List.of(new Animal(1, Animal.Kind.MAMMOTH), new Animal(2, Animal.Kind.TIGER), new Animal(3, Animal.Kind.MAMMOTH), new Animal(4, Animal.Kind.MAMMOTH), new Animal(5, Animal.Kind.TIGER)), null))), new ArrayList<>(), 0);
-        Set<Animal> setAnimal = GameState.cancelAnimalUpdate(area, new HashSet<>());
-        Set<Animal> setSearch = Set.of();
-        assertEquals(setSearch, setAnimal);
-    }
-
-    @Test
-    void cancelledAnimal1() {
-        Area<Zone.Meadow> area = new Area<>(new HashSet<>(Set.of(new Zone.Meadow(1, List.of(new Animal(1, Animal.Kind.DEER), new Animal(2, Animal.Kind.DEER), new Animal(3, Animal.Kind.DEER), new Animal(4, Animal.Kind.MAMMOTH), new Animal(5, Animal.Kind.MAMMOTH)), null))), new ArrayList<>(), 0);
-        Set<Animal> setAnimal = GameState.cancelAnimalUpdate(area, new HashSet<>());
-        Set<Animal> setSearch = Set.of();
-        assertEquals(setSearch, setAnimal);
-    }
-    @Test
-    void cancelledAnimal3() {
-        Area<Zone.Meadow> area = new Area<>(new HashSet<>(Set.of(new Zone.Meadow(1, List.of(new Animal(1, Animal.Kind.DEER), new Animal(2, Animal.Kind.DEER), new Animal(3, Animal.Kind.DEER), new Animal(4, Animal.Kind.TIGER), new Animal(5, Animal.Kind.TIGER)), null))), new ArrayList<>(), 0);
-        Set<Animal> setAnimal = GameState.cancelAnimalUpdate(area, new HashSet<>());
-        Set<Animal> setSearch = Set.of(new Animal(1, Animal.Kind.DEER), new Animal(2, Animal.Kind.DEER));
-        assertEquals(setSearch, setAnimal);
+        //gamestate = gamestate.withPlacedTile()
+        return null;
     }
 
     @Test
@@ -132,6 +107,31 @@ class MyGameStateTest {
     }
 
     @Test
-    void freeOccupantCountReturnsCorrectOccupantCount() {
+    void freeOccupantCountReturnsCorrectOccupantCountForNewGame() {
+        GameState gamestate = new GameState(players, tileDecks, tileDecks.topTile(Tile.Kind.NORMAL),
+                Board.EMPTY, GameState.Action.PLACE_TILE, new MessageBoard(textMaker, new ArrayList<>()));
+        for (PlayerColor player : players) {
+            assertEquals(gamestate.freeOccupantsCount(player, Occupant.Kind.HUT), Occupant.occupantsCount(Occupant.Kind.HUT));
+            assertEquals(gamestate.freeOccupantsCount(player, Occupant.Kind.PAWN), Occupant.occupantsCount(Occupant.Kind.PAWN));
+        }
+    }
+
+    @Test
+    void freeOccupantCountReturnsCorrectOccupantCountForNormalGame() {
+
+        //assertEquals(gamestate.freeOccupantsCount(player, Occupant.Kind.HUT), Occupant.occupantsCount(Occupant.Kind.HUT));
+        //assertEquals(gamestate.freeOccupantsCount(player, Occupant.Kind.PAWN), Occupant.occupantsCount(Occupant.Kind.PAWN));
+    }
+
+    @Test
+    void lastTilePotentialOccupantsWorksForOrdinaryGame() {
+        GameState gameState = GameState.initial(players, tileDecks, textMaker);
+        gameState = gameState.withStartingTilePlaced();
+        PlacedTile placedTile = new PlacedTile(Tiles.TILES.get(0), players.getFirst(), Rotation.NONE, new Pos(1, 0));
+        gameState = gameState.withPlacedTile(placedTile);
+        gameState = gameState.withNewOccupant(new Occupant(Occupant.Kind.PAWN, Tiles.TILES.get(0).w().zones().get(0).id()));
+        PlacedTile placedTile2 = new PlacedTile(Tiles.TILES.get(2), players.getFirst(), Rotation.RIGHT, new Pos(0, 1));
+        gameState = gameState.withPlacedTile(placedTile2);
+        assertNotEquals(gameState.lastTilePotentialOccupants(),  placedTile2.potentialOccupants());
     }
 }

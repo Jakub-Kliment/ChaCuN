@@ -1,5 +1,7 @@
 package ch.epfl.chacun;
 
+import ch.epfl.chacun.tile.Tiles;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -41,8 +43,23 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
     }
 
     public Set<Occupant> lastTilePotentialOccupants() {
-        Preconditions.checkArgument(board.equals(Board.EMPTY));
-        return board.lastPlacedTile().potentialOccupants();
+        Preconditions.checkArgument(!board.equals(Board.EMPTY));
+       Set<Occupant> potentialOccupants = board.lastPlacedTile().potentialOccupants();
+       potentialOccupants.removeIf(
+               o -> freeOccupantsCount(currentPlayer(), o.kind()) == 0);
+
+       potentialOccupants.removeIf((occupant) -> switch (board.lastPlacedTile().zoneWithId(occupant.zoneId())) {
+           case Zone.Meadow meadow
+                   when occupant.kind().equals(Occupant.Kind.PAWN) -> board.meadowArea(meadow).isOccupied();
+           case Zone.Forest forest
+                   when occupant.kind().equals(Occupant.Kind.PAWN) -> board.forestArea(forest).isOccupied();
+           case Zone.River river
+                   when occupant.kind().equals(Occupant.Kind.PAWN) -> board.riverArea(river).isOccupied();
+           case Zone.Water water
+                   when occupant.kind().equals(Occupant.Kind.HUT) -> board.riverSystemArea(water).isOccupied();
+           default -> false;
+       });
+       return potentialOccupants;
     }
 
     public GameState withStartingTilePlaced() {
@@ -55,8 +72,8 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
     }
 
     public GameState withPlacedTile(PlacedTile tile) {
-        Preconditions.checkArgument(nextAction.equals(Action.PLACE_TILE) && tile.occupant() != null);
-        MessageBoard newMessageBoard = new MessageBoard(messageBoard.textMaker(), messageBoard.messages());
+        Preconditions.checkArgument(nextAction.equals(Action.PLACE_TILE) && tile.occupant() == null);
+        MessageBoard newMessageBoard = messageBoard;
         Board newBoard = board.withNewTile(tile);
         Action newAction;
 
@@ -139,13 +156,14 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
             if (newTileDecks.deckSize(Tile.Kind.MENHIR) != 0)
                 return new GameState(players, newTileDecks, newTileDecks.topTile(kind), newBoard, Action.PLACE_TILE, newMessageBoard);
         }
-
-        players.add(players.removeFirst());
+        List<PlayerColor> newPlayers = new ArrayList<>(players);
+        newPlayers.add(newPlayers.removeFirst());
         newTileDecks = tileDecks.withTopTileDrawnUntil(Tile.Kind.NORMAL, (tile) -> finalNewBoard.couldPlaceTile(tileDecks.topTile(Tile.Kind.NORMAL)));
-        if (newTileDecks.deckSize(Tile.Kind.NORMAL) != 0)
-            return new GameState(players, newTileDecks, newTileDecks.topTile(Tile.Kind.NORMAL), newBoard, Action.PLACE_TILE, newMessageBoard);
 
-        return new GameState(players, newTileDecks, null, newBoard,
+        if (newTileDecks.deckSize(Tile.Kind.NORMAL) != 0)
+            return new GameState(newPlayers, newTileDecks, newTileDecks.topTile(Tile.Kind.NORMAL), newBoard, Action.PLACE_TILE, newMessageBoard);
+
+        return new GameState(newPlayers, newTileDecks, null, newBoard,
                 Action.END_GAME, newMessageBoard).withFinalPointsCounted();
     }
     private GameState withFinalPointsCounted() {
