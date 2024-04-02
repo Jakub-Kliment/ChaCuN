@@ -9,7 +9,6 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
                         Board board, Action nextAction, MessageBoard messageBoard) {
 
     public GameState {
-        //Peut-être être truc à faire pour être immuable !!!!!
         Preconditions.checkArgument(players.size() >= 2);
         players = List.copyOf(players);
         Preconditions.checkArgument((tileToPlace == null) ^ nextAction.equals(Action.PLACE_TILE));
@@ -123,7 +122,7 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
     }
 
     private GameState withTurnFinishedIfOccupationImpossible() {
-        if (board.lastPlacedTile().potentialOccupants().isEmpty())
+        if (lastTilePotentialOccupants().isEmpty())
             return withTurnFinished();
         else
             return new GameState(players, tileDecks, null, board, Action.OCCUPY_TILE, messageBoard);

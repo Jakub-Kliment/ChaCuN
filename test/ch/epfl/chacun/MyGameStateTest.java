@@ -118,9 +118,14 @@ class MyGameStateTest {
 
     @Test
     void freeOccupantCountReturnsCorrectOccupantCountForNormalGame() {
-
-        //assertEquals(gamestate.freeOccupantsCount(player, Occupant.Kind.HUT), Occupant.occupantsCount(Occupant.Kind.HUT));
-        //assertEquals(gamestate.freeOccupantsCount(player, Occupant.Kind.PAWN), Occupant.occupantsCount(Occupant.Kind.PAWN));
+        GameState gameState = GameState.initial(players, tileDecks, textMaker);
+        gameState = gameState.withStartingTilePlaced();
+        Occupant occupant = new Occupant(Occupant.Kind.PAWN, Tiles.TILES.get(0).w().zones().get(0).id());
+        PlacedTile placedTile = new PlacedTile(Tiles.TILES.get(0), players.get(0), Rotation.NONE, new Pos(1, 0));
+        gameState = gameState.withPlacedTile(placedTile);
+        gameState = gameState.withNewOccupant(occupant);
+        assertEquals(gameState.freeOccupantsCount(PlayerColor.RED, Occupant.Kind.HUT), Occupant.occupantsCount(Occupant.Kind.HUT));
+        assertEquals(gameState.freeOccupantsCount(PlayerColor.RED, Occupant.Kind.PAWN), Occupant.occupantsCount(Occupant.Kind.PAWN) - 1);
     }
 
     @Test
@@ -134,4 +139,5 @@ class MyGameStateTest {
         gameState = gameState.withPlacedTile(placedTile2);
         assertNotEquals(gameState.lastTilePotentialOccupants(),  placedTile2.potentialOccupants());
     }
+
 }
