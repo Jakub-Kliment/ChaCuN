@@ -1,6 +1,7 @@
 package ch.epfl.chacun;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile tileToPlace,
                         Board board, Action nextAction, MessageBoard messageBoard) {
@@ -129,7 +130,7 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
             newBoard = newBoard.withoutGatherersOrFishersIn(new HashSet<>(), Set.of(riverArea));
         }
 
-        TileDecks newTileDecks = tileDecks;
+        TileDecks newTileDecks;
         Tile.Kind kind = (hasMenhir && newBoard.lastPlacedTile().kind().equals(Tile.Kind.NORMAL)) ? Tile.Kind.MENHIR : Tile.Kind.NORMAL;
         Board finalNewBoard = newBoard;
 
@@ -150,48 +151,40 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
     private GameState withFinalPointsCounted() {
         Board newBoard = board;
         MessageBoard newMessageBoard = messageBoard;
-        for (Area<Zone.Meadow> meadowArea : newBoard.meadowAreas()) {
-            Map<Animal.Kind, Integer> animalCount = new HashMap<>();
-            Area<Zone.Meadow> adjacentArea = null;
-            boolean wildFire = false;
 
-            for (Zone.Meadow meadow : meadowArea.zones()) {
-                    if (meadow.specialPower() == Zone.SpecialPower.HUNTING_TRAP)
-                        adjacentArea = newBoard.adjacentMeadow(newBoard.tileWithId(meadow.tileId()).pos(), meadow);
-                    if (meadow.specialPower() == Zone.SpecialPower.WILD_FIRE)
-                        wildFire = true;
-                for (Animal animal : meadow.animals())
-                    animalCount.put(animal.kind(), animalCount.getOrDefault(animal.kind(), 0) + 1);
+        for (Area<Zone.Meadow> meadowArea : newBoard.meadowAreas()) {
+            Set<Animal> animals = Area.animals(meadowArea, newBoard.cancelledAnimals());
+            List<Animal> deer = new ArrayList<>();
+            int tigerCount = 0;
+
+            for (Animal animal : animals) {
+                if (animal.kind().equals(Animal.Kind.DEER))
+                    deer.add(animal);
+                else if (animal.kind().equals(Animal.Kind.TIGER))
+                    tigerCount++;
             }
-            if (wildFire)
-                animalCount.put(Animal.Kind.TIGER, 0);
-            while (animalCount.get(Animal.Kind.TIGER) > 0 || animalCount.get(Animal.Kind.DEER) > 0){
-                boolean remove = false;
-                Set<Animal> setAnimal = Area.animals(meadowArea, newBoard.cancelledAnimals());
-                if (adjacentArea != null){
-                    Set<Animal> trapSet = Area.animals(adjacentArea, newBoard.cancelledAnimals());
-                    for(Animal animal : setAnimal){
-                        if (animal.kind() == Animal.Kind.DEER && !trapSet.contains(animal)){
-                            remove = true;
-                            newBoard = newBoard.withMoreCancelledAnimals(Set.of(animal));
-                            animalCount.put(Animal.Kind.DEER, animalCount.getOrDefault(Animal.Kind.DEER, 0) - 1);
-                            animalCount.put(Animal.Kind.TIGER, animalCount.getOrDefault(Animal.Kind.TIGER, 0) - 1);
-                            break;
-                        }
-                    }
-                }
-                if (!remove){
-                    for(Animal animal : setAnimal){
-                        if (animal.kind() == Animal.Kind.DEER) {
-                            newBoard = newBoard.withMoreCancelledAnimals(Set.of(animal));
-                            animalCount.put(Animal.Kind.DEER, animalCount.getOrDefault(Animal.Kind.DEER, 0) - 1);
-                            animalCount.put(Animal.Kind.TIGER, animalCount.getOrDefault(Animal.Kind.TIGER, 0) - 1);
-                            break;
-                        }
-                    }
-                }
+
+            if (meadowArea.zoneWithSpecialPower(Zone.SpecialPower.PIT_TRAP) != null) {
+                Pos pitTrapPos = newBoard.tileWithId(meadowArea.zoneWithSpecialPower(Zone.SpecialPower.PIT_TRAP).tileId()).pos();
+                deer.sort(Comparator.comparingInt(animal ->
+                        Math.max(Math.abs(pitTrapPos.x() - board.tileWithId(animal.tileId()).pos().x()),
+                                Math.abs(pitTrapPos.y() - board.tileWithId(animal.tileId()).pos().y()))));
+                newMessageBoard = newMessageBoard.withScoredPitTrap(
+                        newBoard.adjacentMeadow(pitTrapPos,
+                                (Zone.Meadow) meadowArea.zoneWithSpecialPower(Zone.SpecialPower.PIT_TRAP)),
+                        newBoard.cancelledAnimals());
             }
+
+            if (meadowArea.zoneWithSpecialPower(Zone.SpecialPower.WILD_FIRE) != null)
+                tigerCount = 0;
+
+            Set<Animal> newlyCancelledAnimals = deer.stream()
+                    .limit(tigerCount)
+                    .collect(Collectors.toSet());
+            newBoard = newBoard.withMoreCancelledAnimals(newlyCancelledAnimals);
+            newMessageBoard = newMessageBoard.withScoredMeadow(meadowArea, newBoard.cancelledAnimals());
         }
+
         for (Area<Zone.Water> waterArea : newBoard.riverSystemAreas()) {
             if (waterArea.zoneWithSpecialPower(Zone.SpecialPower.RAFT) != null)
                 newMessageBoard = newMessageBoard.withScoredRaft(waterArea);
@@ -206,25 +199,5 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
 
         newMessageBoard = newMessageBoard.withWinners(winners, maxPoints);
         return new GameState(players, tileDecks, null, board, Action.END_GAME, newMessageBoard);
-    }
-
-    public static Set<Animal> cancelAnimalUpdate(Area<Zone.Meadow> area, Set<Animal> cancelledAnimal){
-        int tigerCount = 0;
-        Set<Animal> nextCancel = new HashSet<>();
-        for (Animal animal : Area.animals(area, cancelledAnimal)){
-            if (animal.kind() == Animal.Kind.TIGER){
-                tigerCount++;
-            }
-        }
-        while(tigerCount>0) {
-            for (Animal animal : Area.animals(area, cancelledAnimal)){
-                if (animal.kind() == Animal.Kind.DEER && !nextCancel.contains(animal)){
-                    nextCancel.add(animal);
-                    break;
-                }
-            }
-            tigerCount--;
-        }
-        return nextCancel;
     }
 }
