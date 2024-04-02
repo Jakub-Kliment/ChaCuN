@@ -1,7 +1,5 @@
 package ch.epfl.chacun;
 
-import ch.epfl.chacun.tile.Tiles;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
