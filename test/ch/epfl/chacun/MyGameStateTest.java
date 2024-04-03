@@ -38,14 +38,7 @@ class MyGameStateTest {
     TileDecks tileDecks = new TileDecks(startingTiles, normalTiles, menhirTiles);
 
     TextMaker textMaker = new BasicTextMaker();
-
-
-    private GameState normalGame() {
-        GameState gamestate = GameState.initial(players, tileDecks, textMaker);
-
-        //gamestate = gamestate.withPlacedTile()
-        return null;
-    }
+    
 
     @Test
     void gameStateConstructorIsImmutable() {
@@ -139,5 +132,7 @@ class MyGameStateTest {
         gameState = gameState.withPlacedTile(placedTile2);
         assertNotEquals(gameState.lastTilePotentialOccupants(),  placedTile2.potentialOccupants());
     }
+
+
 
 }

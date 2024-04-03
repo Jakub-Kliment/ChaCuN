@@ -129,36 +129,40 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
     private GameState withTurnFinished() {
         MessageBoard newMessageBoard = messageBoard;
         Board newBoard = board;
-        boolean hasMenhir = false;
 
         for (Area<Zone.Forest> forestArea : board.forestsClosedByLastTile()) {
-            if (Area.hasMenhir(forestArea)) {
+            if (Area.hasMenhir(forestArea))
                 newMessageBoard = newMessageBoard.withClosedForestWithMenhir(currentPlayer(), forestArea);
-                hasMenhir = true;
-            }
             newMessageBoard = newMessageBoard.withScoredForest(forestArea);
             newBoard = newBoard.withoutGatherersOrFishersIn(Set.of(forestArea), new HashSet<>());
         }
+
         for (Area<Zone.River> riverArea : board.riversClosedByLastTile()) {
             newMessageBoard = newMessageBoard.withScoredRiver(riverArea);
             newBoard = newBoard.withoutGatherersOrFishersIn(new HashSet<>(), Set.of(riverArea));
         }
 
         TileDecks newTileDecks;
-        Tile.Kind kind = (hasMenhir && newBoard.lastPlacedTile().kind().equals(Tile.Kind.NORMAL)) ? Tile.Kind.MENHIR : Tile.Kind.NORMAL;
+        Tile.Kind kind = (newBoard.forestsClosedByLastTile().stream().anyMatch(Area::hasMenhir) &&
+                newBoard.lastPlacedTile().kind().equals(Tile.Kind.NORMAL)) ? Tile.Kind.MENHIR : Tile.Kind.NORMAL;
         Board finalNewBoard = newBoard;
 
         if (kind.equals(Tile.Kind.MENHIR)) {
-            newTileDecks = tileDecks.withTopTileDrawnUntil(kind, (tile) -> finalNewBoard.couldPlaceTile(tileDecks.topTile(kind)));
+            newTileDecks = tileDecks.withTopTileDrawnUntil(kind,
+                    (tile) -> finalNewBoard.couldPlaceTile(tileDecks.topTile(kind)));
             if (newTileDecks.deckSize(Tile.Kind.MENHIR) != 0)
-                return new GameState(players, newTileDecks, newTileDecks.topTile(kind), newBoard, Action.PLACE_TILE, newMessageBoard);
+                return new GameState(players, newTileDecks, newTileDecks.topTile(kind),
+                        newBoard, Action.PLACE_TILE, newMessageBoard);
         }
+
         List<PlayerColor> newPlayers = new ArrayList<>(players);
         newPlayers.add(newPlayers.removeFirst());
-        newTileDecks = tileDecks.withTopTileDrawnUntil(Tile.Kind.NORMAL, (tile) -> finalNewBoard.couldPlaceTile(tileDecks.topTile(Tile.Kind.NORMAL)));
+        newTileDecks = tileDecks.withTopTileDrawnUntil(Tile.Kind.NORMAL,
+                (tile) -> finalNewBoard.couldPlaceTile(tileDecks.topTile(Tile.Kind.NORMAL)));
 
         if (newTileDecks.deckSize(Tile.Kind.NORMAL) != 0)
-            return new GameState(newPlayers, newTileDecks, newTileDecks.topTile(Tile.Kind.NORMAL), newBoard, Action.PLACE_TILE, newMessageBoard);
+            return new GameState(newPlayers, newTileDecks, newTileDecks.topTile(Tile.Kind.NORMAL),
+                    newBoard, Action.PLACE_TILE, newMessageBoard);
 
         return new GameState(newPlayers, newTileDecks, null, newBoard,
                 Action.END_GAME, newMessageBoard).withFinalPointsCounted();
@@ -169,15 +173,12 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
 
         for (Area<Zone.Meadow> meadowArea : newBoard.meadowAreas()) {
             Set<Animal> animals = Area.animals(meadowArea, newBoard.cancelledAnimals());
-            List<Animal> deer = new ArrayList<>();
-            int tigerCount = 0;
-
-            for (Animal animal : animals) {
-                if (animal.kind().equals(Animal.Kind.DEER))
-                    deer.add(animal);
-                else if (animal.kind().equals(Animal.Kind.TIGER))
-                    tigerCount++;
-            }
+            List<Animal> deer = animals.stream()
+                    .filter(animal -> animal.kind().equals(Animal.Kind.DEER))
+                    .collect(Collectors.toList());
+            long tigerCount = animals.stream()
+                    .filter(animal -> animal.kind().equals(Animal.Kind.TIGER))
+                    .count();
 
             if (meadowArea.zoneWithSpecialPower(Zone.SpecialPower.PIT_TRAP) != null) {
                 Pos pitTrapPos = newBoard.tileWithId(meadowArea.zoneWithSpecialPower(Zone.SpecialPower.PIT_TRAP).tileId()).pos();
@@ -191,7 +192,7 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
             }
 
             if (meadowArea.zoneWithSpecialPower(Zone.SpecialPower.WILD_FIRE) != null)
-                tigerCount = 0;
+                tigerCount = 0L;
 
             Set<Animal> newlyCancelledAnimals = deer.stream()
                     .limit(tigerCount)
@@ -206,11 +207,11 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
             newMessageBoard = newMessageBoard.withScoredRiverSystem(waterArea);
         }
 
-        Set<PlayerColor> winners = new HashSet<>();
         int maxPoints = Collections.max(newMessageBoard.points().values());
-        for (PlayerColor playerColor : newMessageBoard.points().keySet())
-            if (newMessageBoard.points().get(playerColor) == maxPoints)
-                winners.add(playerColor);
+        Set<PlayerColor> winners = newMessageBoard.points().entrySet().stream()
+                .filter(entry -> entry.getValue() == maxPoints)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
 
         newMessageBoard = newMessageBoard.withWinners(winners, maxPoints);
         return new GameState(players, tileDecks, null, board, Action.END_GAME, newMessageBoard);
