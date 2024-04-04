@@ -151,7 +151,7 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
             newTileDecks = tileDecks.withTopTileDrawnUntil(kind,
                     (tile) -> finalNewBoard.couldPlaceTile(tileDecks.topTile(kind)));
             if (newTileDecks.deckSize(Tile.Kind.MENHIR) != 0)
-                return new GameState(players, newTileDecks, newTileDecks.topTile(kind),
+                return new GameState(players, newTileDecks.withTopTileDrawn(Tile.Kind.MENHIR), newTileDecks.topTile(Tile.Kind.MENHIR),
                         newBoard, Action.PLACE_TILE, newMessageBoard);
         }
 
@@ -161,7 +161,7 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
                 (tile) -> finalNewBoard.couldPlaceTile(tileDecks.topTile(Tile.Kind.NORMAL)));
 
         if (newTileDecks.deckSize(Tile.Kind.NORMAL) != 0)
-            return new GameState(newPlayers, newTileDecks, newTileDecks.topTile(Tile.Kind.NORMAL),
+            return new GameState(newPlayers, newTileDecks.withTopTileDrawn(Tile.Kind.NORMAL), newTileDecks.topTile(Tile.Kind.NORMAL),
                     newBoard, Action.PLACE_TILE, newMessageBoard);
 
         return new GameState(newPlayers, newTileDecks, null, newBoard,
