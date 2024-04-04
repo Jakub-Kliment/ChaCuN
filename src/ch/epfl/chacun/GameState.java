@@ -9,7 +9,7 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
     public GameState {
         Preconditions.checkArgument(players.size() >= 2);
         players = List.copyOf(players);
-        Preconditions.checkArgument((tileToPlace == null) ^ nextAction.equals(Action.PLACE_TILE));
+        Preconditions.checkArgument(tileToPlace == null ^ nextAction.equals(Action.PLACE_TILE));
         Objects.requireNonNull(tileDecks);
         Objects.requireNonNull(board);
         Objects.requireNonNull(nextAction);
@@ -78,14 +78,13 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
             case Zone.Meadow meadow
                     when meadow.specialPower().equals(Zone.SpecialPower.HUNTING_TRAP) -> {
                 Area<Zone.Meadow> adjacentMeadow = newBoard.adjacentMeadow(tile.pos(), meadow);
-                Set<Animal> animals = Area.animals(adjacentMeadow, board.cancelledAnimals());
-                newBoard = newBoard.withMoreCancelledAnimals(animals);
-                newMessageBoard = messageBoard.withScoredHuntingTrap(currentPlayer(), adjacentMeadow);
+                newBoard = newBoard.withMoreCancelledAnimals(Area.animals(adjacentMeadow, newBoard.cancelledAnimals()));
+                newMessageBoard = newMessageBoard.withScoredHuntingTrap(currentPlayer(), adjacentMeadow);
                 newAction = Action.OCCUPY_TILE;
             }
             case Zone.Lake lake
                     when lake.specialPower().equals(Zone.SpecialPower.LOGBOAT) -> {
-                newMessageBoard = messageBoard.withScoredLogboat(currentPlayer(), newBoard.riverSystemArea(lake));
+                newMessageBoard = newMessageBoard.withScoredLogboat(currentPlayer(), newBoard.riverSystemArea(lake));
                 newAction = Action.OCCUPY_TILE;
             }
             case Zone.Meadow meadow
@@ -94,6 +93,7 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
             case null, default ->
                     newAction = Action.OCCUPY_TILE;
         }
+
         GameState newGameState = new GameState(players, tileDecks, null, newBoard, newAction, newMessageBoard);
         if (newAction.equals(Action.OCCUPY_TILE))
             return newGameState.withTurnFinishedIfOccupationImpossible();

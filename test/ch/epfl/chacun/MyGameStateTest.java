@@ -150,4 +150,18 @@ class MyGameStateTest {
         assertEquals(gameState.tileToPlace(), normalTiles.getFirst());
         assertEquals(gameState.tileDecks().deckSize(Tile.Kind.NORMAL), normalTiles.size() - 1);
     }
+
+    @Test
+    void withPlacedTileThrowsExceptionWhenItShould() {
+        GameState gameState = new GameState(players, tileDecks, null, Board.EMPTY,
+                GameState.Action.START_GAME, new MessageBoard(textMaker, new ArrayList<>()));
+        PlacedTile placedTile = new PlacedTile(normalTiles.get(0), gameState.currentPlayer(), Rotation.NONE, new Pos(1, 0));
+        assertThrows(IllegalArgumentException.class, () -> gameState.withPlacedTile(placedTile));
+
+        GameState gameState2 = new GameState(players, tileDecks, normalTiles.get(0), Board.EMPTY,
+                GameState.Action.PLACE_TILE, new MessageBoard(textMaker, new ArrayList<>()));
+        PlacedTile placedTile2 = new PlacedTile(normalTiles.get(0), gameState.currentPlayer(),
+                Rotation.NONE, new Pos(1, 0), new Occupant(Occupant.Kind.PAWN, 1));
+        assertThrows(IllegalArgumentException.class, () -> gameState2.withPlacedTile(placedTile2));
+    }
 }
