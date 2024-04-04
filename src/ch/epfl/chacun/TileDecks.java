@@ -86,7 +86,7 @@ public record TileDecks(List<Tile> startTiles, List<Tile> normalTiles, List<Tile
      * @return the deck of the given kind without its top tile, until the predicate is satisfied
      */
     public TileDecks withTopTileDrawnUntil(Tile.Kind kind, Predicate<Tile> predicate) {
-        if (!predicate.test(this.topTile(kind)) && deckSize(kind) != 0)
+        if (deckSize(kind) != 0 && !predicate.test(this.topTile(kind)))
             return this.withTopTileDrawn(kind).withTopTileDrawnUntil(kind, predicate);
 
         return this;
