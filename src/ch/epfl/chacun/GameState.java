@@ -64,8 +64,8 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
         Board newBoard = board.withNewTile(new PlacedTile(tileDecks.topTile(Tile.Kind.START),
                 null, Rotation.NONE, Pos.ORIGIN));
         Tile nextTile = tileDecks.topTile(Tile.Kind.NORMAL);
-        TileDecks nextDecks = tileDecks.withTopTileDrawn(Tile.Kind.START).withTopTileDrawn(Tile.Kind.NORMAL);
-        return new GameState(players, nextDecks, nextTile, newBoard, Action.PLACE_TILE, messageBoard);
+        TileDecks newTileDecks = tileDecks.withTopTileDrawn(Tile.Kind.START).withTopTileDrawn(Tile.Kind.NORMAL);
+        return new GameState(players, newTileDecks, nextTile, newBoard, Action.PLACE_TILE, messageBoard);
     }
 
     public GameState withPlacedTile(PlacedTile tile) {

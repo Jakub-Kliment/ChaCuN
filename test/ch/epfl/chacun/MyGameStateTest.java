@@ -133,6 +133,21 @@ class MyGameStateTest {
         assertNotEquals(gameState.lastTilePotentialOccupants(),  placedTile2.potentialOccupants());
     }
 
+    @Test
+    void withStartingTilePlacedThrowsException() {
+        GameState gameState = new GameState(players, tileDecks, Tiles.TILES.get(0), Board.EMPTY,
+                GameState.Action.PLACE_TILE, new MessageBoard(textMaker, new ArrayList<>()));
+        assertThrows(IllegalArgumentException.class, gameState::withStartingTilePlaced);
+    }
 
+    @Test
+    void withStartingTilePlacedWorksCorrectly() {
+        GameState gameState = GameState.initial(players, tileDecks, textMaker);
+        gameState = gameState.withStartingTilePlaced();
 
+        assertEquals(gameState.board().tileAt(Pos.ORIGIN).tile(), Tiles.TILES.get(56));
+        assertTrue(gameState.tileDecks().startTiles().isEmpty());
+        assertEquals(gameState.tileToPlace(), normalTiles.getFirst());
+        assertEquals(gameState.tileDecks().deckSize(Tile.Kind.NORMAL), normalTiles.size() - 1);
+    }
 }
