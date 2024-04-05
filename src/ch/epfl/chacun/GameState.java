@@ -186,10 +186,6 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
                 deer.sort(Comparator.comparingInt(animal ->
                         Math.max(Math.abs(pitTrapPos.x() - board.tileWithId(animal.tileId()).pos().x()),
                                 Math.abs(pitTrapPos.y() - board.tileWithId(animal.tileId()).pos().y()))));
-                newMessageBoard = newMessageBoard.withScoredPitTrap(
-                        newBoard.adjacentMeadow(pitTrapPos,
-                                (Zone.Meadow) meadowArea.zoneWithSpecialPower(Zone.SpecialPower.PIT_TRAP)),
-                        newBoard.cancelledAnimals());
             }
 
             if (meadowArea.zoneWithSpecialPower(Zone.SpecialPower.WILD_FIRE) != null)
@@ -200,6 +196,14 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
                     .collect(Collectors.toSet());
             newBoard = newBoard.withMoreCancelledAnimals(newlyCancelledAnimals);
             newMessageBoard = newMessageBoard.withScoredMeadow(meadowArea, newBoard.cancelledAnimals());
+
+            if (meadowArea.zoneWithSpecialPower(Zone.SpecialPower.PIT_TRAP) != null) {
+                Pos pitTrapPos = newBoard.tileWithId(meadowArea.zoneWithSpecialPower(Zone.SpecialPower.PIT_TRAP).tileId()).pos();
+                newMessageBoard = newMessageBoard.withScoredPitTrap(
+                        newBoard.adjacentMeadow(pitTrapPos,
+                                (Zone.Meadow) meadowArea.zoneWithSpecialPower(Zone.SpecialPower.PIT_TRAP)),
+                        newBoard.cancelledAnimals());
+            }
         }
 
         for (Area<Zone.Water> waterArea : newBoard.riverSystemAreas()) {
