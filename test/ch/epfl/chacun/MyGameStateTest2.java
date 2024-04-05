@@ -835,9 +835,9 @@ public class MyGameStateTest2 {
                 Occupant.Kind.PAWN,
                 gameState2.board().lastPlacedTile().tile().n().zones().get(0).id());*/
 
-        var gameState3 = gameState2.withNewOccupant(new Occupant(
+       var gameState3 = gameState2.withNewOccupant(new Occupant(
                 Occupant.Kind.PAWN,
-                gameState2.board().lastPlacedTile().tile().n().zones().get(0).id()));
+                gameState2.board().lastPlacedTile().tile().n().zones().getFirst().id()));
 
         var boardExpected = Board.EMPTY
                 .withNewTile(new PlacedTile(TILES.get(56), null, Rotation.NONE, Pos.ORIGIN))

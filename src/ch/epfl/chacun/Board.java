@@ -411,7 +411,7 @@ public class Board {
             newZonePartitions.clearFishers(riverArea);
             for (Zone.River river : riverArea.zones())
                 for (int i : index)
-                    if (newPlacedTiles[i].tile().id() == river.tileId())
+                    if (newPlacedTiles[i].occupant() != null && river.id() == newPlacedTiles[i].occupant().zoneId())
                         newPlacedTiles[i] = newPlacedTiles[i].withNoOccupant();
         }
         return new Board(newPlacedTiles, newIndex, newZonePartitions.build(), cancelledAnimals());

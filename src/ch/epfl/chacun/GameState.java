@@ -146,11 +146,9 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
         TileDecks newTileDecks;
         Tile.Kind kind = (newBoard.forestsClosedByLastTile().stream().anyMatch(Area::hasMenhir) &&
                 newBoard.lastPlacedTile().kind().equals(Tile.Kind.NORMAL)) ? Tile.Kind.MENHIR : Tile.Kind.NORMAL;
-        Board finalNewBoard = newBoard;
 
         if (kind.equals(Tile.Kind.MENHIR)) {
-            newTileDecks = tileDecks.withTopTileDrawnUntil(kind,
-                    (tile) -> finalNewBoard.couldPlaceTile(tileDecks.topTile(kind)));
+            newTileDecks = tileDecks.withTopTileDrawnUntil(kind, newBoard::couldPlaceTile);
             if (newTileDecks.deckSize(Tile.Kind.MENHIR) != 0)
                 return new GameState(players, newTileDecks.withTopTileDrawn(Tile.Kind.MENHIR),
                         newTileDecks.topTile(Tile.Kind.MENHIR), newBoard, Action.PLACE_TILE, newMessageBoard);
@@ -158,8 +156,7 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
 
         List<PlayerColor> newPlayers = new LinkedList<>(players);
         newPlayers.add(newPlayers.removeFirst());
-        newTileDecks = tileDecks.withTopTileDrawnUntil(Tile.Kind.NORMAL,
-                (tile) -> finalNewBoard.couldPlaceTile(tileDecks.topTile(Tile.Kind.NORMAL)));
+        newTileDecks = tileDecks.withTopTileDrawnUntil(Tile.Kind.NORMAL, newBoard::couldPlaceTile);
 
         if (newTileDecks.deckSize(Tile.Kind.NORMAL) != 0)
             return new GameState(newPlayers, newTileDecks.withTopTileDrawn(Tile.Kind.NORMAL),

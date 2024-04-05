@@ -18,7 +18,7 @@ public class MyGameStateTestGhetto {
     //Normal
     public static TileDecks initialTileDecks1 = new TileDecks(
             List.of(TILES.get(56)),
-            List.of(TILES.get(17), TILES.get(27)) ,
+            List.of(TILES.get(17), TILES.get(27), TILES.get(34)) ,
             List.of(TILES.get(79)));
     public static GameState initialGameState1 = GameState.initial(
             PlayerColor.ALL,
