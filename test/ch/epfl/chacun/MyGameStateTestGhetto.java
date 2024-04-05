@@ -5,10 +5,7 @@ import ch.epfl.chacun.tile.Tiles;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class MyGameStateTestGhetto {
 
@@ -18,7 +15,7 @@ public class MyGameStateTestGhetto {
     //Normal
     public static TileDecks initialTileDecks1 = new TileDecks(
             List.of(TILES.get(56)),
-            List.of(TILES.get(17), TILES.get(27), TILES.get(34)) ,
+            List.of(TILES.get(17), TILES.get(27)) ,
             List.of(TILES.get(79)));
     public static GameState initialGameState1 = GameState.initial(
             PlayerColor.ALL,
@@ -96,11 +93,11 @@ public class MyGameStateTestGhetto {
     //Shaman
     public static TileDecks initialTileDecks8 = new TileDecks(
             List.of(TILES.get(56)),
-            List.of(TILES.get(49), TILES.get(27),TILES.get(1),TILES.get(0),TILES.get(8)),
+            List.of(TILES.get(49), TILES.get(27),TILES.get(1),TILES.get(69),TILES.get(8)),
             List.of(TILES.get(88)));
 
     public static GameState initialGameState8 = GameState.initial(
-            PlayerColor.ALL,
+            new ArrayList<>(List.of(PlayerColor.RED, PlayerColor.BLUE, PlayerColor.GREEN, PlayerColor.YELLOW)),
             initialTileDecks8,
             TEXT_MADE);
 
@@ -471,7 +468,7 @@ public class MyGameStateTestGhetto {
         var gameState8 = gameState7.withPlacedTile(new PlacedTile(
                 gameState7.tileToPlace(),
                 gameState7.currentPlayer(),
-                Rotation.RIGHT,
+                Rotation.NONE,
                 new Pos(0,1)));
 
         var gameState9 = gameState8.withNewOccupant(null);
@@ -666,7 +663,7 @@ public class MyGameStateTestGhetto {
         var gameState8 = gameState7.withPlacedTile(new PlacedTile(
                 gameState7.tileToPlace(),
                 gameState7.currentPlayer(),
-                Rotation.RIGHT,
+                Rotation.NONE,
                 new Pos(0,1)));
 
         var gameState9 = gameState8.withNewOccupant(null);
