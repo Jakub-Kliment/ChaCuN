@@ -95,7 +95,8 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
         }
 
         GameState newGameState = new GameState(players, tileDecks, null, newBoard, newAction, newMessageBoard);
-        if (newAction.equals(Action.OCCUPY_TILE))
+        if (newAction.equals(Action.OCCUPY_TILE) ||
+                freeOccupantsCount(currentPlayer(), Occupant.Kind.PAWN) == Occupant.occupantsCount(Occupant.Kind.PAWN))
             return newGameState.withTurnFinishedIfOccupationImpossible();
         return newGameState;
     }
@@ -130,14 +131,14 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
         MessageBoard newMessageBoard = messageBoard;
         Board newBoard = board;
 
-        for (Area<Zone.Forest> forestArea : board.forestsClosedByLastTile()) {
+        for (Area<Zone.Forest> forestArea : newBoard.forestsClosedByLastTile()) {
             if (Area.hasMenhir(forestArea))
                 newMessageBoard = newMessageBoard.withClosedForestWithMenhir(currentPlayer(), forestArea);
             newMessageBoard = newMessageBoard.withScoredForest(forestArea);
             newBoard = newBoard.withoutGatherersOrFishersIn(Set.of(forestArea), new HashSet<>());
         }
 
-        for (Area<Zone.River> riverArea : board.riversClosedByLastTile()) {
+        for (Area<Zone.River> riverArea : newBoard.riversClosedByLastTile()) {
             newMessageBoard = newMessageBoard.withScoredRiver(riverArea);
             newBoard = newBoard.withoutGatherersOrFishersIn(new HashSet<>(), Set.of(riverArea));
         }
@@ -151,18 +152,18 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
             newTileDecks = tileDecks.withTopTileDrawnUntil(kind,
                     (tile) -> finalNewBoard.couldPlaceTile(tileDecks.topTile(kind)));
             if (newTileDecks.deckSize(Tile.Kind.MENHIR) != 0)
-                return new GameState(players, newTileDecks.withTopTileDrawn(Tile.Kind.MENHIR), newTileDecks.topTile(Tile.Kind.MENHIR),
-                        newBoard, Action.PLACE_TILE, newMessageBoard);
+                return new GameState(players, newTileDecks.withTopTileDrawn(Tile.Kind.MENHIR),
+                        newTileDecks.topTile(Tile.Kind.MENHIR), newBoard, Action.PLACE_TILE, newMessageBoard);
         }
 
-        List<PlayerColor> newPlayers = new ArrayList<>(players);
+        List<PlayerColor> newPlayers = new LinkedList<>(players);
         newPlayers.add(newPlayers.removeFirst());
         newTileDecks = tileDecks.withTopTileDrawnUntil(Tile.Kind.NORMAL,
                 (tile) -> finalNewBoard.couldPlaceTile(tileDecks.topTile(Tile.Kind.NORMAL)));
 
         if (newTileDecks.deckSize(Tile.Kind.NORMAL) != 0)
-            return new GameState(newPlayers, newTileDecks.withTopTileDrawn(Tile.Kind.NORMAL), newTileDecks.topTile(Tile.Kind.NORMAL),
-                    newBoard, Action.PLACE_TILE, newMessageBoard);
+            return new GameState(newPlayers, newTileDecks.withTopTileDrawn(Tile.Kind.NORMAL),
+                    newTileDecks.topTile(Tile.Kind.NORMAL), newBoard, Action.PLACE_TILE, newMessageBoard);
 
         return new GameState(newPlayers, newTileDecks, null, newBoard,
                 Action.END_GAME, newMessageBoard).withFinalPointsCounted();
