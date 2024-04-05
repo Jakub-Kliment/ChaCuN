@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class MyGameStateTest {
+public class MyGameStateTestGhetto {
 
     public static final List<Tile> TILES = Tiles.TILES;
     public static final TextMade TEXT_MADE = new TextMade();
@@ -18,7 +18,7 @@ public class MyGameStateTest {
     //Normal
     public static TileDecks initialTileDecks1 = new TileDecks(
             List.of(TILES.get(56)),
-            List.of(TILES.get(17), TILES.get(27)),
+            List.of(TILES.get(17), TILES.get(27)) ,
             List.of(TILES.get(79)));
     public static GameState initialGameState1 = GameState.initial(
             PlayerColor.ALL,

@@ -1,5 +1,6 @@
 package ch.epfl.chacun;
 
+import ch.epfl.chacun.tile.Tiles;
 import org.junit.jupiter.api.Test;
 import tests_etape4.ourTests.TextMakerApo;
 import java.util.*;
@@ -72,7 +73,7 @@ public class GameStateTests {
 
     //Le premier joueur décide d'occuper la tuile qu'il a placé
     static GameState withFirstTileOccupied() {
-        Occupant occupant = new Occupant(Occupant.Kind.PAWN, 0_1);
+        Occupant occupant = new Occupant(Occupant.Kind.PAWN, 1);
         return withFirstTilePlaced().withNewOccupant(occupant);
     }
 
