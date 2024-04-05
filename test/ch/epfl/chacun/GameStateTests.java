@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import tests_etape4.ourTests.TextMakerApo;
 import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
+import ch.epfl.chacun.tile.Tiles;
 
 
 public class GameStateTests {

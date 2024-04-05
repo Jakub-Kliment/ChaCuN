@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class MyGameStateTest {
+public class MyGameStateTest2 {
 
     public static final List<Tile> TILES = Tiles.TILES;
     public static final TextMade TEXT_MADE = new TextMade();
