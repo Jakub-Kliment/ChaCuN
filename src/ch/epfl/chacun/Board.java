@@ -403,7 +403,7 @@ public class Board {
             newZonePartitions.clearGatherers(forestArea);
             for (Zone.Forest forest : forestArea.zones())
                 for (int i : index)
-                    if (newPlacedTiles[i].tile().id() == forest.tileId())
+                    if (newPlacedTiles[i].occupant() != null && forest.id() == newPlacedTiles[i].occupant().zoneId())
                         newPlacedTiles[i] = newPlacedTiles[i].withNoOccupant();
         }
 
