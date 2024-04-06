@@ -1,7 +1,7 @@
 package ch.epfl.chacun;
 
 /**
- * A record of an animal in the game.
+ * Represents an animal in the game.
  *
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)

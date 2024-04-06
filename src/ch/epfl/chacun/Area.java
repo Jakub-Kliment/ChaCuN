@@ -84,11 +84,11 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
         Set<Zone.Lake> countedLake = new HashSet<>();
 
         for (Zone.River zone : river.zones()) {
-                fishCount += zone.fishCount();
+            fishCount += zone.fishCount();
 
-                // If the river is connected to a lake at both ends, the lake should only be counted once
-                if (zone.hasLake() && countedLake.add(zone.lake()))
-                    fishCount += zone.lake().fishCount();
+            // If the river is connected to a lake at both ends, the lake should only be counted once
+            if (zone.hasLake() && countedLake.add(zone.lake()))
+                fishCount += zone.lake().fishCount();
         }
         return fishCount;
     }

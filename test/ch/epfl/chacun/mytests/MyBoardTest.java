@@ -1,4 +1,4 @@
-package ch.epfl.chacun;
+package ch.epfl.chacun.mytests;
 
 import java.util.*;
 

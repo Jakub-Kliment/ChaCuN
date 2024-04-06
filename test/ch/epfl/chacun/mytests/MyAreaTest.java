@@ -1,5 +1,8 @@
-package ch.epfl.chacun;
+package ch.epfl.chacun.mytests;
 
+import ch.epfl.chacun.Area;
+import ch.epfl.chacun.PlayerColor;
+import ch.epfl.chacun.Zone;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

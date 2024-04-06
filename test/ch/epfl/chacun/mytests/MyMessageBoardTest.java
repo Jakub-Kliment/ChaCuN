@@ -1,5 +1,6 @@
-package ch.epfl.chacun;
+package ch.epfl.chacun.mytests;
 
+import ch.epfl.chacun.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;

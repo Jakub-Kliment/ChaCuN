@@ -27,8 +27,6 @@ public class Board {
 
     /**
      * Private board constructor to keep the class immutable
-     *
-     *
       */
     private Board(PlacedTile[] placedTiles, int[] index, ZonePartitions zonePartitions, Set<Animal> cancelledAnimals) {
         this.placedTiles = placedTiles;
@@ -224,7 +222,6 @@ public class Board {
     public PlacedTile lastPlacedTile() {
         if (this.equals(EMPTY))
             return null;
-
         return placedTiles[index[index.length - 1]];
     }
 

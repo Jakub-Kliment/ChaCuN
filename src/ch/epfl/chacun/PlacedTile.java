@@ -165,7 +165,6 @@ public record PlacedTile(Tile tile, PlayerColor placer, Rotation rotation, Pos p
     public PlacedTile withOccupant(Occupant occupant) {
         if (occupant() != null)
             throw new IllegalArgumentException();
-
         return new PlacedTile(tile, placer, rotation, pos, occupant);
     }
 
