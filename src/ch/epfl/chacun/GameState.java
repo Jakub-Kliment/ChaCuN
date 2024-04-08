@@ -85,24 +85,25 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
      */
     public Set<Occupant> lastTilePotentialOccupants() {
         Preconditions.checkArgument(!board.equals(Board.EMPTY));
-       Set<Occupant> potentialOccupants = board.lastPlacedTile().potentialOccupants();
-       // Remove occupants if there are no free ones left
-       potentialOccupants.removeIf(
-               o -> freeOccupantsCount(currentPlayer(), o.kind()) == 0);
+        Set<Occupant> potentialOccupants = board.lastPlacedTile().potentialOccupants();
 
-       // Remove occupants if the area is already occupied
-       potentialOccupants.removeIf((occupant) -> switch (board.lastPlacedTile().zoneWithId(occupant.zoneId())) {
-           case Zone.Meadow meadow
-                   when occupant.kind().equals(Occupant.Kind.PAWN) -> board.meadowArea(meadow).isOccupied();
-           case Zone.Forest forest
-                   when occupant.kind().equals(Occupant.Kind.PAWN) -> board.forestArea(forest).isOccupied();
-           case Zone.River river
-                   when occupant.kind().equals(Occupant.Kind.PAWN) -> board.riverArea(river).isOccupied();
-           case Zone.Water water
-                   when occupant.kind().equals(Occupant.Kind.HUT) -> board.riverSystemArea(water).isOccupied();
-           default -> false;
-       });
-       return potentialOccupants;
+        // Remove occupants if there are no free ones left
+        potentialOccupants.removeIf(
+                o -> freeOccupantsCount(currentPlayer(), o.kind()) == 0);
+
+        // Remove occupants if the area is already occupied
+        potentialOccupants.removeIf((occupant) -> switch (board.lastPlacedTile().zoneWithId(occupant.zoneId())) {
+            case Zone.Meadow meadow
+                    when occupant.kind().equals(Occupant.Kind.PAWN) -> board.meadowArea(meadow).isOccupied();
+            case Zone.Forest forest
+                    when occupant.kind().equals(Occupant.Kind.PAWN) -> board.forestArea(forest).isOccupied();
+            case Zone.River river
+                    when occupant.kind().equals(Occupant.Kind.PAWN) -> board.riverArea(river).isOccupied();
+            case Zone.Water water
+                    when occupant.kind().equals(Occupant.Kind.HUT) -> board.riverSystemArea(water).isOccupied();
+            default -> false;
+        });
+        return potentialOccupants;
     }
 
     /**
