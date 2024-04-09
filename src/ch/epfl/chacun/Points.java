@@ -1,12 +1,12 @@
 package ch.epfl.chacun;
 
 /**
- * Class for computing the points of a given feature in the game.
+ * Non instantiable class for computing the
+ * points of a given feature in the game.
  *
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
  */
-
 public final class Points {
 
     /**
@@ -15,7 +15,9 @@ public final class Points {
     private Points() {}
 
     /**
-     * Computes the points of a closed forest.
+     * Computes the points of a closed forest to the player with the
+     * most occupants by adding the number of tiles multiplied by 2
+     * and the number of mushroom groups multiplied by 3.
      *
      * @param tileCount the number of tiles
      * @param mushroomGroupCount the number of mushroom groups
@@ -29,7 +31,8 @@ public final class Points {
     }
 
     /**
-     * Computes the points of a closed river.
+     * Computes the points of a closed river to the player with the most occupants
+     * by adding the number of tiles and the number of fish in the river.
      *
      * @param tileCount the number of tiles
      * @param fishCount the number of fish
@@ -43,7 +46,9 @@ public final class Points {
     }
 
     /**
-     * Computes the points of a meadow with different types of animals.
+     * Computes the points of a meadow with different types of animals to
+     * the player with the most occupants by adding the number of mammoths
+     * multiplied by 3, the number of aurochs multiplied by 2 and the number of deer.
      *
      * @param mammothCount the number of mammoths
      * @param aurochsCount the number of aurochs
@@ -57,7 +62,8 @@ public final class Points {
     }
 
     /**
-     * Computes the points of a river system.
+     * Computes the points of a river system to the player with
+     * the most occupants by adding the number of fish in the river.
      *
      * @param fishCount the number of fish
      * @throws IllegalArgumentException if the number of fish is smaller than zero
@@ -69,7 +75,8 @@ public final class Points {
     }
 
     /**
-     * Computes the points if a logboat is located in a water zone.
+     * Computes the points for a placed logboat in a water zone to the
+     * player who placed it by multiplying the number of lakes by 2.
      *
      * @param lakeCount the number of lakes
      * @throws IllegalArgumentException if the number of lakes is smaller or equal to zero
@@ -81,7 +88,8 @@ public final class Points {
     }
 
     /**
-     * Computes the points if a raft is located in a water zone.
+     * Computes the points for a raft located in a water zone to the player
+     * with the majority occupants by adding the number of lakes.
      *
      * @param lakeCount the number of lakes
      * @throws IllegalArgumentException if the number of lakes is smaller or equal to zero

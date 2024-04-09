@@ -3,19 +3,18 @@ package ch.epfl.chacun;
 import java.util.Objects;
 
 /**
- * Represents the occupants of the game.
+ * Represents an occupants of the game.
  *
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
  *
- * @param kind the kind of the occupant
+ * @param kind the kind of the occupant (not null)
  * @param zoneId the zone id where the occupant is located
  */
-
 public record Occupant(Kind kind, int zoneId) {
 
     /**
-     * The kind of occupant
+     * The kind of the occupant
      */
     public enum Kind {
         PAWN,
@@ -23,7 +22,8 @@ public record Occupant(Kind kind, int zoneId) {
     }
 
     /**
-     * Constructs an occupant of the given kind and the zone where he is located.
+     * Compact constructor that constructs an occupant of
+     * the given kind and the id of a zone where he is located.
      *
      * @throws NullPointerException if kind is null
      * @throws IllegalArgumentException if zoneId is negative

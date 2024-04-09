@@ -20,8 +20,7 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests,
      * The empty zone partitions.
      */
     public final static ZonePartitions EMPTY = new ZonePartitions(
-            new ZonePartition<>(), new ZonePartition<>(),
-            new ZonePartition<>(), new ZonePartition<>());
+            new ZonePartition<>(), new ZonePartition<>(), new ZonePartition<>(), new ZonePartition<>());
 
     /**
      * Builder for the zone partitions.

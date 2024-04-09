@@ -9,7 +9,6 @@ package ch.epfl.chacun;
  * @param id the id of the animal
  * @param kind the kind of the animal
  */
-
 public record Animal(int id, Kind kind) {
 
     /**
@@ -28,6 +27,6 @@ public record Animal(int id, Kind kind) {
      * @return the id of the tile the animal is on
      */
     public int tileId() {
-        return id / 100;
+        return Zone.tileId(id);
     }
 }

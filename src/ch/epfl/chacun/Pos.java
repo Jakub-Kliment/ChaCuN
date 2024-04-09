@@ -1,7 +1,7 @@
 package ch.epfl.chacun;
 
 /**
- * The position of a tile.
+ * The position of a tile in the game.
  *
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
@@ -9,11 +9,10 @@ package ch.epfl.chacun;
  * @param x the x coordinate of the position
  * @param y the y coordinate of the position
  */
-
 public record Pos(int x, int y) {
 
     /**
-     * The origin position of the game.
+     * The origin position of the game (center of the board).
      */
     public static final Pos ORIGIN = new Pos(0, 0);
 

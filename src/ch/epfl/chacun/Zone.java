@@ -8,11 +8,10 @@ import java.util.List;
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
  */
-
 public sealed interface Zone {
 
     /**
-     * Special powers of a zone
+     * Special powers that a zone can have.
      */
     enum SpecialPower {
         SHAMAN,
@@ -27,17 +26,17 @@ public sealed interface Zone {
      * The id of the tile the zone is located in.
      *
      * @param zoneId the id of the zone
-     * @return the id of the tile the zone is on
+     * @return the id of the tile the zone is in.
      */
     static int tileId(int zoneId) {
         return zoneId / 10;
     }
 
     /**
-     * The local id of a specific zone in the tile.
+     * The local id of a specific zone on the tile.
      *
      * @param zoneId the id of the zone
-     * @return the local id of the specific zone in the tile
+     * @return the local id of the specific zone on the tile
      */
     static int localId(int zoneId) {
         return zoneId % 10;
@@ -115,10 +114,15 @@ public sealed interface Zone {
     }
 
     /**
-     * Water zone
+     * Water zone (lake or river)
      */
     sealed interface Water extends Zone {
-        // The number of fish in the water
+
+        /**
+         * The number of fish in the water.
+         *
+         * @return the number of fish in the water
+         */
         int fishCount();
     }
 
