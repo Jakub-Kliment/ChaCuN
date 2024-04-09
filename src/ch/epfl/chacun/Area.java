@@ -7,15 +7,16 @@ import java.util.*;
  *
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
+ *
+ * @param zones zones of the area
+ * @param occupants occupants of the area
+ * @param openConnections the number of open connections of this area
  */
 public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, int openConnections) {
 
     /**
-     * Immutable constructor
+     * Immutable constructor of area
      *
-     * @param zones zones of the area
-     * @param occupants occupants of the area
-     * @param openConnections the number of open connections of this area
      * @throws IllegalArgumentException if the number of open connections is smaller than zero
      */
     public Area {
@@ -30,6 +31,7 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
     /**
      * Checks whether an area contains a forest of menhir kind
      *
+     * @param forest area of a forest zone
      * @return true if an area contains a forest of kind menhir, false otherwise
      */
     public static boolean hasMenhir(Area<Zone.Forest> forest) {

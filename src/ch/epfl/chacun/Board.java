@@ -8,17 +8,25 @@ import java.util.*;
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
  */
-public class Board {
-    private PlacedTile[] placedTiles;
-    private int[] index;
-    private ZonePartitions zonePartitions;
-    private Set<Animal> cancelledAnimals;
+public final class Board {
+    private final PlacedTile[] placedTiles;
+    private final int[] index;
+    private final ZonePartitions zonePartitions;
+    private final Set<Animal> cancelledAnimals;
 
-    // The number of possible tile placements (board of size 25 x 25)
+    /**
+     * The size of the board (the number of all possible positions)
+     */
     private static final int BOARD_SIZE = 625;
+
+    /**
+     * The reach of a board from its middle
+     */
     public static final int REACH = 12;
 
-    // Empty board
+    /**
+     * The empty board
+     */
     public static final Board EMPTY = new Board(
             new PlacedTile[BOARD_SIZE],
             new int[0],
@@ -27,8 +35,16 @@ public class Board {
 
     /**
      * Private board constructor to keep the class immutable
+     *
+     * @param placedTiles the placed tiles on the board
+     * @param index the index of the placed tiles
+     * @param zonePartitions the partitions of the zones on the board
+     * @param cancelledAnimals the set of all cancelled animals
       */
-    private Board(PlacedTile[] placedTiles, int[] index, ZonePartitions zonePartitions, Set<Animal> cancelledAnimals) {
+    private Board(PlacedTile[] placedTiles,
+                  int[] index,
+                  ZonePartitions zonePartitions,
+                  Set<Animal> cancelledAnimals) {
         this.placedTiles = placedTiles;
         this.index = index;
         this.zonePartitions = zonePartitions;
@@ -205,7 +221,7 @@ public class Board {
 
             for (Direction direction : Direction.ALL)
                 if (Math.abs(pos.neighbor(direction).x()) <= REACH
-                        && Math.abs(pos.neighbor(direction).y()) <= REACH )
+                        && Math.abs(pos.neighbor(direction).y()) <= REACH)
                     insertionPositions.add(pos.neighbor(direction));
         }
         for (int i : index)

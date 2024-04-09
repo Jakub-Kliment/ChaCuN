@@ -8,6 +8,7 @@ import java.util.List;
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
  */
+
 public enum Direction {
     N,
     E,
@@ -15,14 +16,18 @@ public enum Direction {
     W
     ;
 
-    // The four cardinal directions in order
+    /**
+     * The list of all directions.
+     */
     public static final List<Direction> ALL = List.of(values());
 
-    // The number of directions
+    /**
+     * The number of directions.
+     */
     public static final int COUNT = ALL.size();
 
     /**
-     * Direction obtained by rotating by any given rotation.
+     * The direction obtained by rotating by any given rotation.
      *
      * @param rotation the rotation to apply (add)
      * @return the final direction we get by rotating this direction by the given rotation
@@ -32,7 +37,7 @@ public enum Direction {
     }
 
     /**
-     * Opposite direction of this direction.
+     * Returns the opposite direction of this direction.
      *
      * @return the opposite direction of this direction
      */

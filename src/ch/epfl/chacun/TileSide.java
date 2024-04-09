@@ -8,12 +8,22 @@ import java.util.List;
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
  */
+
 public sealed interface TileSide {
 
-    // The zones of the side
+    /**
+     * The zones of the side of a tile.
+     *
+     * @return list of zones of the side
+     */
     List<Zone> zones();
 
-    // Method to check if two sides are of the same kind
+    /**
+     * Method to check if two sides are of the same kind.
+     *
+     * @param that the side of a tile to compare to
+     * @return true if the sides are of the same kind, false otherwise
+     */
     boolean isSameKindAs(TileSide that);
 
     /**

@@ -1,14 +1,17 @@
 package ch.epfl.chacun;
 
 /**
- * Class for computing the points of a given feature.
+ * Class for computing the points of a given feature in the game.
  *
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
  */
+
 public final class Points {
 
-    // Prevents instantiation (immutable class)
+    /**
+     * Private constructor that prevents instantiation
+     */
     private Points() {}
 
     /**

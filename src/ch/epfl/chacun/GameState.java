@@ -8,6 +8,13 @@ import java.util.stream.Collectors;
  *
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
+ *
+ * @param players the players of the game
+ * @param tileDecks the decks of tiles
+ * @param tileToPlace the tile to place
+ * @param board the board of the game
+ * @param nextAction the next action to perform
+ * @param messageBoard the message board
  */
 public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile tileToPlace,
                         Board board, Action nextAction, MessageBoard messageBoard) {
@@ -15,17 +22,17 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
     /**
      * Constructs a new game state.
      *
-     * @param players      the players of the game
-     * @param tileDecks    the decks of tiles
-     * @param tileToPlace  the tile to place
-     * @param board        the board of the game
-     * @param nextAction   the next action to perform
-     * @param messageBoard the message board
+     * @throws IllegalArgumentException if the number of players is smaller than 2
+     * @throws IllegalArgumentException if the tile to place is null and the next action is PLACE_TILE
+     * @throws NullPointerException if the tile decks are null
+     * @throws NullPointerException if the board is null
+     * @throws NullPointerException if the next action is null
+     * @throws NullPointerException if the message board is null
      */
     public GameState {
         Preconditions.checkArgument(players.size() >= 2);
-        players = List.copyOf(players);
         Preconditions.checkArgument(tileToPlace == null ^ nextAction.equals(Action.PLACE_TILE));
+        players = List.copyOf(players);
         Objects.requireNonNull(tileDecks);
         Objects.requireNonNull(board);
         Objects.requireNonNull(nextAction);

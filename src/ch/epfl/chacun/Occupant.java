@@ -7,7 +7,11 @@ import java.util.Objects;
  *
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
+ *
+ * @param kind the kind of the occupant
+ * @param zoneId the zone id where the occupant is located
  */
+
 public record Occupant(Kind kind, int zoneId) {
 
     /**
@@ -21,8 +25,6 @@ public record Occupant(Kind kind, int zoneId) {
     /**
      * Constructs an occupant of the given kind and the zone where he is located.
      *
-     * @param kind the kind of the occupant
-     * @param zoneId the zone id where the occupant is located
      * @throws NullPointerException if kind is null
      * @throws IllegalArgumentException if zoneId is negative
      */

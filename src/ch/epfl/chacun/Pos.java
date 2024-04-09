@@ -5,10 +5,16 @@ package ch.epfl.chacun;
  *
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
+ *
+ * @param x the x coordinate of the position
+ * @param y the y coordinate of the position
  */
+
 public record Pos(int x, int y) {
 
-    // The origin of the game
+    /**
+     * The origin position of the game.
+     */
     public static final Pos ORIGIN = new Pos(0, 0);
 
     /**

@@ -6,9 +6,12 @@ package ch.epfl.chacun;
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
  */
+
 public final class Preconditions {
 
-    // Prevents instantiation
+    /**
+     * Private constructor that prevents instantiation
+     */
     private Preconditions() {}
 
     /**
@@ -18,7 +21,6 @@ public final class Preconditions {
      * @throws IllegalArgumentException if the given boolean is false
      */
     public static void checkArgument(boolean shouldBeTrue) {
-        if (!shouldBeTrue)
-            throw new IllegalArgumentException();
+        if (!shouldBeTrue) throw new IllegalArgumentException();
     }
 }

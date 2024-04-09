@@ -8,6 +8,7 @@ import java.util.List;
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
  */
+
 public enum PlayerColor {
     RED,
     BLUE,
@@ -16,6 +17,8 @@ public enum PlayerColor {
     PURPLE
     ;
 
-    // The list of all player colors
+    /**
+     * The list of all player colors.
+     */
     public static final List<PlayerColor> ALL = List.of(values());
 }

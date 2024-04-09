@@ -5,11 +5,20 @@ package ch.epfl.chacun;
  *
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
+ *
+ * @param forests the partition of forest zones
+ * @param meadows the partition of meadow zones
+ * @param rivers the partition of river zones
+ * @param riverSystems the partition of river system zones
  */
-public record ZonePartitions(ZonePartition<Zone.Forest> forests, ZonePartition<Zone.Meadow> meadows,
-                             ZonePartition<Zone.River> rivers, ZonePartition<Zone.Water> riverSystems) {
+public record ZonePartitions(ZonePartition<Zone.Forest> forests,
+                             ZonePartition<Zone.Meadow> meadows,
+                             ZonePartition<Zone.River> rivers,
+                             ZonePartition<Zone.Water> riverSystems) {
 
-    // Empty zone partitions
+    /**
+     * The empty zone partitions.
+     */
     public final static ZonePartitions EMPTY = new ZonePartitions(
             new ZonePartition<>(), new ZonePartition<>(),
             new ZonePartition<>(), new ZonePartition<>());
@@ -18,10 +27,10 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests, ZonePartition<Z
      * Builder for the zone partitions.
      */
     public final static class Builder {
-        private ZonePartition.Builder<Zone.Forest> forests;
-        private ZonePartition.Builder<Zone.Meadow> meadows;
-        private ZonePartition.Builder<Zone.River> rivers;
-        private ZonePartition.Builder<Zone.Water> riverSystem;
+        private final ZonePartition.Builder<Zone.Forest> forests;
+        private final ZonePartition.Builder<Zone.Meadow> meadows;
+        private final ZonePartition.Builder<Zone.River> rivers;
+        private final ZonePartition.Builder<Zone.Water> riverSystem;
 
         /**
          * Builder constructor
@@ -180,10 +189,15 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests, ZonePartition<Z
 
         /**
          * Builds the zone partitions.
+         *
+         * @return the ZonePartitions
          */
         public ZonePartitions build() {
-            return new ZonePartitions(forests.build(), meadows.build(),
-                    rivers.build(), riverSystem.build());
+            return new ZonePartitions(
+                    forests.build(),
+                    meadows.build(),
+                    rivers.build(),
+                    riverSystem.build());
         }
     }
 }

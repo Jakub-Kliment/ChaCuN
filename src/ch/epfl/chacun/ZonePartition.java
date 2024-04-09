@@ -10,13 +10,13 @@ import java.util.Set;
  *
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
+ *
+ * @param areas the areas of the partition
  */
 public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
 
     /**
      * Immutable constructor
-     *
-     * @param areas the areas of the partition
      */
     public ZonePartition {
         areas = Set.copyOf(areas);

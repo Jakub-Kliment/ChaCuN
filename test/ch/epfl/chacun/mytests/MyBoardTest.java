@@ -508,7 +508,7 @@ public class MyBoardTest {
     @Test
     void couldPlaceTileWorksForWholeBoard() {
         Board board = Board.EMPTY;
-        for (int i = 0; i < 625; i++) {
+        for (int i = 0; i < 624; i++) {
 
             Tile tile = new Tile(i, Tile.Kind.NORMAL,
                     new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null)),

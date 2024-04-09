@@ -1,7 +1,7 @@
 package ch.epfl.chacun;
 
-import java.util.HashSet;
 import java.util.Objects;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -9,17 +9,23 @@ import java.util.Set;
  *
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
+ *
+ * @param tile tile to be placed (not null)
+ * @param placer player who places the tile
+ * @param rotation rotation of the tile (not null)
+ * @param pos position where the tile will be placed (not null)
+ * @param occupant occupant of the tile
  */
-public record PlacedTile(Tile tile, PlayerColor placer, Rotation rotation, Pos pos, Occupant occupant) {
+
+public record PlacedTile(Tile tile,
+                         PlayerColor placer,
+                         Rotation rotation,
+                         Pos pos,
+                         Occupant occupant) {
 
     /**
      * Immutable constructor
      *
-     * @param tile tile to be placed
-     * @param placer player who places the tile
-     * @param rotation rotation of the tile
-     * @param pos position where the tile will be placed
-     * @param occupant occupant of the tile
      * @throws NullPointerException if the tile, rotation or position is null
      */
     public PlacedTile {
@@ -163,8 +169,7 @@ public record PlacedTile(Tile tile, PlayerColor placer, Rotation rotation, Pos p
      * @return the placed tile with the given occupant
      */
     public PlacedTile withOccupant(Occupant occupant) {
-        if (occupant() != null)
-            throw new IllegalArgumentException();
+        Preconditions.checkArgument(this.occupant == null);
         return new PlacedTile(tile, placer, rotation, pos, occupant);
     }
 
@@ -182,6 +187,7 @@ public record PlacedTile(Tile tile, PlayerColor placer, Rotation rotation, Pos p
      *
      * @param occupantKind the kind of the occupant
      * @return the id of the zone occupied by the given occupant kind
+     *         or -1 if the zone is not occupied by the given kind
      */
     public int idOfZoneOccupiedBy(Occupant.Kind occupantKind) {
         if (occupant != null && occupant.kind() == occupantKind)

@@ -8,6 +8,7 @@ import java.util.List;
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
  */
+
 public enum Rotation {
     NONE,
     RIGHT,
@@ -15,10 +16,14 @@ public enum Rotation {
     LEFT
     ;
 
-    // All types of rotations
+    /**
+     * List of all rotations.
+     */
     public static final List<Rotation> ALL = List.of(values());
 
-    // The number of rotations
+    /**
+     * Number of all rotations.
+     */
     public static final int COUNT = ALL.size();
 
     /**

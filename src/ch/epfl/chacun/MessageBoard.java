@@ -7,14 +7,14 @@ import java.util.*;
  *
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
+ *
+ * @param textMaker creates the text for the message
+ * @param messages list of all messages of the message board
  */
 public record MessageBoard(TextMaker textMaker, List<Message> messages) {
 
     /**
      * Immutable constructor
-     *
-     * @param textMaker creates the text for the message
-     * @param messages list of all messages of the message board
      */
     public MessageBoard {
         messages = List.copyOf(messages);
@@ -314,22 +314,26 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
 
     /**
      * Represents a message that is displayed to the players
+     *
+     * @param text the text of the message
+     * @param points the points that the action gains
+     * @param scorers the player(s) that scored the points
+     * @param tileIds the ids of the tiles that the message is about
      */
-    public record Message(String text, int points, Set<PlayerColor> scorers, Set<Integer> tileIds) {
+    public record Message(String text,
+                          int points,
+                          Set<PlayerColor> scorers,
+                          Set<Integer> tileIds) {
 
         /**
          * Immutable constructor
          *
-         * @param text the text of the message
-         * @param points the points that the action gains
-         * @param scorers the player(s) that scored the points
-         * @param tileIds the ids of the tiles that the message is about
          * @throws IllegalArgumentException if the number of points is smaller than 0
          * @throws NullPointerException if the text is null
          */
         public Message {
-            Objects.requireNonNull(text);
             Preconditions.checkArgument(points >= 0);
+            Objects.requireNonNull(text);
             scorers = Set.copyOf(scorers);
             tileIds = Set.copyOf(tileIds);
         }

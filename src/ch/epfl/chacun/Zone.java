@@ -8,10 +8,11 @@ import java.util.List;
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
  */
+
 public sealed interface Zone {
 
     /**
-     * All special powers of a zone
+     * Special powers of a zone
      */
     enum SpecialPower {
         SHAMAN,

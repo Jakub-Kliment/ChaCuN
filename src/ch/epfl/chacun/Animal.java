@@ -5,10 +5,16 @@ package ch.epfl.chacun;
  *
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
+ *
+ * @param id the id of the animal
+ * @param kind the kind of the animal
  */
+
 public record Animal(int id, Kind kind) {
 
-    // The kind of animal.
+    /**
+     * The kind of the animal
+     */
     public enum Kind {
         MAMMOTH,
         AUROCHS,
@@ -17,7 +23,7 @@ public record Animal(int id, Kind kind) {
     }
 
     /**
-     * The id of the tile the animal is located.
+     * The id of the tile the animal is located on.
      *
      * @return the id of the tile the animal is on
      */

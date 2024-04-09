@@ -8,15 +8,17 @@ import java.util.function.Predicate;
  *
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
+ *
+ * @param startTiles list of starting tiles
+ * @param normalTiles list of normal tiles
+ * @param menhirTiles list of tiles with a menhir
  */
-public record TileDecks(List<Tile> startTiles, List<Tile> normalTiles, List<Tile> menhirTiles) {
+public record TileDecks(List<Tile> startTiles,
+                        List<Tile> normalTiles,
+                        List<Tile> menhirTiles) {
 
     /**
      * Immutable constructor
-     *
-     * @param startTiles list of starting tiles
-     * @param normalTiles list of normal tiles
-     * @param menhirTiles list of tiles with a menhir
      */
     public TileDecks {
         startTiles = List.copyOf(startTiles);
@@ -57,7 +59,6 @@ public record TileDecks(List<Tile> startTiles, List<Tile> normalTiles, List<Tile
     public Tile topTile(Tile.Kind kind) {
         if (deckSize(kind) == 0)
             return null;
-
         return deckKind(kind).getFirst();
     }
 
@@ -70,7 +71,6 @@ public record TileDecks(List<Tile> startTiles, List<Tile> normalTiles, List<Tile
      */
     public TileDecks withTopTileDrawn(Tile.Kind kind) {
         Preconditions.checkArgument(deckSize(kind) != 0);
-
         return switch (kind) {
             case START -> new TileDecks(startTiles.subList(1, startTiles.size()), normalTiles, menhirTiles);
             case NORMAL -> new TileDecks(startTiles, normalTiles.subList(1, normalTiles.size()), menhirTiles);
@@ -88,7 +88,6 @@ public record TileDecks(List<Tile> startTiles, List<Tile> normalTiles, List<Tile
     public TileDecks withTopTileDrawnUntil(Tile.Kind kind, Predicate<Tile> predicate) {
         if (deckSize(kind) != 0 && !predicate.test(this.topTile(kind)))
             return this.withTopTileDrawn(kind).withTopTileDrawnUntil(kind, predicate);
-
         return this;
     }
 }
