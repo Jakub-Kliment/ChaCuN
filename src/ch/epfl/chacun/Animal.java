@@ -27,6 +27,6 @@ public record Animal(int id, Kind kind) {
      * @return the id of the tile the animal is on
      */
     public int tileId() {
-        return Zone.tileId(id);
+        return Zone.tileId(id / 10);
     }
 }
