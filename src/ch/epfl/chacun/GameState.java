@@ -23,11 +23,9 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
      * Constructs a new game state.
      *
      * @throws IllegalArgumentException if the number of players is smaller than 2
-     * @throws IllegalArgumentException if the tile to place is null and the next action is PLACE_TILE
-     * @throws NullPointerException if the tile decks are null
-     * @throws NullPointerException if the board is null
-     * @throws NullPointerException if the next action is null
-     * @throws NullPointerException if the message board is null
+     * @throws IllegalArgumentException if the tile to place is null and the next action is PLACE_TILE or
+     *                                  if the tile to place is not null and the next action is not PLACE_TILE
+     * @throws NullPointerException if the tile decks, board, next action or board is null
      */
     public GameState {
         Preconditions.checkArgument(players.size() >= 2);

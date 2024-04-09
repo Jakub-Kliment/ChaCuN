@@ -32,8 +32,8 @@ public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
     /**
      * Checks whether a zone is in the area partition.
      *
-     * @throws IllegalArgumentException if the area is not in the partition
      * @return the area containing the zone
+     * @throws IllegalArgumentException if the area is not in the partition
      */
     public Area<Z> areaContaining(Z zone) {
         for (Area<Z> area : areas)

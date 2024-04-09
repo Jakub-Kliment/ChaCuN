@@ -21,9 +21,9 @@ public final class Points {
      *
      * @param tileCount the number of tiles
      * @param mushroomGroupCount the number of mushroom groups
+     * @return the points of a closed forest
      * @throws IllegalArgumentException if the tile count is smaller or equal to one or
      *                                  the number of mushroom groups is smaller than zero
-     * @return the points of a closed forest
      */
     public static int forClosedForest(int tileCount, int mushroomGroupCount) {
         Preconditions.checkArgument(tileCount > 1 && mushroomGroupCount >= 0);
@@ -36,9 +36,9 @@ public final class Points {
      *
      * @param tileCount the number of tiles
      * @param fishCount the number of fish
+     * @return the points of the for a closed river
      * @throws IllegalArgumentException if the tile count is smaller or equal to one or
      *                                  the number of fish is smaller than zero
-     * @return the points of the for a closed river
      */
     public static int forClosedRiver(int tileCount, int fishCount) {
         Preconditions.checkArgument(tileCount > 1 && fishCount >= 0);
@@ -53,8 +53,8 @@ public final class Points {
      * @param mammothCount the number of mammoths
      * @param aurochsCount the number of aurochs
      * @param deerCount the number of deer
-     * @throws IllegalArgumentException if the number of any animal kind is smaller than zero
      * @return the points for a meadow
+     * @throws IllegalArgumentException if the number of any animal kind is smaller than zero
      */
     public static int forMeadow(int mammothCount, int aurochsCount, int deerCount) {
         Preconditions.checkArgument(mammothCount >= 0 && aurochsCount >= 0 && deerCount >= 0);
@@ -66,8 +66,8 @@ public final class Points {
      * the most occupants by adding the number of fish in the river.
      *
      * @param fishCount the number of fish
-     * @throws IllegalArgumentException if the number of fish is smaller than zero
      * @return the points for river system
+     * @throws IllegalArgumentException if the number of fish is smaller than zero
      */
     public static int forRiverSystem(int fishCount) {
         Preconditions.checkArgument(fishCount >= 0);
@@ -79,8 +79,8 @@ public final class Points {
      * player who placed it by multiplying the number of lakes by 2.
      *
      * @param lakeCount the number of lakes
-     * @throws IllegalArgumentException if the number of lakes is smaller or equal to zero
      * @return the additional points if a logboat is located in a water zone
+     * @throws IllegalArgumentException if the number of lakes is smaller or equal to zero
      */
     public static int forLogboat(int lakeCount) {
         Preconditions.checkArgument(lakeCount > 0);
@@ -92,8 +92,8 @@ public final class Points {
      * with the majority occupants by adding the number of lakes.
      *
      * @param lakeCount the number of lakes
-     * @throws IllegalArgumentException if the number of lakes is smaller or equal to zero
      * @return the additional points if a raft is located in a water zone
+     * @throws IllegalArgumentException if the number of lakes is smaller or equal to zero
      */
     public static int forRaft(int lakeCount) {
         Preconditions.checkArgument(lakeCount > 0);

@@ -68,8 +68,8 @@ public record TileDecks(List<Tile> startTiles,
      * Returns the deck of a given tile kind without its top tile.
      *
      * @param kind the kind of the tile
-     * @throws IllegalArgumentException if the deck of the given kind is empty
      * @return the deck of the given kind without its top tile
+     * @throws IllegalArgumentException if the deck of the given kind is empty
      */
     public TileDecks withTopTileDrawn(Tile.Kind kind) {
         Preconditions.checkArgument(deckSize(kind) != 0);

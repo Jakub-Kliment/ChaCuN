@@ -3,11 +3,13 @@ package ch.epfl.chacun;
 import java.util.*;
 
 /**
- * Represents an area of the game.
+ * Represents an area of the game, which is a set of connected zones.
+ *
  *
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
  *
+ * @param <Z> the type of zones in the area
  * @param zones zones of the area
  * @param occupants occupants of the area
  * @param openConnections the number of open connections of this area
@@ -15,7 +17,8 @@ import java.util.*;
 public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, int openConnections) {
 
     /**
-     * Immutable constructor of area
+     * Immutable constructor of area that copies the set of zones
+     * and sorts the occupants by their ordinal of their color.
      *
      * @throws IllegalArgumentException if the number of open connections is smaller than zero
      */
@@ -36,9 +39,8 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
      */
     public static boolean hasMenhir(Area<Zone.Forest> forest) {
         for (Zone.Forest zone : forest.zones())
-            if (zone.kind().equals(Zone.Forest.Kind.WITH_MENHIR))
+            if (zone.kind() == Zone.Forest.Kind.WITH_MENHIR)
                 return true;
-
         return false;
     }
 
@@ -199,8 +201,8 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
     /**
      * Returns a new area with the initial occupant added
      *
-     * @throws IllegalArgumentException if the area is already occupied
      * @return the hash code of the area
+     * @throws IllegalArgumentException if the area is already occupied
      */
     public Area<Z> withInitialOccupant(PlayerColor occupant) {
         Preconditions.checkArgument(!isOccupied());
@@ -213,8 +215,8 @@ public record Area<Z extends Zone> (Set<Z> zones, List<PlayerColor> occupants, i
     /**
      * Returns a new area without the specified occupant
      *
-     * @throws IllegalArgumentException if the occupant is not in the area
      * @return the new area without the specified occupant
+     * @throws IllegalArgumentException if the occupant is not in the area
      */
     public Area<Z> withoutOccupant(PlayerColor occupant) {
         Preconditions.checkArgument(occupants().contains(occupant));

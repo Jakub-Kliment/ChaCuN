@@ -75,8 +75,8 @@ public record PlacedTile(Tile tile,
      * Returns a zone of the tile by its id.
      *
      * @param id the id of the zone
-     * @throws IllegalArgumentException if the zone is not on the tile
      * @return the zone of the tile
+     * @throws IllegalArgumentException if the zone is not on the tile
      */
     public Zone zoneWithId(int id) {
         for (Zone zone : tile.zones())
@@ -162,8 +162,8 @@ public record PlacedTile(Tile tile,
      * Returns a placed tile with a given occupant.
      *
      * @param occupant the occupant of the placed tile
-     * @throws IllegalArgumentException if this placed tile is already occupied
      * @return the placed tile with the given occupant
+     * @throws IllegalArgumentException if this placed tile is already occupied
      */
     public PlacedTile withOccupant(Occupant occupant) {
         Preconditions.checkArgument(this.occupant == null);

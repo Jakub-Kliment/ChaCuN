@@ -69,8 +69,8 @@ public final class Board {
      * Gets the placed tile by its id
      *
      * @param tileId id of the placed tile
-     * @throws IllegalArgumentException if the id of the tile is not on the board
      * @return placed tile to which corresponds the id
+     * @throws IllegalArgumentException if the id of the tile is not on the board
      */
     public PlacedTile tileWithId(int tileId) {
         for (int i : index)
@@ -323,8 +323,8 @@ public final class Board {
      * Adds a tile to the board and returns the new board with the tile placed
      *
      * @param tile the tile to be placed
-     * @throws IllegalArgumentException if the tile cannot be placed
      * @return the new board with the tile placed
+     * @throws IllegalArgumentException if the tile cannot be placed
      */
     public Board withNewTile(PlacedTile tile) {
         Preconditions.checkArgument(this.equals(EMPTY) || canAddTile(tile));
@@ -352,8 +352,8 @@ public final class Board {
      * Adds an occupant to the board and returns the new board with the occupant placed
      *
      * @param occupant the occupant to be placed
-     * @throws IllegalArgumentException if the occupant cannot be placed
      * @return the new board with the occupant placed
+     * @throws IllegalArgumentException if the occupant cannot be placed
      */
     public Board withOccupant(Occupant occupant) {
         PlacedTile[] newPlacedTiles = placedTiles.clone();
