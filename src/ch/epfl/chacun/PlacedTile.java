@@ -10,13 +10,14 @@ import java.util.Set;
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
  *
- * @param tile tile to be placed (not null)
+ * @param tile tile that was placed (not null)
  * @param placer player who places the tile
+ *               (can be null for starting tile)
  * @param rotation rotation of the tile (not null)
  * @param pos position where the tile will be placed (not null)
  * @param occupant occupant of the tile
+ *                 (can be null if the tile is not occupied)
  */
-
 public record PlacedTile(Tile tile,
                          PlayerColor placer,
                          Rotation rotation,
@@ -24,7 +25,7 @@ public record PlacedTile(Tile tile,
                          Occupant occupant) {
 
     /**
-     * Immutable constructor
+     * Compact constructor that keeps the record immutable
      *
      * @throws NullPointerException if the tile, rotation or position is null
      */
@@ -35,7 +36,7 @@ public record PlacedTile(Tile tile,
     }
 
     /**
-     * Constructor that does not take an occupant
+     * Constructor that does not take an occupant.
       */
     public PlacedTile(Tile tile, PlayerColor placer, Rotation rotation, Pos pos) {
         this(tile, placer, rotation, pos, null);
@@ -61,7 +62,7 @@ public record PlacedTile(Tile tile,
     }
 
     /**
-     * Returns the side of the tile.
+     * Returns the side of the tile with regard to the rotation.
      *
      * @param direction the direction of the side
      * @return the side of the tile
@@ -81,7 +82,6 @@ public record PlacedTile(Tile tile,
         for (Zone zone : tile.zones())
             if (zone.id() == id)
                 return zone;
-
         throw new IllegalArgumentException();
     }
 
@@ -94,7 +94,6 @@ public record PlacedTile(Tile tile,
         for (Zone zone : tile.zones())
             if (zone.specialPower() != null)
                 return zone;
-
         return null;
     }
 
@@ -108,7 +107,6 @@ public record PlacedTile(Tile tile,
         for (Zone zone : tile.zones())
             if (zone instanceof Zone.Forest forest)
                 forests.add(forest);
-
         return forests;
     }
 
@@ -122,7 +120,6 @@ public record PlacedTile(Tile tile,
         for (Zone zone : tile.zones())
             if (zone instanceof Zone.Meadow meadow)
                 meadows.add(meadow);
-
         return meadows;
     }
 
@@ -136,7 +133,6 @@ public record PlacedTile(Tile tile,
         for (Zone zone : tile.zones())
             if (zone instanceof Zone.River river)
                 rivers.add(river);
-
         return rivers;
     }
 
@@ -163,8 +159,9 @@ public record PlacedTile(Tile tile,
     }
 
     /**
-     * Returns a place tile with a given occupant.
+     * Returns a placed tile with a given occupant.
      *
+     * @param occupant the occupant of the placed tile
      * @throws IllegalArgumentException if this placed tile is already occupied
      * @return the placed tile with the given occupant
      */
@@ -192,7 +189,6 @@ public record PlacedTile(Tile tile,
     public int idOfZoneOccupiedBy(Occupant.Kind occupantKind) {
         if (occupant != null && occupant.kind() == occupantKind)
             return occupant.zoneId();
-
         return -1;
     }
 }

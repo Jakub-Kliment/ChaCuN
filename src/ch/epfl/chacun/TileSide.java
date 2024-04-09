@@ -3,16 +3,15 @@ package ch.epfl.chacun;
 import java.util.List;
 
 /**
- * Represents the side of a tile by its zones.
+ * Represents the side of a tile.
  *
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
  */
-
 public sealed interface TileSide {
 
     /**
-     * The zones of the side of a tile.
+     * List of zones of the side of a tile.
      *
      * @return list of zones of the side
      */
@@ -34,7 +33,7 @@ public sealed interface TileSide {
     record Forest(Zone.Forest forest) implements TileSide {
 
         /**
-         * The zone of the side.
+         * The forest zone of the side.
          *
          * @return list of zones (forest) of the side
          */
@@ -44,7 +43,7 @@ public sealed interface TileSide {
         }
 
         /**
-         * Method to check if two sides are of the same kind (forest).
+         * Method to check if two sides are of the same kind (forests).
          *
          * @param that the side to compare to
          * @return true if the sides are of the same kind, false otherwise
@@ -63,7 +62,7 @@ public sealed interface TileSide {
     record Meadow(Zone.Meadow meadow) implements TileSide {
 
         /**
-         * The zone of the side.
+         * The meadow zone of the side.
          *
          * @return list of zones (meadow) of the side
          */
@@ -73,7 +72,7 @@ public sealed interface TileSide {
         }
 
         /**
-         * Method to check if two sides are of the same kind (meadow).
+         * Method to check if two sides are of the same kind (meadows).
          *
          * @param that the side to compare to
          * @return true if the sides are of the same kind, false otherwise
@@ -94,7 +93,7 @@ public sealed interface TileSide {
     record River(Zone.Meadow meadow1, Zone.River river, Zone.Meadow meadow2) implements TileSide {
 
         /**
-         * The zones of the tile side.
+         * The zones (two meadows and one river between them) of the tile side.
          *
          * @return list of zones (meadow 1, river, meadow 2) of the side in order
          */
@@ -104,7 +103,7 @@ public sealed interface TileSide {
         }
 
         /**
-         * Method to check if two sides are of the same kind (river).
+         * Method to check if two sides are of the same kind (rivers).
          *
          * @param that the side to compare to
          * @return true if the sides are of the same kind, false otherwise

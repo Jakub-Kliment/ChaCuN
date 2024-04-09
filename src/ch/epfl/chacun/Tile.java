@@ -30,7 +30,7 @@ public record Tile(int id, Kind kind, TileSide n, TileSide e, TileSide s, TileSi
     }
 
     /**
-     * List of all sides of the tile.
+     * List of all sides of the tile in order of their directions (clockwise).
      *
      * @return the list of all sides of the tile
      */
@@ -40,7 +40,8 @@ public record Tile(int id, Kind kind, TileSide n, TileSide e, TileSide s, TileSi
 
 
     /**
-     * Set of all zones on the sides of the tile. (All zones except lakes)
+     * Set of all zones on the sides of the tile.
+     * (All zones except lakes)
      *
      * @return the set of all zones on the sides of the tile
      */
@@ -48,13 +49,13 @@ public record Tile(int id, Kind kind, TileSide n, TileSide e, TileSide s, TileSi
         Set<Zone> zones = new HashSet<>();
         for (TileSide side : sides())
             zones.addAll(side.zones());
-
         return zones;
     }
 
 
     /**
-     * Set of all zones on the tile. (Including lakes)
+     * Set of all zones on the tile.
+     * (Including lakes)
      *
      * @return the set of all zones on the tile
      */
