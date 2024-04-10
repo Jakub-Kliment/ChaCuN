@@ -280,7 +280,7 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
             if (meadowArea.zoneWithSpecialPower(Zone.SpecialPower.PIT_TRAP) != null) {
                 Pos pitTrapPos = newBoard.tileWithId(meadowArea.zoneWithSpecialPower(Zone.SpecialPower.PIT_TRAP).tileId()).pos();
                 deer.sort(Comparator.comparingInt(animal ->
-                        Math.min(Math.abs(pitTrapPos.x() - board.tileWithId(animal.tileId()).pos().x()),
+                        -Math.max(Math.abs(pitTrapPos.x() - board.tileWithId(animal.tileId()).pos().x()),
                                 Math.abs(pitTrapPos.y() - board.tileWithId(animal.tileId()).pos().y()))));
             }
 
