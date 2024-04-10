@@ -1,7 +1,9 @@
 package ch.epfl.chacun;
 
 /**
- * Represents all the zone partitions.
+ * Represents all the zone partitions in a game.
+ * Regroups all zone partitions that are created throughout
+ * the game, (forests, meadows, rivers and river systems).
  *
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
@@ -17,7 +19,7 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests,
                              ZonePartition<Zone.Water> riverSystems) {
 
     /**
-     * The empty zone partitions.
+     * Represents the group of four empty zone partitions
      */
     public final static ZonePartitions EMPTY = new ZonePartitions(
             new ZonePartition<>(), new ZonePartition<>(), new ZonePartition<>(), new ZonePartition<>());
@@ -32,7 +34,8 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests,
         private final ZonePartition.Builder<Zone.Water> riverSystem;
 
         /**
-         * Builder constructor
+         * Builder constructor that takes initial
+         * zone partitions and builds new ones from it
          *
          * @param initial zone partitions
          */
@@ -44,59 +47,62 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests,
         }
 
         /**
-         * Adds a tile to the zone partitions.
+         * Adds a tile to the zone partitions and makes sure to add
+         * every zone of the tile to the correct zone partition
+         * with the correct number of open connections.
          *
-         * @param tile the tile to add
+         * @param tile the tile to add to the partitions
          */
         public void addTile(Tile tile) {
-            int[] localOpenZones = new int[10];
+            int[] zoneOpenConnections = new int[10];
 
-            // Count the number of open zones for each zone
+            // Count the number of open connections for each zone
+            // We consider an open connection between a lake and a river as well
             for (TileSide side : tile.sides()) {
-
                 for (Zone zone : side.zones()) {
-                    localOpenZones[zone.localId()]++;
+                    zoneOpenConnections[zone.localId()]++;
 
                     if (zone instanceof Zone.River river && river.hasLake()) {
-                        localOpenZones[river.localId()]++;
-                        localOpenZones[river.lake().localId()]++;
+                        zoneOpenConnections[river.localId()]++;
+                        zoneOpenConnections[river.lake().localId()]++;
                     }
                 }
             }
 
             // Add the zones to the partitions
             for (Zone zone : tile.zones()) {
-
                 if (zone instanceof Zone.Forest forest)
-                    forests.addSingleton(forest, localOpenZones[forest.localId()]);
+                    forests.addSingleton(forest, zoneOpenConnections[forest.localId()]);
 
                 else if (zone instanceof Zone.Meadow meadow)
-                    meadows.addSingleton(meadow, localOpenZones[meadow.localId()]);
+                    meadows.addSingleton(meadow, zoneOpenConnections[meadow.localId()]);
 
                 else if (zone instanceof Zone.Lake lake)
-                    riverSystem.addSingleton(lake, localOpenZones[lake.localId()]);
+                    riverSystem.addSingleton(lake, zoneOpenConnections[lake.localId()]);
 
                 else if (zone instanceof Zone.River river) {
                     if (river.hasLake())
-                        rivers.addSingleton(river, localOpenZones[river.localId()] - 1);
+                        rivers.addSingleton(river, zoneOpenConnections[river.localId()] - 1);
                     else
-                        rivers.addSingleton(river, localOpenZones[river.localId()]);
+                        rivers.addSingleton(river, zoneOpenConnections[river.localId()]);
 
-                    riverSystem.addSingleton(river, localOpenZones[river.localId()]);
+                    riverSystem.addSingleton(river, zoneOpenConnections[river.localId()]);
                 }
             }
 
-            // Connect the rivers to the lakes
+            // Connect the rivers to their lakes (close the open connection)
             for (Zone zone : tile.zones())
                 if (zone instanceof Zone.River river && river.hasLake())
                     riverSystem.union(river, river.lake());
         }
 
         /**
-         * Connects two sides of a tiles.
+         * Connects two sides of different tiles and makes sure to create a union of zones
+         * based on the type of zone and adds them to their corresponding zone partition.
          *
          * @param s1 the side of the first tile
          * @param s2 the side of the second tile
+         * @throws IllegalArgumentException if the two tile sides are not of the same kind
          */
         public void connectSides(TileSide s1, TileSide s2) {
             switch (s1) {
@@ -113,7 +119,6 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests,
                     rivers.union(r1, r2);
                     riverSystem.union(r1, r2);
                 }
-
                 default -> throw new IllegalArgumentException();
             }
         }

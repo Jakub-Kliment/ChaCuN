@@ -36,6 +36,22 @@ public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
      * @throws IllegalArgumentException if the area is not in the partition
      */
     public Area<Z> areaContaining(Z zone) {
+        return areaContaining(areas, zone);
+    }
+
+    /**
+     * Private function that does the job of finding the
+     * area of a particular zone in the partition.
+     * It is defined static to be used in the builder which
+     * is also static and will need this function multiple times.
+     *
+     * @param <Z> the type of zones in the areas of partition
+     * @param areas the set of areas to search in
+     * @param zone the zone to search for
+     * @return the area containing the zone
+     * @throws IllegalArgumentException if the area is not in the partition
+     */
+    private static <Z extends Zone> Area<Z> areaContaining(Set<Area<Z>> areas, Z zone) {
         for (Area<Z> area : areas)
             if (area.zones().contains(zone))
                 return area;
@@ -81,19 +97,12 @@ public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
          * @param zone the zone to add the occupant to
          * @param color the color of the player that places the occupant
          * @throws IllegalArgumentException if the zone is not in the partition
+         *                                  or if the area is already occupied
          */
         public void addInitialOccupant(Z zone, PlayerColor color) {
-            for (Area<Z> area : areas) {
-                if (area.zones().contains(zone) && !area.isOccupied()) {
-                    areas.add(new Area<>(
-                            area.zones(),
-                            List.of(color),
-                            area.openConnections()));
-                    areas.remove(area);
-                    return;
-                }
-            }
-            throw new IllegalArgumentException();
+            Area<Z> area = areaContaining(areas, zone);
+            areas.add(area.withInitialOccupant(color));
+            areas.remove(area);
         }
 
         /**
@@ -103,22 +112,12 @@ public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
          * @param zone the zone to remove the occupant from
          * @param color the color of the occupant
          * @throws IllegalArgumentException if the zone is not in the partition
+         *                                  or if the player has no occupant there
          */
         public void removeOccupant(Z zone, PlayerColor color) {
-            for (Area<Z> area : areas) {
-                if (area.zones().contains(zone) && area.occupants().contains(color)) {
-                    List<PlayerColor> newOccupants = new ArrayList<>(area.occupants());
-                    newOccupants.remove(color);
-
-                    areas.add(new Area<>(
-                            area.zones(),
-                            newOccupants,
-                            area.openConnections()));
-                    areas.remove(area);
-                    return;
-                }
-            }
-            throw new IllegalArgumentException();
+            Area<Z> area = areaContaining(areas, zone);
+            areas.add(area.withoutOccupant(color));
+            areas.remove(area);
         }
 
         /**
@@ -128,17 +127,9 @@ public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
          * @throws IllegalArgumentException if the area is not in the partition
          */
         public void removeAllOccupantsOf(Area<Z> area) {
-            for (Area<Z> areaPartition : areas) {
-                if (areaPartition == area) {
-                    areas.remove(area);
-                    areas.add(new Area<>(
-                            area.zones(),
-                            new ArrayList<>(),
-                            area.openConnections()));
-                    return;
-                }
-            }
-            throw new IllegalArgumentException();
+            Preconditions.checkArgument(areas.contains(area));
+            areas.remove(area);
+            areas.add(area.withoutOccupants());
         }
 
         /**
@@ -150,39 +141,12 @@ public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
          *                                  is not in the partition
          */
         public void union(Z zone1, Z zone2) {
-            Area<Z> area1 = null;
-            Area<Z> area2 = null;
-
-            for (Area<Z> onePartition : areas) {
-                if (onePartition.zones().contains(zone1))
-                    area1 = onePartition;
-
-                if (onePartition.zones().contains(zone2))
-                    area2 = onePartition;
-            }
-
-            if (area1 != null && area2 != null) {
-
-                Area<Z> newArea = area1.connectTo(area2);
-                areas.add(newArea);
-                areas.remove(area1);
-
-                if (!area1.equals(area2))
-                    areas.remove(area2);
-
-                return;
-            }
-            throw new IllegalArgumentException();
-
-            /*
-            ZonePartition<Z> partition = new ZonePartition<>(areas);
-            Area<Z> area1 = partition.areaContaining(zone1);
-            Area<Z> area2 = partition.areaContaining(zone2);
+            Area<Z> area1 = areaContaining(areas, zone1);
+            Area<Z> area2 = areaContaining(areas, zone2);
 
             areas.add(area1.connectTo(area2));
             areas.remove(area1);
             areas.remove(area2);
-             */
         }
 
         /**
