@@ -22,7 +22,8 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests,
      * Represents the group of four empty zone partitions
      */
     public final static ZonePartitions EMPTY = new ZonePartitions(
-            new ZonePartition<>(), new ZonePartition<>(), new ZonePartition<>(), new ZonePartition<>());
+            new ZonePartition<>(), new ZonePartition<>(),
+            new ZonePartition<>(), new ZonePartition<>());
 
     /**
      * Builder for the zone partitions.
@@ -71,22 +72,19 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests,
 
             // Add the zones to the partitions
             for (Zone zone : tile.zones()) {
-                if (zone instanceof Zone.Forest forest)
-                    forests.addSingleton(forest, zoneOpenConnections[forest.localId()]);
-
-                else if (zone instanceof Zone.Meadow meadow)
-                    meadows.addSingleton(meadow, zoneOpenConnections[meadow.localId()]);
-
-                else if (zone instanceof Zone.Lake lake)
-                    riverSystem.addSingleton(lake, zoneOpenConnections[lake.localId()]);
-
-                else if (zone instanceof Zone.River river) {
-                    if (river.hasLake())
-                        rivers.addSingleton(river, zoneOpenConnections[river.localId()] - 1);
-                    else
-                        rivers.addSingleton(river, zoneOpenConnections[river.localId()]);
-
-                    riverSystem.addSingleton(river, zoneOpenConnections[river.localId()]);
+                int openConnections = zoneOpenConnections[zone.localId()];
+                switch (zone) {
+                    case Zone.Meadow meadow ->
+                            meadows.addSingleton(meadow, openConnections);
+                    case Zone.Forest forest ->
+                            forests.addSingleton(forest, openConnections);
+                    case Zone.Lake lake ->
+                            riverSystem.addSingleton(lake, openConnections);
+                    case Zone.River river -> {
+                        // If the river has a lake we subtract one open connection between them
+                        rivers.addSingleton(river, openConnections - (river.hasLake() ? 1 : 0));
+                        riverSystem.addSingleton(river, openConnections);
+                    }
                 }
             }
 
@@ -124,7 +122,8 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests,
         }
 
         /**
-         * Adds an initial occupant to the zone partitions.
+         * Adds an initial occupant of the given kind to the zone
+         * partition of areas where the zone is located
          *
          * @param player the color of the player
          * @param occupantKind the kind of the occupant
@@ -133,16 +132,16 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests,
          */
         public void addInitialOccupant(PlayerColor player, Occupant.Kind occupantKind, Zone occupiedZone) {
             switch (occupiedZone) {
-                case Zone.Forest forest when occupantKind.equals(Occupant.Kind.PAWN) ->
+                case Zone.Forest forest when occupantKind == Occupant.Kind.PAWN ->
                     forests.addInitialOccupant(forest, player);
 
-                case Zone.Meadow meadow when occupantKind.equals(Occupant.Kind.PAWN) ->
+                case Zone.Meadow meadow when occupantKind == Occupant.Kind.PAWN ->
                     meadows.addInitialOccupant(meadow, player);
 
-                case Zone.Water water when occupantKind.equals(Occupant.Kind.HUT) ->
+                case Zone.Water water when occupantKind == Occupant.Kind.HUT ->
                     riverSystem.addInitialOccupant(water, player);
 
-                case Zone.River river when occupantKind.equals(Occupant.Kind.PAWN) ->
+                case Zone.River river when occupantKind == Occupant.Kind.PAWN ->
                     rivers.addInitialOccupant(river, player);
 
                 default -> throw new IllegalArgumentException();
@@ -172,7 +171,7 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests,
         }
 
         /**
-         * Removes all gatherers from the forest area.
+         * Removes all gatherers (pawns) from the forest area.
          *
          * @param forest the forest to remove the gatherers from
          * @throws IllegalArgumentException if there are no gatherers in the forest area
@@ -182,7 +181,7 @@ public record ZonePartitions(ZonePartition<Zone.Forest> forests,
         }
 
         /**
-         * Removes all fishers from the river area.
+         * Removes all fishers (pawns) from the river area.
          *
          * @param river the river to remove the fishers from
          * @throws IllegalArgumentException if there are no fishers in the river area
