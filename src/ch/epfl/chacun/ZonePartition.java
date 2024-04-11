@@ -65,7 +65,7 @@ public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
      */
     public static final class Builder<Z extends Zone> {
 
-        // Set of areas.
+        // Set of areas of the zone partition
         private final HashSet<Area<Z>> areas;
 
         /**
@@ -144,6 +144,7 @@ public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
             Area<Z> area1 = areaContaining(areas, zone1);
             Area<Z> area2 = areaContaining(areas, zone2);
 
+            // !!!!! demander
             areas.add(area1.connectTo(area2));
             areas.remove(area1);
             areas.remove(area2);

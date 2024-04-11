@@ -279,6 +279,8 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
             // Sort the deer by distance to the pit trap
             if (meadowArea.zoneWithSpecialPower(Zone.SpecialPower.PIT_TRAP) != null) {
                 Pos pitTrapPos = newBoard.tileWithId(meadowArea.zoneWithSpecialPower(Zone.SpecialPower.PIT_TRAP).tileId()).pos();
+
+                // Sort the deer by distance to the pit trap using Chebyshev distance in reverse order
                 deer.sort(Comparator.comparingInt(animal ->
                         -Math.max(Math.abs(pitTrapPos.x() - board.tileWithId(animal.tileId()).pos().x()),
                                 Math.abs(pitTrapPos.y() - board.tileWithId(animal.tileId()).pos().y()))));

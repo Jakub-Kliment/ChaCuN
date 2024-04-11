@@ -325,7 +325,7 @@ public class MyBoardTest {
         Set<Occupant> occupants = new HashSet<>();
 
         for (int i = 0; i < 100; i++) {
-            Occupant occupant = new Occupant(Occupant.Kind.PAWN, i * 10 + i);
+            Occupant occupant = new Occupant(Occupant.Kind.PAWN, i * 10 + i % 10);
             PlacedTile placedTile = new PlacedTile(
                     new Tile(i, Tile.Kind.NORMAL,
                             new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null)),
@@ -356,7 +356,7 @@ public class MyBoardTest {
             else
                 color = PlayerColor.GREEN;
 
-            Occupant occupant = new Occupant(Occupant.Kind.PAWN, i * 10 + i);
+            Occupant occupant = new Occupant(Occupant.Kind.PAWN, i * 10 + i % 10);
             PlacedTile placedTile = new PlacedTile(
                     new Tile(i, Tile.Kind.NORMAL,
                             new TileSide.Meadow(new Zone.Meadow(i, new ArrayList<>(), null)),
@@ -407,7 +407,7 @@ public class MyBoardTest {
             else
                 occupantKind = Occupant.Kind.HUT;
 
-            Occupant occupant = new Occupant(occupantKind, i * 10 + i);
+            Occupant occupant = new Occupant(occupantKind, i * 10 + i % 10);
 
             Zone.Lake lake = new Zone.Lake(i, 0, null);
             Zone.Meadow meadow1 = new Zone.Meadow(i, new ArrayList<>(), null);
@@ -1450,5 +1450,16 @@ public class MyBoardTest {
         Set<Occupant> expected = Set.of(new Occupant(Occupant.Kind.PAWN, 8_4), new Occupant(Occupant.Kind.HUT, 15_1));
 
         assertEquals(expected, boardwithoutGatherers.occupants());
+    }
+
+    @Test
+    void equalsWorks() {
+        Board board = Board.EMPTY;
+        assertTrue(board.equals(Board.EMPTY));
+        Board board2 = board.withNewTile(startTile());
+        assertNotEquals(board, board2);
+        assertFalse(board.equals(null));
+        assertFalse(board.equals(new HashSet<>()));
+        assertTrue(board2.equals(board.withNewTile(startTile())));
     }
 }

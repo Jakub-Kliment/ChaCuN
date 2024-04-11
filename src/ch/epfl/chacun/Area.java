@@ -152,8 +152,7 @@ public record Area<Z extends Zone> (Set<Z> zones,
      */
     public Set<PlayerColor> majorityOccupants() {
         // If the area is not occupied, return an empty set
-        if (!isOccupied())
-            return new HashSet<>();
+        if (!isOccupied()) return new HashSet<>();
 
         int[] occupantCountsByColor = new int[PlayerColor.ALL.size()];
         int max = 0;
