@@ -41,7 +41,7 @@ public final class Board {
     public static final Board EMPTY = new Board(
             new PlacedTile[BOARD_SIZE],
             new int[0],
-            new ZonePartitions.Builder(ZonePartitions.EMPTY).build(),
+            ZonePartitions.EMPTY,
             new HashSet<>());
 
     /**
@@ -75,7 +75,6 @@ public final class Board {
      */
     public PlacedTile tileAt(Pos pos) {
         int position = indexFromPosition(pos);
-        // !!!!! demander
         if (position < 0 || position >= BOARD_SIZE) return null;
         return placedTiles[position];
     }
@@ -364,7 +363,7 @@ public final class Board {
             PlacedTile neighbor = tileAt(tile.pos().neighbor(dir));
             if (neighbor != null)
                 newPartitions.connectSides(
-                        tile.side(dir), neighbor.side(dir.opposite()));
+                    tile.side(dir), neighbor.side(dir.opposite()));
         }
         return new Board(newPlacedTiles, newIndex,
                 newPartitions.build(), cancelledAnimals());
@@ -387,8 +386,6 @@ public final class Board {
         PlacedTile occupantTile = tileWithId(
                 Zone.tileId(occupant.zoneId())).withOccupant(occupant);
         newTiles[indexFromPosition(occupantTile.pos())] = occupantTile;
-
-        int[] newIndex = index.clone();
         
         ZonePartitions.Builder newPartitions = 
                 new ZonePartitions.Builder(zonePartitions);
@@ -397,7 +394,7 @@ public final class Board {
                 occupant.kind(),
                 occupantTile.zoneWithId(occupant.zoneId()));
 
-        return new Board(newTiles, newIndex, 
+        return new Board(newTiles, index,
                 newPartitions.build(), cancelledAnimals());
     }
 
@@ -415,15 +412,13 @@ public final class Board {
                 Zone.tileId(occupant.zoneId())).withNoOccupant();
         newTiles[indexFromPosition(occupantTile.pos())] = occupantTile;
 
-        int[] newIndex = index.clone();
-
         ZonePartitions.Builder newPartitions =
                 new ZonePartitions.Builder(zonePartitions);
         newPartitions.removePawn(
                 occupantTile.placer(),
                 occupantTile.zoneWithId(occupant.zoneId()));
 
-        return new Board(newTiles, newIndex,
+        return new Board(newTiles, index,
                 newPartitions.build(), cancelledAnimals());
     }
 
@@ -440,9 +435,6 @@ public final class Board {
                                              Set<Area<Zone.River>> rivers) {
         ZonePartitions.Builder newPartitions =
                 new ZonePartitions.Builder(zonePartitions);
-        // !!!!!!!! demander
-        int[] newIndex = index.clone();
-
         PlacedTile[] newTiles = placedTiles.clone();
 
         Set<Integer> zoneIds = new HashSet<>();
@@ -461,7 +453,7 @@ public final class Board {
                     .idOfZoneOccupiedBy(Occupant.Kind.PAWN)))
                 newTiles[i] = newTiles[i].withNoOccupant();
 
-        return new Board(newTiles, newIndex,
+        return new Board(newTiles, index,
                 newPartitions.build(), cancelledAnimals());
     }
 
@@ -476,18 +468,6 @@ public final class Board {
     public Board withMoreCancelledAnimals(Set<Animal> newlyCancelledAnimals) {
         Set<Animal> allCancelledAnimals = new HashSet<>(newlyCancelledAnimals);
         allCancelledAnimals.addAll(cancelledAnimals());
-        /*
-        PlacedTile[] newPlacedTiles = placedTiles.clone();
-
-        int[] newIndex = index.clone();
-
-        ZonePartitions newPartitions =
-                new ZonePartitions.Builder(zonePartitions).build();
-
-
-         */
-        //return new Board(newPlacedTiles, newIndex,
-                //newPartitions, allCancelledAnimals);
         return new Board(placedTiles, index, zonePartitions, allCancelledAnimals);
     }
 
