@@ -144,7 +144,6 @@ public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
             Area<Z> area1 = areaContaining(areas, zone1);
             Area<Z> area2 = areaContaining(areas, zone2);
 
-            // !!!!! demander
             areas.add(area1.connectTo(area2));
             areas.remove(area1);
             areas.remove(area2);

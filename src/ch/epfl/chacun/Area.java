@@ -179,8 +179,8 @@ public record Area<Z extends Zone> (Set<Z> zones,
      * @return the new area formed by the two areas
      */
     public Area<Z> connectTo(Area<Z> that) {
-        Set<Z> setArea = new HashSet<>(zones);
-        setArea.addAll(that.zones());
+        Set<Z> connectedArea = new HashSet<>(zones);
+        connectedArea.addAll(that.zones());
 
         List<PlayerColor> listColor = new ArrayList<>(occupants);
         if (this != that) listColor.addAll(that.occupants());
@@ -190,7 +190,7 @@ public record Area<Z extends Zone> (Set<Z> zones,
         int nbConnections = openConnections - 2 + (
                 this != that ? that.openConnections : 0);
 
-        return new Area<>(setArea, listColor, nbConnections);
+        return new Area<>(connectedArea, listColor, nbConnections);
     }
 
     /**

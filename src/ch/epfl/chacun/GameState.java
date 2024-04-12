@@ -230,7 +230,8 @@ public record GameState(List<PlayerColor> players,
 
         Board newBoard = board.withoutOccupant(occupant);
         return new GameState(players, tileDecks, null,
-                newBoard, Action.OCCUPY_TILE, messageBoard).withTurnFinishedIfOccupationImpossible();
+                newBoard, Action.OCCUPY_TILE, messageBoard)
+                .withTurnFinishedIfOccupationImpossible();
     }
 
     /**
@@ -260,13 +261,15 @@ public record GameState(List<PlayerColor> players,
     private GameState withTurnFinishedIfOccupationImpossible() {
         if (lastTilePotentialOccupants().isEmpty())
             return withTurnFinished();
-        else
-            return new GameState(players, tileDecks, null,
+        else return new GameState(players, tileDecks, null,
                     board, Action.OCCUPY_TILE, messageBoard);
     }
 
     /**
      * Private method that finishes a turn of a player.
+     * It scores the forests and rivers closed by the last tile,
+     * and removes the gatherers and fishers from them.
+     *
      *
      * @return new game state with the turn finished
      */
@@ -277,7 +280,8 @@ public record GameState(List<PlayerColor> players,
         // Score the forests and rivers closed by the last tile
         for (Area<Zone.Forest> forestArea : newBoard.forestsClosedByLastTile()) {
             if (Area.hasMenhir(forestArea))
-                newMessageBoard = newMessageBoard.withClosedForestWithMenhir(currentPlayer(), forestArea);
+                newMessageBoard = newMessageBoard
+                        .withClosedForestWithMenhir(currentPlayer(), forestArea);
             newMessageBoard = newMessageBoard.withScoredForest(forestArea);
         }
 
@@ -285,14 +289,18 @@ public record GameState(List<PlayerColor> players,
             newMessageBoard = newMessageBoard.withScoredRiver(riverArea);
 
         newBoard = newBoard.withoutGatherersOrFishersIn(
-                newBoard.forestsClosedByLastTile(), newBoard.riversClosedByLastTile());
+                newBoard.forestsClosedByLastTile(),
+                newBoard.riversClosedByLastTile());
 
         TileDecks newTileDecks;
         // Check if the next tile is a menhir tile or a normal tile
-        Tile.Kind kind = (newBoard.forestsClosedByLastTile().stream().anyMatch(Area::hasMenhir) &&
-                newBoard.lastPlacedTile().kind().equals(Tile.Kind.NORMAL)) ? Tile.Kind.MENHIR : Tile.Kind.NORMAL;
+        Tile.Kind kind = (newBoard.forestsClosedByLastTile()
+                .stream()
+                .anyMatch(Area::hasMenhir) &&
+                newBoard.lastPlacedTile().kind() == Tile.Kind.NORMAL)
+                ? Tile.Kind.MENHIR : Tile.Kind.NORMAL;
 
-        if (kind.equals(Tile.Kind.MENHIR)) {
+        if (kind == Tile.Kind.MENHIR) {
             newTileDecks = tileDecks.withTopTileDrawnUntil(kind, newBoard::couldPlaceTile);
             if (newTileDecks.deckSize(Tile.Kind.MENHIR) != 0)
                 return new GameState(players, newTileDecks.withTopTileDrawn(Tile.Kind.MENHIR),
