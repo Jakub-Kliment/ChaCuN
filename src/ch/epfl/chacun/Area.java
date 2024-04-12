@@ -66,6 +66,7 @@ public record Area<Z extends Zone> (Set<Z> zones,
      * that are not in the cancelled animals set
      *
      * @param meadow area of meadow zones
+     * @param cancelledAnimals set of animals to be cancelled
      * @return the set of animals in the meadow zone
      */
     public static Set<Animal> animals(Area<Zone.Meadow> meadow, Set<Animal> cancelledAnimals) {
@@ -148,7 +149,7 @@ public record Area<Z extends Zone> (Set<Z> zones,
      * Returns the set of player colors of majority occupants of the area
      * If the area is not occupied, returns an empty set
      *
-     * @return the majority occupants of the area
+     * @return the majority occupants of the area or an empty set if the area is not occupied
      */
     public Set<PlayerColor> majorityOccupants() {
         // If the area is not occupied, return an empty set
@@ -176,6 +177,7 @@ public record Area<Z extends Zone> (Set<Z> zones,
     /**
      * Adds two areas together to form a new one
      *
+     * @param that the other area to connect to
      * @return the new area formed by the two areas
      */
     public Area<Z> connectTo(Area<Z> that) {
@@ -197,6 +199,7 @@ public record Area<Z extends Zone> (Set<Z> zones,
      * Returns a new area with the initial occupant added
      * if the area is not already occupied
      *
+     * @param occupant the initial occupant to add
      * @return the hash code of the area
      * @throws IllegalArgumentException if the area is already occupied
      */
@@ -212,6 +215,7 @@ public record Area<Z extends Zone> (Set<Z> zones,
     /**
      * Returns a new area without the specified occupant if it is there
      *
+     * @param occupant the occupant to remove
      * @return the new area without the specified occupant
      * @throws IllegalArgumentException if the occupant is not in the area
      */

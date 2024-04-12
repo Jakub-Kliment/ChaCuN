@@ -321,6 +321,7 @@ public record GameState(List<PlayerColor> players,
 
     /**
      * Private method that returns a new game state with the final points counted.
+     * It scores the forests and rivers remaining then determine the winner of the game
      *
      * @return new game state with the final points counted
      */
