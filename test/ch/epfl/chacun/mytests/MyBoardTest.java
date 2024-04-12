@@ -1301,7 +1301,6 @@ public class MyBoardTest {
         var l1_56 = new Zone.Lake(56_8, 1, null);
         var z3_56 = new Zone.River(56_3, 0, l1_56);
         Set<Zone.River> riverZones15 = Set.of(z3_56, z1_15);
-        //TODO bien d'accord que l'Area<Zone.River> contient que des PAWN et pas les HUT ?
         Area<Zone.River> expected15 = new Area<>(riverZones15, new ArrayList<>(), 1);
         //Area<Zone.River> expected = new Area<>(riverZones15, List.of(PlayerColor.RED), 1);
         assertEquals(expected15, board.riverArea(z1_15));
