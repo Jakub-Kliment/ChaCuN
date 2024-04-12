@@ -183,8 +183,7 @@ public record Area<Z extends Zone> (Set<Z> zones,
         setArea.addAll(that.zones());
 
         List<PlayerColor> listColor = new ArrayList<>(occupants);
-        if (this != that)
-            listColor.addAll(that.occupants());
+        if (this != that) listColor.addAll(that.occupants());
 
         // The number of open connections of this area minus 2 (for sides)
         // If they are not the same we add the number of open connections of that

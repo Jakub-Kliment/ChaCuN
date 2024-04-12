@@ -250,7 +250,7 @@ public final class Board {
     }
 
     /**
-     * Returns the last placed tile on the board
+     * Returns the last placed tile on the board.
      *
      * @return the last placed tile on the board,
      *         or null if the board is empty

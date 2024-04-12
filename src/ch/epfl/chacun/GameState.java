@@ -5,6 +5,9 @@ import java.util.stream.Collectors;
 
 /**
  * Represents the state of the game at a given moment.
+ * It is an immutable record that keeps track of the players,
+ * the decks of tiles, the tile to place, the board, the next action
+ * to perform and the message board.
  *
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
@@ -16,11 +19,19 @@ import java.util.stream.Collectors;
  * @param nextAction the next action to perform
  * @param messageBoard the message board
  */
-public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile tileToPlace,
-                        Board board, Action nextAction, MessageBoard messageBoard) {
+public record GameState(List<PlayerColor> players,
+                        TileDecks tileDecks,
+                        Tile tileToPlace,
+                        Board board,
+                        Action nextAction,
+                        MessageBoard messageBoard) {
 
     /**
-     * Constructs a new game state.
+     * Compact constructor of game state that copies the list of players to keep the class immutable.
+     * It also verifies that the number of players is at least 2, because the game cannot be played
+     * with less than 2 players. It also verifies that the tile to place is not null if the next action is
+     * PLACE_TILE and vice versa to keep the logic of the game consistent. Also verifies that the tile decks,
+     * board, next action and message board are not null.
      *
      * @throws IllegalArgumentException if the number of players is smaller than 2
      * @throws IllegalArgumentException if the tile to place is null and the next action is PLACE_TILE or
@@ -38,7 +49,7 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
     }
 
     /**
-     * Represents the possible actions that can be performed in the game.
+     * Represents all possible actions that can be performed in the game.
      */
     public enum Action {
         START_GAME,
@@ -49,35 +60,51 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
     }
 
     /**
-     * Creates the initial game state.
+     * Creates the initial game state where the game has not started yet
+     * by adding an empty board, adding the action to start the game and
+     * creating an empty message board. All other parameters are passed
+     * as arguments.
      *
      * @param players    the players of the game
      * @param tileDecks  the decks of tiles
      * @param textMaker  the text maker
      * @return the initial game state
      */
-    public static GameState initial(List<PlayerColor> players, TileDecks tileDecks, TextMaker textMaker) {
-        return new GameState(players, tileDecks, null, Board.EMPTY,
-                Action.START_GAME, new MessageBoard(textMaker, new ArrayList<>()));
+    public static GameState initial(List<PlayerColor> players,
+                                    TileDecks tileDecks,
+                                    TextMaker textMaker) {
+        return new GameState(
+                players,
+                tileDecks,
+                null,
+                Board.EMPTY,
+                Action.START_GAME,
+                new MessageBoard(textMaker, new ArrayList<>()));
     }
 
     /**
-     * Returns the current player of the game.
+     * Returns the current player of the game that is on turn.
+     * If the game is starting or has ended, it returns null,
+     * since there is no player on turn.
      *
-     * @return the current player
+     * @return the current player or null if
+     *         the game is starting or has ended
      */
     public PlayerColor currentPlayer() {
-        if (nextAction.equals(Action.START_GAME) || nextAction.equals(Action.END_GAME))
+        if (nextAction == Action.START_GAME
+                || nextAction == Action.END_GAME)
             return null;
         return players.getFirst();
     }
 
     /**
      * Returns the number of free occupants of a given kind for a given player.
+     * It is the number of occupants of the given kind that the player has
+     * in hand and can still place on the board.
      *
      * @param player the player
      * @param kind   the kind of occupant
-     * @return the number of free occupants
+     * @return the number of free occupants of the given kind for the given player
      */
     public int freeOccupantsCount(PlayerColor player, Occupant.Kind kind) {
         return Occupant.occupantsCount(kind) - board.occupantCount(player, kind);
@@ -85,44 +112,61 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
 
     /**
      * Returns the potential occupants for the last placed tile.
+     * Makes sure that the player has free occupants of the given kind in hand
+     * and that the area of a potential occupant is not already occupied.
      *
-     * @return the potential occupants
+     * @return the potential occupants for the last placed tile
      */
     public Set<Occupant> lastTilePotentialOccupants() {
-        Preconditions.checkArgument(!board.equals(Board.EMPTY));
+        Preconditions.checkArgument(board.lastPlacedTile() != null);
         Set<Occupant> potentialOccupants = board.lastPlacedTile().potentialOccupants();
 
-        // Remove occupants if there are no free ones left
+        // Remove occupants if there are no free ones left of a given kind
         potentialOccupants.removeIf(
                 o -> freeOccupantsCount(currentPlayer(), o.kind()) == 0);
 
         // Remove occupants if the area is already occupied
-        potentialOccupants.removeIf((occupant) -> switch (board.lastPlacedTile().zoneWithId(occupant.zoneId())) {
-            case Zone.Meadow meadow
-                    when occupant.kind().equals(Occupant.Kind.PAWN) -> board.meadowArea(meadow).isOccupied();
-            case Zone.Forest forest
-                    when occupant.kind().equals(Occupant.Kind.PAWN) -> board.forestArea(forest).isOccupied();
-            case Zone.River river
-                    when occupant.kind().equals(Occupant.Kind.PAWN) -> board.riverArea(river).isOccupied();
-            case Zone.Water water
-                    when occupant.kind().equals(Occupant.Kind.HUT) -> board.riverSystemArea(water).isOccupied();
-            default -> false;
-        });
+        potentialOccupants.removeIf(
+                o -> switch (board.lastPlacedTile().zoneWithId(o.zoneId())) {
+                        case Zone.Meadow meadow
+                                when o.kind() == Occupant.Kind.PAWN ->
+                                    board.meadowArea(meadow).isOccupied();
+                        case Zone.Forest forest
+                                when o.kind() == Occupant.Kind.PAWN ->
+                                    board.forestArea(forest).isOccupied();
+                        case Zone.River river
+                                when o.kind() == Occupant.Kind.PAWN ->
+                                    board.riverArea(river).isOccupied();
+                        case Zone.Water water
+                                when o.kind() == Occupant.Kind.HUT ->
+                                    board.riverSystemArea(water).isOccupied();
+                        default -> false;
+                });
         return potentialOccupants;
     }
 
     /**
      * Returns a new game state with the starting tile placed.
+     * Creates a new board with the starting tile placed and the next tile drawn
+     * for the player to place. The next action is set to PLACE_TILE.
      *
      * @return new game state with the starting tile placed
+     * @throws IllegalArgumentException if the next action is not START_GAME
      */
     public GameState withStartingTilePlaced() {
-        Preconditions.checkArgument(nextAction.equals(Action.START_GAME));
-        Board newBoard = board.withNewTile(new PlacedTile(tileDecks.topTile(Tile.Kind.START),
-                null, Rotation.NONE, Pos.ORIGIN));
-        Tile nextTile = tileDecks.topTile(Tile.Kind.NORMAL);
-        TileDecks newTileDecks = tileDecks.withTopTileDrawn(Tile.Kind.START).withTopTileDrawn(Tile.Kind.NORMAL);
-        return new GameState(players, newTileDecks, nextTile, newBoard, Action.PLACE_TILE, messageBoard);
+        Preconditions.checkArgument(nextAction == Action.START_GAME);
+        Board startingBoard = board.withNewTile(
+                new PlacedTile(
+                        tileDecks.topTile(Tile.Kind.START),
+                        null,
+                        Rotation.NONE,
+                        Pos.ORIGIN));
+        Tile tileToPlace = tileDecks.topTile(Tile.Kind.NORMAL);
+        TileDecks newTileDecks = tileDecks
+                .withTopTileDrawn(Tile.Kind.START)
+                .withTopTileDrawn(Tile.Kind.NORMAL);
+        return new GameState(players, newTileDecks, tileToPlace,
+                startingBoard, Action.PLACE_TILE, messageBoard);
     }
 
     /**
@@ -130,9 +174,11 @@ public record GameState(List<PlayerColor> players, TileDecks tileDecks, Tile til
      *
      * @param tile the tile to place
      * @return new game state with the given tile placed
+     * @throws IllegalArgumentException if the next action is not PLACE_TILE
+     *                                  or if the tile is already occupied
      */
     public GameState withPlacedTile(PlacedTile tile) {
-        Preconditions.checkArgument(nextAction.equals(Action.PLACE_TILE) && tile.occupant() == null);
+        Preconditions.checkArgument(nextAction == Action.PLACE_TILE && tile.occupant() == null);
         MessageBoard newMessageBoard = messageBoard;
         Board newBoard = board.withNewTile(tile);
         Action newAction;
