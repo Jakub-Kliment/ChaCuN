@@ -336,11 +336,12 @@ public record GameState(List<PlayerColor> players,
                     .collect(Collectors.toList());
 
             // Count the deer in the area or set the count to 0 if there is a wildfire
-            long tigerCount = meadowArea.zoneWithSpecialPower(Zone.SpecialPower.WILD_FIRE) != null ? 0L : animals.stream()
+            long tigerCount = meadowArea.zoneWithSpecialPower(Zone.SpecialPower.WILD_FIRE) != null
+                    ? 0L : animals.stream()
                     .filter(animal -> animal.kind() == (Animal.Kind.TIGER))
                     .count();
 
-            Zone.Meadow pitTrapZone = (Zone.Meadow) meadowArea.zoneWithSpecialPower(Zone.SpecialPower.PIT_TRAP);
+            Zone pitTrapZone = meadowArea.zoneWithSpecialPower(Zone.SpecialPower.PIT_TRAP);
             if (pitTrapZone != null) {
                 Pos pitTrapPos = newBoard.tileWithId(pitTrapZone.tileId()).pos();
 
@@ -348,19 +349,17 @@ public record GameState(List<PlayerColor> players,
                 deer.sort(Comparator.comparingInt(d ->
                         -Math.max(Math.abs(pitTrapPos.x() - board.tileWithId(d.tileId()).pos().x()),
                                 Math.abs(pitTrapPos.y() - board.tileWithId(d.tileId()).pos().y()))));
+            }
+            newBoard = newBoard.withMoreCancelledAnimals(deer.stream()
+                    .limit(tigerCount)
+                    .collect(Collectors.toSet()));
 
-                newBoard = newBoard.withMoreCancelledAnimals(deer.stream()
-                        .limit(tigerCount)
-                        .collect(Collectors.toSet()));
-
+            if (pitTrapZone != null)
                 newMessageBoard = newMessageBoard.withScoredPitTrap(
-                        newBoard.adjacentMeadow(pitTrapPos, pitTrapZone),
+                        newBoard.adjacentMeadow(newBoard.tileWithId(
+                                pitTrapZone.tileId()).pos(),
+                                (Zone.Meadow) pitTrapZone),
                         newBoard.cancelledAnimals());
-            } else
-                newBoard = newBoard.withMoreCancelledAnimals(deer.stream()
-                        .limit(tigerCount)
-                        .collect(Collectors.toSet()));
-
             newMessageBoard = newMessageBoard.withScoredMeadow(meadowArea, newBoard.cancelledAnimals());
         }
 
