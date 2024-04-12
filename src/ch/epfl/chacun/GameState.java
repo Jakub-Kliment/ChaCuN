@@ -230,7 +230,7 @@ public record GameState(List<PlayerColor> players,
 
         Board newBoard = board.withoutOccupant(occupant);
         return new GameState(players, tileDecks, null,
-                newBoard, Action.OCCUPY_TILE, messageBoard);
+                newBoard, Action.OCCUPY_TILE, messageBoard).withTurnFinishedIfOccupationImpossible();
     }
 
     /**
@@ -324,11 +324,13 @@ public record GameState(List<PlayerColor> players,
         for (Area<Zone.Meadow> meadowArea : newBoard.meadowAreas()) {
             Set<Animal> animals = Area.animals(meadowArea, newBoard.cancelledAnimals());
             List<Animal> deer = animals.stream()
-                    .filter(animal -> animal.kind().equals(Animal.Kind.DEER))
+                    .filter(animal -> animal.kind() == (Animal.Kind.DEER))
                     .collect(Collectors.toList());
-            long tigerCount = animals.stream()
-                    .filter(animal -> animal.kind().equals(Animal.Kind.TIGER))
-                    .count();
+            // Count the deer in the area or set the count to 0 if there is a wildfire
+            long tigerCount = meadowArea.zoneWithSpecialPower(Zone.SpecialPower.WILD_FIRE) != null ? 0L :
+                    animals.stream()
+                            .filter(animal -> animal.kind() == (Animal.Kind.TIGER))
+                            .count();
 
             // Sort the deer by distance to the pit trap
             if (meadowArea.zoneWithSpecialPower(Zone.SpecialPower.PIT_TRAP) != null) {
@@ -338,25 +340,21 @@ public record GameState(List<PlayerColor> players,
                 deer.sort(Comparator.comparingInt(animal ->
                         -Math.max(Math.abs(pitTrapPos.x() - board.tileWithId(animal.tileId()).pos().x()),
                                 Math.abs(pitTrapPos.y() - board.tileWithId(animal.tileId()).pos().y()))));
-            }
-
-            if (meadowArea.zoneWithSpecialPower(Zone.SpecialPower.WILD_FIRE) != null)
-                tigerCount = 0L;
-
-            // Cancel the deer that are furthest to the pit trap
-            Set<Animal> newlyCancelledAnimals = deer.stream()
-                    .limit(tigerCount)
-                    .collect(Collectors.toSet());
-            newBoard = newBoard.withMoreCancelledAnimals(newlyCancelledAnimals);
-            newMessageBoard = newMessageBoard.withScoredMeadow(meadowArea, newBoard.cancelledAnimals());
-
-            if (meadowArea.zoneWithSpecialPower(Zone.SpecialPower.PIT_TRAP) != null) {
-                Pos pitTrapPos = newBoard.tileWithId(meadowArea.zoneWithSpecialPower(Zone.SpecialPower.PIT_TRAP).tileId()).pos();
+                Set<Animal> newlyCancelledAnimals = deer.stream()
+                        .limit(tigerCount)
+                        .collect(Collectors.toSet());
+                newBoard = newBoard.withMoreCancelledAnimals(newlyCancelledAnimals);
                 newMessageBoard = newMessageBoard.withScoredPitTrap(
                         newBoard.adjacentMeadow(pitTrapPos,
                                 (Zone.Meadow) meadowArea.zoneWithSpecialPower(Zone.SpecialPower.PIT_TRAP)),
                         newBoard.cancelledAnimals());
+            } else {
+                Set<Animal> newlyCancelledAnimals = deer.stream()
+                        .limit(tigerCount)
+                        .collect(Collectors.toSet());
+                newBoard = newBoard.withMoreCancelledAnimals(newlyCancelledAnimals);
             }
+            newMessageBoard = newMessageBoard.withScoredMeadow(meadowArea, newBoard.cancelledAnimals());
         }
 
         for (Area<Zone.Water> waterArea : newBoard.riverSystemAreas()) {
