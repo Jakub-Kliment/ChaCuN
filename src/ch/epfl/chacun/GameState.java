@@ -171,6 +171,8 @@ public record GameState(List<PlayerColor> players,
 
     /**
      * Returns a new game state with the given tile placed.
+     * Adds the tile to the board and checks if the tile contains a special power.
+     * In the case of a special power, it acts accordingly and sets the next action.
      *
      * @param tile the tile to place
      * @return new game state with the given tile placed
@@ -181,72 +183,77 @@ public record GameState(List<PlayerColor> players,
         Preconditions.checkArgument(nextAction == Action.PLACE_TILE && tile.occupant() == null);
         MessageBoard newMessageBoard = messageBoard;
         Board newBoard = board.withNewTile(tile);
-        Action newAction;
 
         // Check if the tile contains a special power
         switch (tile.specialPowerZone()) {
             case Zone.Meadow meadow
-                    when meadow.specialPower().equals(Zone.SpecialPower.HUNTING_TRAP) -> {
+                    when meadow.specialPower() == Zone.SpecialPower.HUNTING_TRAP -> {
                 Area<Zone.Meadow> adjacentMeadow = newBoard.adjacentMeadow(tile.pos(), meadow);
-                newBoard = newBoard.withMoreCancelledAnimals(Area.animals(adjacentMeadow, newBoard.cancelledAnimals()));
-                newMessageBoard = newMessageBoard.withScoredHuntingTrap(currentPlayer(), adjacentMeadow);
-                newAction = Action.OCCUPY_TILE;
+
+                newBoard = newBoard.withMoreCancelledAnimals(
+                        Area.animals(adjacentMeadow, newBoard.cancelledAnimals()));
+
+                newMessageBoard = newMessageBoard.withScoredHuntingTrap(
+                        currentPlayer(), adjacentMeadow);
             }
             case Zone.Lake lake
-                    when lake.specialPower().equals(Zone.SpecialPower.LOGBOAT) -> {
-                newMessageBoard = newMessageBoard.withScoredLogboat(currentPlayer(), newBoard.riverSystemArea(lake));
-                newAction = Action.OCCUPY_TILE;
-            }
-            case Zone.Meadow meadow
-                    when meadow.specialPower().equals(Zone.SpecialPower.SHAMAN) ->
-                    newAction = Action.RETAKE_PAWN;
-            case null, default ->
-                    newAction = Action.OCCUPY_TILE;
-        }
+                    when lake.specialPower() == Zone.SpecialPower.LOGBOAT ->
+                newMessageBoard = newMessageBoard
+                        .withScoredLogboat(currentPlayer(), newBoard.riverSystemArea(lake));
 
-        GameState newGameState = new GameState(players, tileDecks, null, newBoard, newAction, newMessageBoard);
-        // Check if the player can occupy the tile
-        if (newAction.equals(Action.OCCUPY_TILE) ||
-                freeOccupantsCount(currentPlayer(), Occupant.Kind.PAWN) == Occupant.occupantsCount(Occupant.Kind.PAWN))
-            return newGameState.withTurnFinishedIfOccupationImpossible();
-        // If player can retake a pawn
-        return newGameState;
+            case Zone.Meadow meadow
+                    when meadow.specialPower() == Zone.SpecialPower.SHAMAN -> {
+                if (newBoard.occupantCount(currentPlayer(), Occupant.Kind.PAWN) != 0)
+                    return new GameState(players, tileDecks, null,
+                            newBoard, Action.RETAKE_PAWN, newMessageBoard);
+            }
+            case null, default -> {}
+        }
+        return new GameState(players, tileDecks, null,
+                newBoard, Action.OCCUPY_TILE, newMessageBoard)
+                .withTurnFinishedIfOccupationImpossible();
     }
 
     /**
-     * Returns a new game state with the given occupant removed.
+     * Returns a new game state with the given occupant removed, if
+     * the given player has a pawn on the board and wants to remove one
+     * and proceeds to the next action.
      *
-     * @param occupant the occupant to remove
+     * @param occupant the occupant to remove (can be null)
      * @return new game state with the given occupant removed
      */
     public GameState withOccupantRemoved(Occupant occupant) {
-        Preconditions.checkArgument(nextAction.equals(Action.RETAKE_PAWN)
-                && (occupant == null || occupant.kind().equals(Occupant.Kind.PAWN)));
+        Preconditions.checkArgument(nextAction == Action.RETAKE_PAWN
+                && (occupant == null || occupant.kind() == Occupant.Kind.PAWN));
 
-        if (occupant == null || board.occupantCount(currentPlayer(), occupant.kind()) == 0)
-            return withTurnFinishedIfOccupationImpossible();
+        if (occupant == null) return withTurnFinishedIfOccupationImpossible();
 
         Board newBoard = board.withoutOccupant(occupant);
-        return new GameState(players, tileDecks, null, newBoard, Action.OCCUPY_TILE, messageBoard);
+        return new GameState(players, tileDecks, null,
+                newBoard, Action.OCCUPY_TILE, messageBoard);
     }
 
     /**
-     * Returns a new game state with the given occupant placed.
+     * Returns a new game state with the given occupant placed if the player
+     * desires to place an occupant on the board and proceeds to the next action.
      *
      * @param occupant the occupant to place
      * @return new game state with the given occupant placed
      */
     public GameState withNewOccupant(Occupant occupant) {
-        Preconditions.checkArgument(nextAction.equals(Action.OCCUPY_TILE));
-        if (occupant == null)
-            return withTurnFinished();
+        Preconditions.checkArgument(nextAction == Action.OCCUPY_TILE);
+        if (occupant == null) return withTurnFinished();
         Board newBoard = board.withOccupant(occupant);
-        return new GameState(players, tileDecks, null, newBoard, nextAction, messageBoard).withTurnFinished();
+        return new GameState(players, tileDecks, null,
+                newBoard, nextAction, messageBoard)
+                .withTurnFinished();
     }
 
     /**
-     * Private methode that returns a new game state with the turn finished if the occupation is impossible,
-     * otherwise returns a new game state with the action set to OCCUPY_TILE.
+     * Private methode that returns a new game state with the turn finished
+     * if the occupation is impossible either because the player has no free
+     * occupants of the given kind or because the area is already occupied.
+     * Otherwise, proceeds to next action, that is OCCUPY_TILE.
      *
      * @return new game state with the turn finished
      */
@@ -254,7 +261,8 @@ public record GameState(List<PlayerColor> players,
         if (lastTilePotentialOccupants().isEmpty())
             return withTurnFinished();
         else
-            return new GameState(players, tileDecks, null, board, Action.OCCUPY_TILE, messageBoard);
+            return new GameState(players, tileDecks, null,
+                    board, Action.OCCUPY_TILE, messageBoard);
     }
 
     /**
