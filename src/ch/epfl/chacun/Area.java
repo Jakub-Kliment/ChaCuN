@@ -252,6 +252,7 @@ public record Area<Z extends Zone> (Set<Z> zones,
     /**
      * Returns the zone with the specified special power if there is any
      *
+     * @param specialPower the special power of the zone
      * @return the zone with the specified special power, null otherwise
      */
     public Zone zoneWithSpecialPower(Zone.SpecialPower specialPower) {

@@ -270,7 +270,6 @@ public record GameState(List<PlayerColor> players,
      * It scores the forests and rivers closed by the last tile,
      * and removes the gatherers and fishers from them.
      *
-     *
      * @return new game state with the turn finished
      */
     private GameState withTurnFinished() {
@@ -302,16 +301,16 @@ public record GameState(List<PlayerColor> players,
 
         if (kind == Tile.Kind.MENHIR) {
             newTileDecks = newTileDecks.withTopTileDrawnUntil(kind, newBoard::couldPlaceTile);
-            if (newTileDecks.deckSize(Tile.Kind.MENHIR) != 0)
-                return new GameState(players, newTileDecks.withTopTileDrawn(Tile.Kind.MENHIR),
-                        newTileDecks.topTile(Tile.Kind.MENHIR), newBoard, Action.PLACE_TILE, newMessageBoard);
+            if (newTileDecks.deckSize(kind) != 0)
+                return new GameState(players, newTileDecks.withTopTileDrawn(kind),
+                        newTileDecks.topTile(kind), newBoard, Action.PLACE_TILE, newMessageBoard);
         }
 
         List<PlayerColor> newPlayers = new LinkedList<>(players);
         newPlayers.add(newPlayers.removeFirst());
         newTileDecks = newTileDecks.withTopTileDrawnUntil(Tile.Kind.NORMAL, newBoard::couldPlaceTile);
 
-        if (newTileDecks.deckSize(Tile.Kind.NORMAL) == 0)
+        if (newTileDecks.deckSize(Tile.Kind.NORMAL) != 0)
             return new GameState(newPlayers, newTileDecks.withTopTileDrawn(Tile.Kind.NORMAL),
                     newTileDecks.topTile(Tile.Kind.NORMAL), newBoard, Action.PLACE_TILE, newMessageBoard);
 
@@ -321,7 +320,8 @@ public record GameState(List<PlayerColor> players,
 
     /**
      * Private method that returns a new game state with the final points counted.
-     * It scores the forests and rivers remaining then determine the winner of the game
+     * Counts the points at the end of the game for meadows and river systems
+     * and determines the winner(s).
      *
      * @return new game state with the final points counted
      */
@@ -333,13 +333,13 @@ public record GameState(List<PlayerColor> players,
         for (Area<Zone.Meadow> meadowArea : newBoard.meadowAreas()) {
             Set<Animal> animals = Area.animals(meadowArea, newBoard.cancelledAnimals());
             List<Animal> deer = animals.stream()
-                    .filter(animal -> animal.kind() == (Animal.Kind.DEER))
+                    .filter(animal -> animal.kind() == Animal.Kind.DEER)
                     .collect(Collectors.toList());
 
             // Count the deer in the area or set the count to 0 if there is a wildfire
             long tigerCount = meadowArea.zoneWithSpecialPower(Zone.SpecialPower.WILD_FIRE) != null
                     ? 0L : animals.stream()
-                    .filter(animal -> animal.kind() == (Animal.Kind.TIGER))
+                    .filter(animal -> animal.kind() == Animal.Kind.TIGER)
                     .count();
 
             Zone pitTrapZone = meadowArea.zoneWithSpecialPower(Zone.SpecialPower.PIT_TRAP);
@@ -378,6 +378,7 @@ public record GameState(List<PlayerColor> players,
                 .collect(Collectors.toSet());
 
         newMessageBoard = newMessageBoard.withWinners(winners, maxPoints);
-        return new GameState(players, tileDecks, null, board, Action.END_GAME, newMessageBoard);
+        return new GameState(players, tileDecks, null,
+                board, Action.END_GAME, newMessageBoard);
     }
 }
