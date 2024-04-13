@@ -162,6 +162,13 @@ public class TextMakerFrTest {
         String actual = textMakerFr.playerScoredHuntingTrap(PlayerColor.YELLOW, 10, animals);
         assertEquals(expected, actual);
     }
+    @Test
+    void playerScoredHuntingTrapWithThreeAnimalsButOneDoesNotGainPoints() {
+        String expected = "Alice a remporté 10 points en plaçant la fosse à pieux dans un pré dans lequel elle est entourée de 4 mammouths et 2 cerfs.";
+        Map<Animal.Kind, Integer> animals = Map.of(Animal.Kind.DEER, 2, Animal.Kind.AUROCHS, 0, Animal.Kind.MAMMOTH, 4);
+        String actual = textMakerFr.playerScoredHuntingTrap(PlayerColor.YELLOW, 10, animals);
+        assertEquals(expected, actual);
+    }
 
     @Test
     void playerScoredHuntingTrapThrowsException() {
