@@ -12,14 +12,14 @@ public class TextMakerFr implements TextMaker {
 
     @Override
     public String playerName(PlayerColor playerColor) {
-        Preconditions.checkArgument(playerNames.containsKey(playerColor));
+        Preconditions.checkArgument(playerColor != null && playerNames.containsKey(playerColor));
         return playerNames.get(playerColor);
     }
 
     @Override
     public String points(int points) {
         Preconditions.checkArgument(points >= 0);
-        return STR."\{points}";
+        return STR."\{points} point\{plural(points)}";
     }
 
     @Override
@@ -29,65 +29,65 @@ public class TextMakerFr implements TextMaker {
 
     @Override
     public String playersScoredForest(Set<PlayerColor> scorers, int points, int mushroomGroupCount, int tileCount) {
-        Preconditions.checkArgument(!scorers.isEmpty());
-        String mushrooms = STR." et de \{points(mushroomGroupCount)} groupe\{plural(mushroomGroupCount)} de champignons";
-        return STR."\{playersObtained(scorers)} \{points(points)} points en tant qu'\{majorityOccupants(scorers)} d'une forêt composée de \{points(tileCount)} tuiles\{addIfGainedPoints(mushrooms, mushroomGroupCount)}.";
+        String mushrooms = STR." et de \{numberOf(mushroomGroupCount, "groupe")} de champignons";
+        return STR."\{playersObtained(scorers)} \{points(points)} \{majorityOccupants(scorers)} d'une forêt composée de \{numberOf(tileCount, "tuile")}\{addIfGainedPoints(mushrooms, mushroomGroupCount)}.";
     }
 
     @Override
     public String playersScoredRiver(Set<PlayerColor> scorers, int points, int fishCount, int tileCount) {
-        Preconditions.checkArgument(!scorers.isEmpty());
-        String fish = STR." et contenant \{points(fishCount)} poisson\{plural(fishCount)}";
-        return STR."\{playersObtained(scorers)} \{points(points)} points en tant qu'\{majorityOccupants(scorers)} d'une rivière composée de \{points(tileCount)} tuiles\{addIfGainedPoints(fish, fishCount)}.";
+        String fish = STR." et contenant \{numberOf(fishCount, "poisson")}";
+        return STR."\{playersObtained(scorers)} \{points(points)} \{majorityOccupants(scorers)} d'une rivière composée de \{numberOf(tileCount, "tuile")}\{addIfGainedPoints(fish, fishCount)}.";
     }
 
     @Override
     public String playerScoredHuntingTrap(PlayerColor scorer, int points, Map<Animal.Kind, Integer> animals) {
-        Preconditions.checkArgument(!animals.isEmpty());
-        return STR."\{playersObtained(Set.of(scorer))} \{points(points)} points en plaçant la fosse à pieux dans un pré dans lequel elle est entourée de \{animalPoints(animals)}.";
+        Preconditions.checkArgument(scorer != null);
+        return STR."\{playersObtained(Set.of(scorer))} \{points(points)} en plaçant la fosse à pieux dans un pré dans lequel elle est entourée de \{animalPoints(animals)}.";
     }
 
     @Override
     public String playerScoredLogboat(PlayerColor scorer, int points, int lakeCount) {
-        return null;
+        Preconditions.checkArgument(scorer != null);
+        return STR."\{playersObtained(Set.of(scorer))} \{points(points)} en plaçant la pirogue dans un réseau hydrographique contenant \{numberOf(lakeCount, "lac")}.";
     }
 
     @Override
     public String playersScoredMeadow(Set<PlayerColor> scorers, int points, Map<Animal.Kind, Integer> animals) {
-        return null;
+        return STR."\{playersObtained(scorers)} \{points(points)} \{majorityOccupants(scorers)} d'un pré contenant \{animalPoints(animals)}.";
     }
 
     @Override
     public String playersScoredRiverSystem(Set<PlayerColor> scorers, int points, int fishCount) {
-        return null;
+        return STR."\{playersObtained(scorers)} \{points(points)} \{majorityOccupants(scorers)} d'un réseau hydrographique contenant \{numberOf(fishCount, "poisson")}.";
     }
 
     @Override
     public String playersScoredPitTrap(Set<PlayerColor> scorers, int points, Map<Animal.Kind, Integer> animals) {
-        return null;
+        return STR."\{playersObtained(scorers)} \{points(points)} \{majorityOccupants(scorers)} d'un pré contenant la grande fosse à pieux entourée de \{animalPoints(animals)}.";
     }
 
     @Override
     public String playersScoredRaft(Set<PlayerColor> scorers, int points, int lakeCount) {
-        return null;
+        return STR."\{playersObtained(scorers)} \{points(points)} \{majorityOccupants(scorers)} d'un réseau hydrographique contenant le radeau et \{ numberOf(lakeCount, "lac")}.";
     }
 
     @Override
     public String playersWon(Set<PlayerColor> winners, int points) {
-        return null;
+        return STR."\{playersObtained(winners)} la partie avec \{points(points)}!";
     }
 
     @Override
     public String clickToOccupy() {
-        return null;
+        return "Cliquez sur le pion ou la hutte que vous désirez placer, ou ici pour ne pas en placer.";
     }
 
     @Override
     public String clickToUnoccupy() {
-        return null;
+        return "Cliquez sur le pion que vous désirez reprendre, ou ici pour ne pas en reprendre.";
     }
 
     private String playersObtained(Set<PlayerColor> players) {
+        Preconditions.checkArgument(!players.isEmpty());
         List<PlayerColor> sortedPlayers = players.stream()
                 .sorted(PlayerColor::compareTo)
                 .toList();
@@ -106,6 +106,7 @@ public class TextMakerFr implements TextMaker {
     }
 
     private String animalPoints(Map<Animal.Kind, Integer> animals) {
+        Preconditions.checkArgument(!animals.isEmpty());
         List<Animal.Kind> sortedAnimals = animals.keySet().stream()
                 .filter(animal -> animals.get(animal) > 0)
                 .sorted(Animal.Kind::compareTo)
@@ -113,8 +114,8 @@ public class TextMakerFr implements TextMaker {
 
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < sortedAnimals.size(); i++) {
-            int score = animals.get(sortedAnimals.get(i));
-            sb.append(STR."\{points(score)} \{animal(sortedAnimals.get(i))}\{plural(score)}");
+            sb.append(STR."\{numberOf(animals.get(sortedAnimals.get(i)),
+                    animalName(sortedAnimals.get(i)))}");
             if (i < sortedAnimals.size() - 2)
                 sb.append(", ");
             else if (i == sortedAnimals.size() - 2)
@@ -123,7 +124,7 @@ public class TextMakerFr implements TextMaker {
         return sb.toString();
     }
 
-    private String animal(Animal.Kind animalKind) {
+    private String animalName(Animal.Kind animalKind) {
         return switch (animalKind) {
             case MAMMOTH -> "mammouth";
             case AUROCHS -> "auroch";
@@ -134,10 +135,13 @@ public class TextMakerFr implements TextMaker {
 
     private String majorityOccupants(Set<PlayerColor> players) {
         return players.size() == 1
-                ? "occupant·e majoritaire"
-                : "occupant·e·s majoritaires";
+                ? "en tant qu'occupant·e majoritaire"
+                : "en tant qu'occupant·e·s majoritaires";
     }
 
+    private String numberOf(int number, String s) {
+        return STR."\{number} \{s}\{plural(number)}";
+    }
     private String plural(int points) {
         return points > 1 ? "s" : "";
     }

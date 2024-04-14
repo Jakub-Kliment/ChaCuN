@@ -36,19 +36,21 @@ public class TextMakerFrTest {
 
     @Test
     void testPoints() {
-        assertEquals("5", textMakerFr.points(5));
-        assertEquals("10", textMakerFr.points(10));
-        assertEquals("15", textMakerFr.points(15));
-        assertEquals("20", textMakerFr.points(20));
+        assertEquals("1 point", textMakerFr.points(1));
+        assertEquals("5 points", textMakerFr.points(5));
+        assertEquals("10 points", textMakerFr.points(10));
+        assertEquals("15 points", textMakerFr.points(15));
+        assertEquals("20 points", textMakerFr.points(20));
 
-        assertNotEquals("5", textMakerFr.points(10));
-        assertNotEquals("10", textMakerFr.points(15));
+        assertNotEquals("5 points", textMakerFr.points(10));
+        assertNotEquals("10 points", textMakerFr.points(15));
     }
 
     @Test
-    void testPlayerClosedForestWithMenhir() {
+    void testPlayerClosedForestWithMenhirProfTest() {
         String expected = "Dalia a fermé une forêt contenant un menhir et peut donc placer une tuile menhir.";
-        assertEquals(expected, textMakerFr.playerClosedForestWithMenhir(PlayerColor.RED));
+        String actual = textMakerFr.playerClosedForestWithMenhir(PlayerColor.RED);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -100,6 +102,20 @@ public class TextMakerFrTest {
     }
 
     @Test
+    void playersScoredForestWorksForFirstProfTest() {
+        String expected = "Claude a remporté 6 points en tant qu'occupant·e majoritaire d'une forêt composée de 3 tuiles.";
+        String actual = textMakerFr.playersScoredForest(Set.of(PlayerColor.BLUE), 6, 0, 3);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void playersScoredForestWorksForSecondProfTest() {
+        String expected = "Dalia et Alice ont remporté 9 points en tant qu'occupant·e·s majoritaires d'une forêt composée de 3 tuiles et de 1 groupe de champignons.";
+        String actual = textMakerFr.playersScoredForest(Set.of(PlayerColor.RED, PlayerColor.YELLOW), 9, 1, 3);
+        assertEquals(expected, actual);
+    }
+
+    @Test
     void testPlayersScoredRiverForNormalCase() {
         String expected = "Dalia, Claude, Bachir et Alice ont remporté 5 points en tant qu'occupant·e·s majoritaires d'une rivière composée de 10 tuiles et contenant 10 poissons.";
         String actual = textMakerFr.playersScoredRiver(Set.of(PlayerColor.BLUE, PlayerColor.GREEN, PlayerColor.RED, PlayerColor.YELLOW), 5, 10, 10);
@@ -107,9 +123,16 @@ public class TextMakerFrTest {
     }
 
     @Test
-    void profTestPlayersScoredRiver() {
+    void profFirstTestPlayersScoredRiver() {
         String expected = "Alice a remporté 8 points en tant qu'occupant·e majoritaire d'une rivière composée de 3 tuiles et contenant 5 poissons.";
         String actual = textMakerFr.playersScoredRiver(Set.of(PlayerColor.YELLOW), 8, 5, 3);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void profSecondTestPlayersScoredRiver() {
+        String expected = "Claude et Bachir ont remporté 3 points en tant qu'occupant·e·s majoritaires d'une rivière composée de 3 tuiles.";
+        String actual = textMakerFr.playersScoredRiver(Set.of(PlayerColor.BLUE, PlayerColor.GREEN), 3, 0, 3);
         assertEquals(expected, actual);
     }
 
@@ -174,4 +197,101 @@ public class TextMakerFrTest {
     void playerScoredHuntingTrapThrowsException() {
         assertThrows(IllegalArgumentException.class, () -> textMakerFr.playerScoredHuntingTrap(PlayerColor.RED, 5, Map.of()));
     }
+
+    @Test
+    void playerScoredHuntingTrapThrowsExceptionIfNoScorer() {
+        assertThrows(IllegalArgumentException.class, () -> textMakerFr.playerScoredHuntingTrap(null, 5, Map.of(Animal.Kind.DEER, 2)));
+    }
+
+    @Test
+    void playerScoredLogboatWorksForFirstProfExample() {
+        String expected = "Alice a remporté 8 points en plaçant la pirogue dans un réseau hydrographique contenant 4 lacs.";
+        String actual = textMakerFr.playerScoredLogboat(PlayerColor.YELLOW, 8, 4);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void playerScoredMeadowWorksForFirstProfExample() {
+        String expected = "Dalia a remporté 1 point en tant qu'occupant·e majoritaire d'un pré contenant 1 cerf.";
+        String actual = textMakerFr.playersScoredMeadow(Set.of(PlayerColor.RED), 1, Map.of(Animal.Kind.DEER, 1));
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void playerScoredMeadowWorksForSecondProfExample() {
+        String expected = "Claude et Bachir ont remporté 5 points en tant qu'occupant·e·s majoritaires d'un pré contenant 1 mammouth et 2 cerfs.";
+        String actual = textMakerFr.playersScoredMeadow(Set.of(PlayerColor.GREEN, PlayerColor.BLUE), 5, Map.of(Animal.Kind.DEER, 2, Animal.Kind.MAMMOTH, 1));
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void playerScoredRiverSystemWorksForFirstProfExample() {
+        String expected = "Alice a remporté 9 points en tant qu'occupant·e majoritaire d'un réseau hydrographique contenant 9 poissons.";
+        String actual = textMakerFr.playersScoredRiverSystem(Set.of(PlayerColor.YELLOW), 9, 9);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void playerScoredRiverSystemWorksForSecondProfExample() {
+        String expected = "Dalia, Claude et Bachir ont remporté 1 point en tant qu'occupant·e·s majoritaires d'un réseau hydrographique contenant 1 poisson.";
+        String actual = textMakerFr.playersScoredRiverSystem(Set.of(PlayerColor.GREEN, PlayerColor.RED, PlayerColor.BLUE), 1, 1);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void playerScoredPitTrapWorksForFirstProfExample() {
+        String expected = "Bachir et Alice ont remporté 12 points en tant qu'occupant·e·s majoritaires d'un pré contenant la grande fosse à pieux entourée de 2 mammouths, 2 aurochs et 2 cerfs.";
+        String actual = textMakerFr.playersScoredPitTrap(Set.of(PlayerColor.GREEN, PlayerColor.YELLOW), 12, Map.of(Animal.Kind.DEER, 2, Animal.Kind.MAMMOTH, 2, Animal.Kind.AUROCHS, 2));
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void playerScoredPitTrapWorksForSecondProfExample() {
+        String expected = "Dalia a remporté 2 points en tant qu'occupant·e majoritaire d'un pré contenant la grande fosse à pieux entourée de 1 auroch.";
+        String actual = textMakerFr.playersScoredPitTrap(Set.of(PlayerColor.RED), 2, Map.of(Animal.Kind.AUROCHS, 1));
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void playerScoredRaftWorksForFirstProfExample() {
+        String expected = "Dalia et Claude ont remporté 10 points en tant qu'occupant·e·s majoritaires d'un réseau hydrographique contenant le radeau et 10 lacs.";
+        String actual = textMakerFr.playersScoredRaft(Set.of(PlayerColor.RED, PlayerColor.BLUE), 10, 10);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void playerScoredRaftWorksForSecondProfExample() {
+        String expected = "Alice a remporté 1 point en tant qu'occupant·e majoritaire d'un réseau hydrographique contenant le radeau et 1 lac.";
+        String actual = textMakerFr.playersScoredRaft(Set.of(PlayerColor.YELLOW), 1, 1);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void playersWonWorksForFirstProfExample() {
+        String expected = "Bachir a remporté la partie avec 111 points!";
+        String actual = textMakerFr.playersWon(Set.of(PlayerColor.GREEN), 111);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void playersWonWorksForSecondProfExample() {
+        String expected = "Dalia et Alice ont remporté la partie avec 123 points!";
+        String actual = textMakerFr.playersWon(Set.of(PlayerColor.YELLOW, PlayerColor.RED), 123);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void occupyWorksAsItShould() {
+        String expected = "Cliquez sur le pion ou la hutte que vous désirez placer, ou ici pour ne pas en placer.";
+        String actual = textMakerFr.clickToOccupy();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void unOccupyWorksAsItShould() {
+        String expected = "Cliquez sur le pion que vous désirez reprendre, ou ici pour ne pas en reprendre.";
+        String actual = textMakerFr.clickToUnoccupy();
+        assertEquals(expected, actual);
+    }
+
 }
