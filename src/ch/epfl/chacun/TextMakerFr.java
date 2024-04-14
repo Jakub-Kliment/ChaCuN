@@ -73,7 +73,9 @@ public class TextMakerFr implements TextMaker {
 
     @Override
     public String playersWon(Set<PlayerColor> winners, int points) {
-        return STR."\{playersObtained(winners)} la partie avec \{points(points)}!";
+        // !!!!! demander pour l'espace avant le point d'exclamation
+        // points !
+        return STR."\{playersObtained(winners)} la partie avec \{points(points)} !";
     }
 
     @Override

@@ -268,14 +268,14 @@ public class TextMakerFrTest {
 
     @Test
     void playersWonWorksForFirstProfExample() {
-        String expected = "Bachir a remporté la partie avec 111 points!";
+        String expected = "Bachir a remporté la partie avec 111 points !";
         String actual = textMakerFr.playersWon(Set.of(PlayerColor.GREEN), 111);
         assertEquals(expected, actual);
     }
 
     @Test
     void playersWonWorksForSecondProfExample() {
-        String expected = "Dalia et Alice ont remporté la partie avec 123 points!";
+        String expected = "Dalia et Alice ont remporté la partie avec 123 points !";
         String actual = textMakerFr.playersWon(Set.of(PlayerColor.YELLOW, PlayerColor.RED), 123);
         assertEquals(expected, actual);
     }
