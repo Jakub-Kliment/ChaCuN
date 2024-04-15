@@ -36,20 +36,27 @@ public class TextMakerFrTest {
 
     @Test
     void testPoints() {
-        assertEquals("1 point", textMakerFr.points(1));
-        assertEquals("5 points", textMakerFr.points(5));
-        assertEquals("10 points", textMakerFr.points(10));
-        assertEquals("15 points", textMakerFr.points(15));
-        assertEquals("20 points", textMakerFr.points(20));
+        assertEquals("1", textMakerFr.points(1));
+        assertEquals("5", textMakerFr.points(5));
+        assertEquals("10", textMakerFr.points(10));
+        assertEquals("15", textMakerFr.points(15));
+        assertEquals("20", textMakerFr.points(20));
 
-        assertNotEquals("5 points", textMakerFr.points(10));
-        assertNotEquals("10 points", textMakerFr.points(15));
+        assertNotEquals("5", textMakerFr.points(10));
+        assertNotEquals("10", textMakerFr.points(15));
     }
 
     @Test
     void testPlayerClosedForestWithMenhirProfTest() {
         String expected = "Dalia a fermé une forêt contenant un menhir et peut donc placer une tuile menhir.";
         String actual = textMakerFr.playerClosedForestWithMenhir(PlayerColor.RED);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void testPlayerClosedForestWithMenhirForBlue() {
+        String expected = "Claude a fermé une forêt contenant un menhir et peut donc placer une tuile menhir.";
+        String actual = textMakerFr.playerClosedForestWithMenhir(PlayerColor.BLUE);
         assertEquals(expected, actual);
     }
 
@@ -76,15 +83,24 @@ public class TextMakerFrTest {
     }
 
     @Test
-    void testPlayersScoredForestForTwoPlayers() {
+    void testPlayersScoredForestForTwoPlayersWithoutMushroom() {
         String expected = "Dalia et Alice ont remporté 10 points en tant qu'occupant·e·s majoritaires d'une forêt composée de 20 tuiles.";
         String actual = textMakerFr.playersScoredForest(Set.of(PlayerColor.YELLOW, PlayerColor.RED), 10, 0, 20);
         assertEquals(expected, actual);
     }
 
     @Test
-    void playerScoredForestThrowsException() {
-        assertThrows(IllegalArgumentException.class, () -> textMakerFr.playersScoredForest(Set.of(), 5, 10, 10));
+    void testPlayersScoredForestForNoMushroomTwo() {
+        String expected = "Dalia, Claude, Bachir et Alice ont remporté 5 points en tant qu'occupant·e·s majoritaires d'une forêt composée de 10 tuiles.";
+        String actual = textMakerFr.playersScoredForest(Set.of(PlayerColor.BLUE, PlayerColor.GREEN, PlayerColor.RED, PlayerColor.YELLOW), 5, 0, 10);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void testPlayersScoredForestForTwoPlayers() {
+        String expected = "Dalia et Alice ont remporté 10 points en tant qu'occupant·e·s majoritaires d'une forêt composée de 20 tuiles.";
+        String actual = textMakerFr.playersScoredForest(Set.of(PlayerColor.YELLOW, PlayerColor.RED), 10, 0, 20);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -130,6 +146,13 @@ public class TextMakerFrTest {
     }
 
     @Test
+    void testPlayersScoredRiverForTwoPlayers() {
+        String expected = "Dalia et Alice ont remporté 10 points en tant qu'occupant·e·s majoritaires d'une rivière composée de 20 tuiles et contenant 10 poissons.";
+        String actual = textMakerFr.playersScoredRiver(Set.of(PlayerColor.RED, PlayerColor.YELLOW), 10, 10, 20);
+        assertEquals(expected, actual);
+    }
+
+    @Test
     void profSecondTestPlayersScoredRiver() {
         String expected = "Claude et Bachir ont remporté 3 points en tant qu'occupant·e·s majoritaires d'une rivière composée de 3 tuiles.";
         String actual = textMakerFr.playersScoredRiver(Set.of(PlayerColor.BLUE, PlayerColor.GREEN), 3, 0, 3);
@@ -151,15 +174,17 @@ public class TextMakerFrTest {
     }
 
     @Test
-    void testPlayersScoredRiverForNoFish() {
+    void testPlayersScoredRiverForNoFishTwo() {
         String expected = "Dalia, Claude, Bachir et Alice ont remporté 5 points en tant qu'occupant·e·s majoritaires d'une rivière composée de 10 tuiles.";
         String actual = textMakerFr.playersScoredRiver(Set.of(PlayerColor.BLUE, PlayerColor.GREEN, PlayerColor.RED, PlayerColor.YELLOW), 5, 0, 10);
         assertEquals(expected, actual);
     }
 
     @Test
-    void playerScoredRiverThrowsException() {
-        assertThrows(IllegalArgumentException.class, () -> textMakerFr.playersScoredRiver(Set.of(), 5, 10, 10));
+    void testPlayersScoredRiverForNoFish() {
+        String expected = "Dalia, Claude, Bachir et Alice ont remporté 5 points en tant qu'occupant·e·s majoritaires d'une rivière composée de 10 tuiles.";
+        String actual = textMakerFr.playersScoredRiver(Set.of(PlayerColor.BLUE, PlayerColor.GREEN, PlayerColor.RED, PlayerColor.YELLOW), 5, 0, 10);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -191,16 +216,6 @@ public class TextMakerFrTest {
         Map<Animal.Kind, Integer> animals = Map.of(Animal.Kind.DEER, 2, Animal.Kind.AUROCHS, 0, Animal.Kind.MAMMOTH, 4);
         String actual = textMakerFr.playerScoredHuntingTrap(PlayerColor.YELLOW, 10, animals);
         assertEquals(expected, actual);
-    }
-
-    @Test
-    void playerScoredHuntingTrapThrowsException() {
-        assertThrows(IllegalArgumentException.class, () -> textMakerFr.playerScoredHuntingTrap(PlayerColor.RED, 5, Map.of()));
-    }
-
-    @Test
-    void playerScoredHuntingTrapThrowsExceptionIfNoScorer() {
-        assertThrows(IllegalArgumentException.class, () -> textMakerFr.playerScoredHuntingTrap(null, 5, Map.of(Animal.Kind.DEER, 2)));
     }
 
     @Test

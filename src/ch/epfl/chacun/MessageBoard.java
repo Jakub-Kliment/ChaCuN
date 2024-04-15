@@ -90,7 +90,6 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
      */
     public MessageBoard withScoredRiver(Area<Zone.River> river) {
         if (!river.isOccupied()) return this;
-
         int points = Points.forClosedRiver(
                 river.tileIds().size(),
                 Area.riverFishCount(river));
@@ -121,7 +120,7 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
         Map<Animal.Kind, Integer> animalCount = animalCount(adjacentMeadow, new HashSet<>());
         int points = meadowPoints(animalCount);
 
-        if (points <= 0) return this;
+        if (points == 0) return this;
         return new MessageBoard(
                 textMaker,
                 withNewMessage(
