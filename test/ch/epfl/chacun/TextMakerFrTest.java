@@ -3,6 +3,7 @@ package ch.epfl.chacun;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,6 +17,24 @@ public class TextMakerFrTest {
             PlayerColor.GREEN, "Bachir",
             PlayerColor.YELLOW, "Alice");
     private final TextMakerFr textMakerFr = new TextMakerFr(playerNames);
+
+
+    @Test
+    void textMakerFrClassIsImmutable() {
+        Map<PlayerColor, String> playerColors = new HashMap<>();
+        playerColors.put(PlayerColor.RED, "Rouge");
+        playerColors.put(PlayerColor.BLUE, "Bleu");
+        playerColors.put(PlayerColor.GREEN, "Vert");
+        playerColors.put(PlayerColor.YELLOW, "Jaune");
+
+        TextMakerFr textMakerFr = new TextMakerFr(playerColors);
+
+        playerColors.put(PlayerColor.PURPLE, "Pourpre");
+        playerColors.put(PlayerColor.RED, "Orange");
+
+        assertEquals("Rouge", textMakerFr.playerName(PlayerColor.RED));
+        assertThrows(IllegalArgumentException.class, () -> textMakerFr.playerName(PlayerColor.PURPLE));
+    }
     @Test
     void testPlayerName() {
         assertEquals("Dalia", textMakerFr.playerName(PlayerColor.RED));

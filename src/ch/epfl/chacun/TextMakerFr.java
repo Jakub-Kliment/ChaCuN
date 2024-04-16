@@ -23,7 +23,7 @@ public class TextMakerFr implements TextMaker {
      * @param playerNames the map of player colors to player names
      */
     public TextMakerFr(Map<PlayerColor, String> playerNames) {
-        this.playerNames = Collections.unmodifiableMap(playerNames);
+        this.playerNames = Map.copyOf(playerNames);
     }
 
     /**
@@ -59,7 +59,8 @@ public class TextMakerFr implements TextMaker {
      */
     @Override
     public String playerClosedForestWithMenhir(PlayerColor player) {
-        return STR."\{playerName(player)} a fermé une forêt contenant un menhir et peut donc placer une tuile menhir.";
+        return STR."\{playerName(player)} a fermé une forêt contenant " +
+                STR."un menhir et peut donc placer une tuile menhir.";
     }
 
     /**
@@ -76,7 +77,10 @@ public class TextMakerFr implements TextMaker {
     @Override
     public String playersScoredForest(Set<PlayerColor> scorers, int points, int mushroomGroupCount, int tileCount) {
         String mushrooms = STR." et de \{numberOf(mushroomGroupCount, "groupe")} de champignons";
-        return STR."\{playersObtained(scorers)} \{numberOf(points, "point")} \{majorityOccupants(scorers)} d'une forêt composée de \{numberOf(tileCount, "tuile")}\{addIfGainedPoints(mushrooms, mushroomGroupCount)}.";
+        return STR."\{playersObtained(scorers)} \{numberOf(points, "point")} " +
+                STR."\{majorityOccupants(scorers)} d'une forêt composée de " +
+                STR."\{numberOf(tileCount, "tuile")}" +
+                STR."\{addIfGainedPoints(mushrooms, mushroomGroupCount)}.";
     }
 
     /**
@@ -93,7 +97,10 @@ public class TextMakerFr implements TextMaker {
     @Override
     public String playersScoredRiver(Set<PlayerColor> scorers, int points, int fishCount, int tileCount) {
         String fish = STR." et contenant \{numberOf(fishCount, "poisson")}";
-        return STR."\{playersObtained(scorers)} \{numberOf(points, "point")} \{majorityOccupants(scorers)} d'une rivière composée de \{numberOf(tileCount, "tuile")}\{addIfGainedPoints(fish, fishCount)}.";
+        return STR."\{playersObtained(scorers)} \{numberOf(points, "point")} " +
+                STR."\{majorityOccupants(scorers)} d'une rivière composée de " +
+                STR."\{numberOf(tileCount, "tuile")}" +
+                STR."\{addIfGainedPoints(fish, fishCount)}.";
     }
 
     /**
@@ -107,7 +114,9 @@ public class TextMakerFr implements TextMaker {
      */
     @Override
     public String playerScoredHuntingTrap(PlayerColor scorer, int points, Map<Animal.Kind, Integer> animals) {
-        return STR."\{playersObtained(Set.of(scorer))} \{numberOf(points, "point")} en plaçant la fosse à pieux dans un pré dans lequel elle est entourée de \{animalPoints(animals)}.";
+        return STR."\{playersObtained(Set.of(scorer))} \{numberOf(points, "point")} " +
+                STR."en plaçant la fosse à pieux dans un pré dans lequel elle est entourée de " +
+                STR."\{animalPoints(animals)}.";
     }
 
     /**
@@ -121,7 +130,9 @@ public class TextMakerFr implements TextMaker {
      */
     @Override
     public String playerScoredLogboat(PlayerColor scorer, int points, int lakeCount) {
-        return STR."\{playersObtained(Set.of(scorer))} \{numberOf(points, "point")} en plaçant la pirogue dans un réseau hydrographique contenant \{numberOf(lakeCount, "lac")}.";
+        return STR."\{playersObtained(Set.of(scorer))} \{numberOf(points, "point")} " +
+                STR."en plaçant la pirogue dans un réseau hydrographique contenant " +
+                STR."\{numberOf(lakeCount, "lac")}.";
     }
 
     /**
@@ -135,7 +146,9 @@ public class TextMakerFr implements TextMaker {
      */
     @Override
     public String playersScoredMeadow(Set<PlayerColor> scorers, int points, Map<Animal.Kind, Integer> animals) {
-        return STR."\{playersObtained(scorers)} \{numberOf(points, "point")} \{majorityOccupants(scorers)} d'un pré contenant \{animalPoints(animals)}.";
+        return STR."\{playersObtained(scorers)} \{numberOf(points, "point")} " +
+                STR."\{majorityOccupants(scorers)} d'un pré contenant " +
+                STR."\{animalPoints(animals)}.";
     }
 
     /**
@@ -149,7 +162,9 @@ public class TextMakerFr implements TextMaker {
      */
     @Override
     public String playersScoredRiverSystem(Set<PlayerColor> scorers, int points, int fishCount) {
-        return STR."\{playersObtained(scorers)} \{numberOf(points, "point")} \{majorityOccupants(scorers)} d'un réseau hydrographique contenant \{numberOf(fishCount, "poisson")}.";
+        return STR."\{playersObtained(scorers)} \{numberOf(points, "point")} " +
+                STR."\{majorityOccupants(scorers)} d'un réseau hydrographique contenant " +
+                STR."\{numberOf(fishCount, "poisson")}.";
     }
 
     /**
@@ -164,7 +179,9 @@ public class TextMakerFr implements TextMaker {
      */
     @Override
     public String playersScoredPitTrap(Set<PlayerColor> scorers, int points, Map<Animal.Kind, Integer> animals) {
-        return STR."\{playersObtained(scorers)} \{numberOf(points, "point")} \{majorityOccupants(scorers)} d'un pré contenant la grande fosse à pieux entourée de \{animalPoints(animals)}.";
+        return STR."\{playersObtained(scorers)} \{numberOf(points, "point")} " +
+                STR."\{majorityOccupants(scorers)} d'un pré contenant la grande fosse à pieux entourée de " +
+                STR."\{animalPoints(animals)}.";
     }
 
     /**
@@ -178,7 +195,9 @@ public class TextMakerFr implements TextMaker {
      */
     @Override
     public String playersScoredRaft(Set<PlayerColor> scorers, int points, int lakeCount) {
-        return STR."\{playersObtained(scorers)} \{numberOf(points, "point")} \{majorityOccupants(scorers)} d'un réseau hydrographique contenant le radeau et \{ numberOf(lakeCount, "lac")}.";
+        return STR."\{playersObtained(scorers)} \{numberOf(points, "point")} " +
+                STR."\{majorityOccupants(scorers)} d'un réseau hydrographique contenant le radeau et " +
+                STR."\{ numberOf(lakeCount, "lac")}.";
     }
 
     /**
@@ -191,9 +210,8 @@ public class TextMakerFr implements TextMaker {
      */
     @Override
     public String playersWon(Set<PlayerColor> winners, int points) {
-        // !!!!! demander pour l'espace avant le point d'exclamation
-        // points !
-        return STR."\{playersObtained(winners)} la partie avec \{numberOf(points, "point")} !";
+        return STR."\{playersObtained(winners)} la partie avec " +
+                STR."\{numberOf(points, "point")} !";
     }
 
     /**
@@ -204,7 +222,8 @@ public class TextMakerFr implements TextMaker {
      */
     @Override
     public String clickToOccupy() {
-        return "Cliquez sur le pion ou la hutte que vous désirez placer, ou ici pour ne pas en placer.";
+        return "Cliquez sur le pion ou la hutte que vous désirez placer, " +
+                "ou ici pour ne pas en placer.";
     }
 
     /**
@@ -215,7 +234,8 @@ public class TextMakerFr implements TextMaker {
      */
     @Override
     public String clickToUnoccupy() {
-        return "Cliquez sur le pion que vous désirez reprendre, ou ici pour ne pas en reprendre.";
+        return "Cliquez sur le pion que vous désirez reprendre, " +
+                "ou ici pour ne pas en reprendre.";
     }
 
     /**
@@ -264,8 +284,8 @@ public class TextMakerFr implements TextMaker {
         // Create the textual representation of the animals and their number
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < sortedAnimals.size(); i++) {
-            sb.append(STR."\{numberOf(animals.get(sortedAnimals.get(i)),
-                    animalName(sortedAnimals.get(i)))}");
+            sb.append(numberOf(animals.get(sortedAnimals.get(i)),
+                    animalName(sortedAnimals.get(i))));
             if (i < sortedAnimals.size() - 2)
                 sb.append(", ");
             else if (i == sortedAnimals.size() - 2)
@@ -313,7 +333,7 @@ public class TextMakerFr implements TextMaker {
      * @return the textual representation of the number and the string
      */
     private String numberOf(int number, String s) {
-        return STR."\{points(number)} \{s}\{plural(number)}";
+        return STR."\{number} \{s}\{plural(number)}";
     }
 
     /**
