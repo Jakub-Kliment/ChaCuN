@@ -30,9 +30,12 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
      */
     public Map<PlayerColor, Integer> points() {
         Map<PlayerColor, Integer> points = new HashMap<>();
+        for (PlayerColor player : PlayerColor.ALL){
+            points.put(player, 0);
+        }
         for (Message message : messages)
             for (PlayerColor player : message.scorers)
-                points.put(player, points.getOrDefault(player, 0) + message.points);
+                points.put(player, points.get(player) + message.points);
         return points;
     }
 

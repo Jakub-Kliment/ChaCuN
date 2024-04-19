@@ -22,17 +22,17 @@ public class PlayersUI {
                               TextMaker textMaker) {
         Pane box = new VBox();
         box.getStylesheets().add("players.css");
-        ObservableValue<Map<PlayerColor, Integer>> points = gameState.map((gs -> gs.messageBoard().points()));
+        ObservableValue<Map<PlayerColor, Integer>> points = gameState.map(gs -> gs.messageBoard().points());
         ObservableValue<PlayerColor> currentPlayer = gameState.map(GameState::currentPlayer);
         for (PlayerColor color : PlayerColor.ALL) {
             if (textMaker.playerName(color) == null) continue;
             Pane flow = new TextFlow();
-            flow.getStylesheets().add("player");
+            flow.getStyleClass().add("player");
             currentPlayer.addListener( (o, old, next) -> {
                 if (old == color)
-                    flow.getStylesheets().remove("current");
+                    flow.getStyleClass().remove("current");
                 if (next == color){
-                    flow.getStylesheets().add("current");
+                    flow.getStyleClass().add("current");
                 }
             } );
 
@@ -42,8 +42,8 @@ public class PlayersUI {
 
 
             ObservableValue<String> string = points.map(mapPoint -> STR." \{textMaker.playerName(color)} : \{mapPoint.get(color)} point\{mapPoint.get(color) > 1 ? "s" : ""}\n");
-            Node text = new Text();
-            text.accessibleTextProperty().bind(string);
+            Text text = new Text();
+            text.textProperty().bind(string);
             flow.getChildren().add(text);
 
 
