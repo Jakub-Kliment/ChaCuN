@@ -1,12 +1,18 @@
 package ch.epfl.chacun.gui;
 
 import ch.epfl.chacun.GameState;
+import ch.epfl.chacun.Occupant;
 import ch.epfl.chacun.PlayerColor;
 import ch.epfl.chacun.TextMaker;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.SVGPath;
+import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
+
+import java.util.Map;
 
 public class PlayersUI {
 
@@ -14,27 +20,55 @@ public class PlayersUI {
 
     public static Node create(ObservableValue<GameState> gameState,
                               TextMaker textMaker) {
-        SVGPath svg = new SVGPath();
-
+        Pane box = new VBox();
+        box.getStylesheets().add("players.css");
+        ObservableValue<Map<PlayerColor, Integer>> points = gameState.map((gs -> gs.messageBoard().points()));
+        ObservableValue<PlayerColor> currentPlayer = gameState.map(GameState::currentPlayer);
         for (PlayerColor color : PlayerColor.ALL) {
-            VBox vBox = new VBox();
-            if (textMaker.playerName(color) != null) {
-                svg.setStyle(vBox.getStylesheets().toString());
+            if (textMaker.playerName(color) == null) continue;
+            Pane flow = new TextFlow();
+            flow.getStylesheets().add("player");
+            currentPlayer.addListener( (o, old, next) -> {
+                if (old == color)
+                    flow.getStylesheets().remove("current");
+                if (next == color){
+                    flow.getStylesheets().add("current");
+                }
+            } );
 
-                vBox.setId(textMaker.playerName(color));
 
-                vBox.getStyleClass();
+            Node circle = new Circle(5, ColorMap.fillColor(color));
+            flow.getChildren().add(circle);
+
+
+            ObservableValue<String> string = points.map(mapPoint -> STR." \{textMaker.playerName(color)} : \{mapPoint.get(color)} point\{mapPoint.get(color) > 1 ? "s" : ""}\n");
+            Node text = new Text();
+            text.accessibleTextProperty().bind(string);
+            flow.getChildren().add(text);
+
+
+
+            for (int i = 1; i <= 3; i++) {
+                Node hut = Icon.newFor(color, Occupant.Kind.HUT);
+                int finalI = i;
+                ObservableValue<Double> opacity = gameState.map(gs -> gs.freeOccupantsCount(color, Occupant.Kind.HUT) >= finalI ? 1 : 0.1);
+                hut.opacityProperty().bind(opacity);
+                flow.getChildren().add(hut);
             }
+
+            Node espace = new Text("   ");
+            box.getChildren().add(espace);
+
+            for (int i = 1; i <= 5; i++) {
+                Node pawn = Icon.newFor(color, Occupant.Kind.PAWN);
+                int finalI = i;
+                ObservableValue<Double> opacity = gameState.map(((c) -> c.freeOccupantsCount(color, Occupant.Kind.PAWN) >= finalI ? 1 : 0.1));
+                pawn.opacityProperty().bind(opacity);
+                flow.getChildren().add(pawn);
+            }
+
+            box.getChildren().add(flow);
         }
-
-        ObservableValue<GameState> gameStateO = gameState;
-        ObservableValue<PlayerColor> currentPlayerO =
-                gameStateO.map(GameState::currentPlayer);
-
-        svg.setContent(currentPlayerO.toString());
-
-
-        return svg;
+        return box;
     }
-
 }
