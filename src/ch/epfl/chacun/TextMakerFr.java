@@ -35,8 +35,7 @@ public class TextMakerFr implements TextMaker {
      */
     @Override
     public String playerName(PlayerColor playerColor) {
-        Preconditions.checkArgument(playerNames.containsKey(playerColor));
-        return playerNames.get(playerColor);
+        return playerNames.getOrDefault(playerColor, null);
     }
 
     /**

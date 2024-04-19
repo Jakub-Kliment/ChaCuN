@@ -32,8 +32,7 @@ public class TextMakerFrTest {
         playerColors.put(PlayerColor.PURPLE, "Pourpre");
         playerColors.put(PlayerColor.RED, "Orange");
 
-        assertEquals("Rouge", textMakerFr.playerName(PlayerColor.RED));
-        assertThrows(IllegalArgumentException.class, () -> textMakerFr.playerName(PlayerColor.PURPLE));
+        assertNull(textMakerFr.playerName(PlayerColor.PURPLE));
     }
     @Test
     void testPlayerName() {
@@ -49,8 +48,8 @@ public class TextMakerFrTest {
     }
 
     @Test
-    void playerNameThrowsException() {
-        assertThrows(IllegalArgumentException.class, () -> textMakerFr.playerName(PlayerColor.PURPLE));
+    void playerNameNullIfNameNotInMap() {
+        assertNull(textMakerFr.playerName(PlayerColor.PURPLE));
     }
 
     @Test
