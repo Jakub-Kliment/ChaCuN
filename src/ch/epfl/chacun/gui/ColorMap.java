@@ -42,7 +42,7 @@ public class ColorMap {
      */
     public static Color strokeColor(PlayerColor color) {
         return switch (color) {
-            case GREEN -> Color.GREEN.deriveColor(0, 1, 0.6, 1);
+            case GREEN -> Color.LIME.deriveColor(0, 1, 0.6, 1);
             case YELLOW -> Color.YELLOW.deriveColor(0, 1, 0.6, 1);
             default -> Color.WHITE;
         };
