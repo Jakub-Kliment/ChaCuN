@@ -8,6 +8,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -27,8 +28,11 @@ public class MessageBoardUI {
 
         listMessage.addListener((l, old, next) -> {
             for (int i = next.size() - old.size(); i > 0 ; i--){
-                Text message = new Text(next.get(next.size()-i).text());
+                MessageBoard.Message mess = next.get(next.size()-i);
+                Text message = new Text(mess.text());
                 message.setWrappingWidth(LARGE_TILE_FIT_SIZE);
+                message.setOnMouseEntered(e -> tileId.setValue(mess.tileIds()));
+                message.setOnMouseExited(e -> tileId.setValue(new HashSet<>()));
                 box.getChildren().add(message);
             }
         });
