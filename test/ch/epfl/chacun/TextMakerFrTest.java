@@ -54,14 +54,15 @@ public class TextMakerFrTest {
 
     @Test
     void testPoints() {
-        assertEquals("1", textMakerFr.points(1));
-        assertEquals("5", textMakerFr.points(5));
-        assertEquals("10", textMakerFr.points(10));
-        assertEquals("15", textMakerFr.points(15));
-        assertEquals("20", textMakerFr.points(20));
+        assertEquals("0 point", textMakerFr.points(0));
+        assertEquals("1 point", textMakerFr.points(1));
+        assertEquals("5 points", textMakerFr.points(5));
+        assertEquals("10 points", textMakerFr.points(10));
+        assertEquals("15 points", textMakerFr.points(15));
+        assertEquals("20 points", textMakerFr.points(20));
 
-        assertNotEquals("5", textMakerFr.points(10));
-        assertNotEquals("10", textMakerFr.points(15));
+        assertNotEquals("5 points", textMakerFr.points(10));
+        assertNotEquals("10 points", textMakerFr.points(15));
     }
 
     @Test

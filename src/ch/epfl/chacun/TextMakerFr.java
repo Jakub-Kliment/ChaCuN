@@ -46,7 +46,7 @@ public class TextMakerFr implements TextMaker {
      */
     @Override
     public String points(int points) {
-        return STR."\{points}";
+        return STR."\{points} point\{plural(points)}";
     }
 
     /**
@@ -76,7 +76,7 @@ public class TextMakerFr implements TextMaker {
     @Override
     public String playersScoredForest(Set<PlayerColor> scorers, int points, int mushroomGroupCount, int tileCount) {
         String mushrooms = STR." et de \{numberOf(mushroomGroupCount, "groupe")} de champignons";
-        return STR."\{playersObtained(scorers)} \{numberOf(points, "point")} " +
+        return STR."\{playersObtained(scorers)} \{points(points)} " +
                 STR."\{majorityOccupants(scorers)} d'une forêt composée de " +
                 STR."\{numberOf(tileCount, "tuile")}" +
                 STR."\{addIfGainedPoints(mushrooms, mushroomGroupCount)}.";
@@ -96,7 +96,7 @@ public class TextMakerFr implements TextMaker {
     @Override
     public String playersScoredRiver(Set<PlayerColor> scorers, int points, int fishCount, int tileCount) {
         String fish = STR." et contenant \{numberOf(fishCount, "poisson")}";
-        return STR."\{playersObtained(scorers)} \{numberOf(points, "point")} " +
+        return STR."\{playersObtained(scorers)} \{points(points)} " +
                 STR."\{majorityOccupants(scorers)} d'une rivière composée de " +
                 STR."\{numberOf(tileCount, "tuile")}" +
                 STR."\{addIfGainedPoints(fish, fishCount)}.";
@@ -113,7 +113,7 @@ public class TextMakerFr implements TextMaker {
      */
     @Override
     public String playerScoredHuntingTrap(PlayerColor scorer, int points, Map<Animal.Kind, Integer> animals) {
-        return STR."\{playersObtained(Set.of(scorer))} \{numberOf(points, "point")} " +
+        return STR."\{playersObtained(Set.of(scorer))} \{points(points)} " +
                 STR."en plaçant la fosse à pieux dans un pré dans lequel elle est entourée de " +
                 STR."\{animalPoints(animals)}.";
     }
@@ -129,7 +129,7 @@ public class TextMakerFr implements TextMaker {
      */
     @Override
     public String playerScoredLogboat(PlayerColor scorer, int points, int lakeCount) {
-        return STR."\{playersObtained(Set.of(scorer))} \{numberOf(points, "point")} " +
+        return STR."\{playersObtained(Set.of(scorer))} \{points(points)} " +
                 STR."en plaçant la pirogue dans un réseau hydrographique contenant " +
                 STR."\{numberOf(lakeCount, "lac")}.";
     }
@@ -145,7 +145,7 @@ public class TextMakerFr implements TextMaker {
      */
     @Override
     public String playersScoredMeadow(Set<PlayerColor> scorers, int points, Map<Animal.Kind, Integer> animals) {
-        return STR."\{playersObtained(scorers)} \{numberOf(points, "point")} " +
+        return STR."\{playersObtained(scorers)} \{points(points)} " +
                 STR."\{majorityOccupants(scorers)} d'un pré contenant " +
                 STR."\{animalPoints(animals)}.";
     }
@@ -161,7 +161,7 @@ public class TextMakerFr implements TextMaker {
      */
     @Override
     public String playersScoredRiverSystem(Set<PlayerColor> scorers, int points, int fishCount) {
-        return STR."\{playersObtained(scorers)} \{numberOf(points, "point")} " +
+        return STR."\{playersObtained(scorers)} \{points(points)} " +
                 STR."\{majorityOccupants(scorers)} d'un réseau hydrographique contenant " +
                 STR."\{numberOf(fishCount, "poisson")}.";
     }
@@ -178,7 +178,7 @@ public class TextMakerFr implements TextMaker {
      */
     @Override
     public String playersScoredPitTrap(Set<PlayerColor> scorers, int points, Map<Animal.Kind, Integer> animals) {
-        return STR."\{playersObtained(scorers)} \{numberOf(points, "point")} " +
+        return STR."\{playersObtained(scorers)} \{points(points)} " +
                 STR."\{majorityOccupants(scorers)} d'un pré contenant la grande fosse à pieux entourée de " +
                 STR."\{animalPoints(animals)}.";
     }
@@ -194,7 +194,7 @@ public class TextMakerFr implements TextMaker {
      */
     @Override
     public String playersScoredRaft(Set<PlayerColor> scorers, int points, int lakeCount) {
-        return STR."\{playersObtained(scorers)} \{numberOf(points, "point")} " +
+        return STR."\{playersObtained(scorers)} \{points(points)} " +
                 STR."\{majorityOccupants(scorers)} d'un réseau hydrographique contenant le radeau et " +
                 STR."\{ numberOf(lakeCount, "lac")}.";
     }
@@ -209,8 +209,7 @@ public class TextMakerFr implements TextMaker {
      */
     @Override
     public String playersWon(Set<PlayerColor> winners, int points) {
-        return STR."\{playersObtained(winners)} la partie avec " +
-                STR."\{numberOf(points, "point")} !";
+        return STR."\{playersObtained(winners)} la partie avec \{points(points)} !";
     }
 
     /**
@@ -221,8 +220,7 @@ public class TextMakerFr implements TextMaker {
      */
     @Override
     public String clickToOccupy() {
-        return "Cliquez sur le pion ou la hutte que vous désirez placer, " +
-                "ou ici pour ne pas en placer.";
+        return "Cliquez sur le pion ou la hutte que vous désirez placer, ou ici pour ne pas en placer.";
     }
 
     /**
@@ -233,8 +231,7 @@ public class TextMakerFr implements TextMaker {
      */
     @Override
     public String clickToUnoccupy() {
-        return "Cliquez sur le pion que vous désirez reprendre, " +
-                "ou ici pour ne pas en reprendre.";
+        return "Cliquez sur le pion que vous désirez reprendre, ou ici pour ne pas en reprendre.";
     }
 
     /**

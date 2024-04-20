@@ -22,52 +22,50 @@ public class PlayersUI {
                               TextMaker textMaker) {
         Pane box = new VBox();
         box.getStylesheets().add("players.css");
-        ObservableValue<Map<PlayerColor, Integer>> points = gameState.map(gs -> gs.messageBoard().points());
-        ObservableValue<PlayerColor> currentPlayer = gameState.map(GameState::currentPlayer);
+        //box.setId("players");
+        ObservableValue<Map<PlayerColor, Integer>> points =
+                gameState.map(gs -> gs.messageBoard().points());
+        ObservableValue<PlayerColor> currentPlayer =
+                gameState.map(GameState::currentPlayer);
+
         for (PlayerColor color : PlayerColor.ALL) {
             if (textMaker.playerName(color) == null) continue;
-            Pane flow = new TextFlow();
-            flow.getStyleClass().add("player");
-            currentPlayer.addListener( (o, old, next) -> {
-                if (old == color)
-                    flow.getStyleClass().remove("current");
-                if (next == color){
-                    flow.getStyleClass().add("current");
-                }
-            } );
+            Pane textFlow = new TextFlow();
+            textFlow.getStyleClass().add("player");
+            currentPlayer.addListener((o, old, next) -> {
+                if (old == color) textFlow.getStyleClass().remove("current");
+                if (next == color) textFlow.getStyleClass().add("current");
+            });
 
+            textFlow.getChildren().add(new Circle(5, ColorMap.fillColor(color)));
 
-            Node circle = new Circle(5, ColorMap.fillColor(color));
-            flow.getChildren().add(circle);
-
-
-            ObservableValue<String> string = points.map(mapPoint -> STR." \{textMaker.playerName(color)} : \{mapPoint.get(color)} point\{mapPoint.get(color) > 1 ? "s" : ""}\n");
+            ObservableValue<String> playerPoints = points
+                    .map(messageBoard -> STR." \{textMaker.playerName(color)} : " +
+                            STR."\{textMaker.points(messageBoard.getOrDefault(color, 0))}\n");
             Text text = new Text();
-            text.textProperty().bind(string);
-            flow.getChildren().add(text);
-
-
+            text.textProperty().bind(playerPoints);
+            textFlow.getChildren().add(text);
 
             for (int i = 1; i <= 3; i++) {
                 Node hut = Icon.newFor(color, Occupant.Kind.HUT);
-                int finalI = i;
-                ObservableValue<Double> opacity = gameState.map(gs -> gs.freeOccupantsCount(color, Occupant.Kind.HUT) >= finalI ? 1 : 0.1);
+                int index = i;
+                ObservableValue<Double> opacity = gameState
+                        .map(gs -> gs.freeOccupantsCount(color, Occupant.Kind.HUT) >= index ? 1 : 0.1);
                 hut.opacityProperty().bind(opacity);
-                flow.getChildren().add(hut);
+                textFlow.getChildren().add(hut);
             }
 
-            Node espace = new Text("   ");
-            box.getChildren().add(espace);
+            box.getChildren().add(new Text("   "));
 
             for (int i = 1; i <= 5; i++) {
                 Node pawn = Icon.newFor(color, Occupant.Kind.PAWN);
-                int finalI = i;
-                ObservableValue<Double> opacity = gameState.map(((c) -> c.freeOccupantsCount(color, Occupant.Kind.PAWN) >= finalI ? 1 : 0.1));
+                int index = i;
+                ObservableValue<Double> opacity = gameState
+                        .map((c -> c.freeOccupantsCount(color, Occupant.Kind.PAWN) >= index ? 1 : 0.1));
                 pawn.opacityProperty().bind(opacity);
-                flow.getChildren().add(pawn);
+                textFlow.getChildren().add(pawn);
             }
-
-            box.getChildren().add(flow);
+            box.getChildren().add(textFlow);
         }
         return box;
     }
