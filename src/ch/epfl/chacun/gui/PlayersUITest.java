@@ -10,7 +10,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public final class PlayersUITest extends Application {
@@ -49,10 +48,6 @@ public final class PlayersUITest extends Application {
         gameState = gameState.withPlacedTile(new PlacedTile(Tiles.TILES.getFirst(), gameState.currentPlayer(),
                 Rotation.RIGHT, new Pos(-1, 0)));
         gameState = gameState.withNewOccupant(new Occupant(Occupant.Kind.PAWN, 1));
-
-        gameState = gameState.withPlacedTile(new PlacedTile(Tiles.TILES.get(4), gameState.currentPlayer(),
-                Rotation.LEFT, new Pos(0, -1)));
-        gameState = gameState.withNewOccupant(null);
 
         var gameStateO = new SimpleObjectProperty<>(gameState);
 

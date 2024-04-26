@@ -24,6 +24,7 @@ public class DecksUI {
 
         VBox box = new VBox();
         box.getStylesheets().add("decks.css");
+        box.setId("decks");
 
 
         StackPane currentTile = new StackPane();

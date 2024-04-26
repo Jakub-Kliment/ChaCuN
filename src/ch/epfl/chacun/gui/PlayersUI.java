@@ -22,7 +22,8 @@ public class PlayersUI {
                               TextMaker textMaker) {
         Pane box = new VBox();
         box.getStylesheets().add("players.css");
-        //box.setId("players");
+        box.setId("players");
+
         ObservableValue<Map<PlayerColor, Integer>> points =
                 gameState.map(gs -> gs.messageBoard().points());
         ObservableValue<PlayerColor> currentPlayer =
