@@ -33,11 +33,11 @@ public class PlayersUI {
             if (textMaker.playerName(color) == null) continue;
             Pane textFlow = new TextFlow();
             textFlow.getStyleClass().add("player");
-            if (color == PlayerColor.RED)
+            if (color == currentPlayer.getValue())
                 textFlow.getStyleClass().add("current");
             currentPlayer.addListener((o, old, next) -> {
-                if (old == color) textFlow.getStyleClass().remove("current");
                 if (next == color) textFlow.getStyleClass().add("current");
+                if (old == color) textFlow.getStyleClass().remove("current");
             });
 
             textFlow.getChildren().add(new Circle(5, ColorMap.fillColor(color)));

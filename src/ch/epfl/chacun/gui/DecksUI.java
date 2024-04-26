@@ -26,34 +26,25 @@ public class DecksUI {
         box.getStylesheets().add("decks.css");
         box.setId("decks");
 
-
-        StackPane currentTile = new StackPane();
-        currentTile.getStyleClass().add("next-tile");
-        box.getChildren().add(currentTile);
-
-        Text textCurrent = new Text();
-        textCurrent.visibleProperty().bind(text.map(txt -> !txt.isEmpty()));
-        textCurrent.setOnMouseClicked(e -> event.accept(null));
-        textCurrent.setWrappingWidth(0.8 * ImageLoader.LARGE_TILE_FIT_SIZE);
-        currentTile.getChildren().add(textCurrent);
-
-
-        ImageView imageCurrent = new ImageView();
-        ObservableValue<Image> image = tileToPlace.map(t -> ImageLoader.largeImageForTile(t.id()));
-        image.addListener((i, old, next) -> {
-            imageCurrent.setImage(next);
-        });
-
-        imageCurrent.setFitHeight(ImageLoader.LARGE_TILE_PIXEL_SIZE);
-        imageCurrent.setFitWidth(ImageLoader.LARGE_TILE_PIXEL_SIZE);
-        imageCurrent.visibleProperty().bind(text.map(String::isEmpty));
-        currentTile.getChildren().add(imageCurrent);
-
-
         HBox hBoxDecks = new HBox();
         hBoxDecks.getStyleClass().add("decks");
         box.getChildren().add(hBoxDecks);
 
+        //Normale Tile
+        StackPane tileNormal = new StackPane();
+        hBoxDecks.getChildren().add(tileNormal);
+
+        ImageView imageNormal = new ImageView(new Image("/512/NORMAL.jpg"));
+        imageNormal.getStyleClass().add("NORMAL");
+        imageNormal.setFitWidth(ImageLoader.LARGE_TILE_FIT_SIZE);
+        imageNormal.setFitHeight(ImageLoader.LARGE_TILE_FIT_SIZE);
+        tileNormal.getChildren().add(imageNormal);
+
+        Text textNormal = new Text();
+        textNormal.textProperty().bind(normalTile.map(i -> STR."\{i}"));
+        tileNormal.getChildren().add(textNormal);
+
+        //Mehnir Tile
         StackPane tileMenhir = new StackPane();
         hBoxDecks.getChildren().add(tileMenhir);
 
@@ -68,18 +59,29 @@ public class DecksUI {
         tileMenhir.getChildren().add(textMenhir);
 
 
-        StackPane tileNormal = new StackPane();
-        hBoxDecks.getChildren().add(tileNormal);
+        //Current Tile
+        StackPane currentTile = new StackPane();
+        currentTile.getStyleClass().add("next-tile");
+        box.getChildren().add(currentTile);
 
-        ImageView imageNormal = new ImageView(new Image("/512/NORMAL.jpg"));
-        imageNormal.getStyleClass().add("NORMAL");
-        imageNormal.setFitWidth(ImageLoader.LARGE_TILE_FIT_SIZE);
-        imageNormal.setFitHeight(ImageLoader.LARGE_TILE_FIT_SIZE);
-        tileNormal.getChildren().add(imageNormal);
+        ImageView imageCurrent = new ImageView();
+        ObservableValue<Image> image = tileToPlace.map(t -> ImageLoader.largeImageForTile(t.id()));
+        imageCurrent.setImage(image.getValue());
+        image.addListener((i, old, next) -> {
+            imageCurrent.setImage(next);
+        });
 
-        Text textNormal = new Text();
-        textNormal.textProperty().bind(normalTile.map(i -> STR."\{i}"));
-        tileNormal.getChildren().add(textNormal);
+        imageCurrent.setFitHeight(ImageLoader.LARGE_TILE_PIXEL_SIZE);
+        imageCurrent.setFitWidth(ImageLoader.LARGE_TILE_PIXEL_SIZE);
+        imageCurrent.visibleProperty().bind(text.map(String::isEmpty));
+        currentTile.getChildren().add(imageCurrent);
+
+        Text textCurrent = new Text();
+        textCurrent.textProperty().bind(text);
+        textCurrent.visibleProperty().bind(text.map(txt -> !txt.isEmpty()));
+        textCurrent.setOnMouseClicked(e -> event.accept(null));
+        textCurrent.setWrappingWidth(0.8 * ImageLoader.LARGE_TILE_PIXEL_SIZE);
+        currentTile.getChildren().add(textCurrent);
 
         return box;
     }
