@@ -4,12 +4,20 @@ package ch.epfl.chacun.gui;
 import ch.epfl.chacun.*;
 import ch.epfl.chacun.tile.Tiles;
 import javafx.application.Application;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ObjectPropertyBase;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.event.Event;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public final class PlayersUITest extends Application {
@@ -17,11 +25,11 @@ public final class PlayersUITest extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        var playerNames = Map.of(PlayerColor.RED, "Rose",
-                PlayerColor.BLUE, "Bernard",
-                PlayerColor.YELLOW, "Patrick",
-                PlayerColor.GREEN, "Shrek",
-                PlayerColor.PURPLE, "Valuigi");
+        var playerNames = Map.of(PlayerColor.RED, "Mario",
+                PlayerColor.BLUE, "Peach",
+                PlayerColor.YELLOW, "Warrio",
+                PlayerColor.GREEN, "Luigi",
+                PlayerColor.PURPLE, "Waluigi");
         var playerColors = playerNames.keySet().stream()
                 .sorted()
                 .toList();
