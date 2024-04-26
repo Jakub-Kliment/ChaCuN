@@ -32,6 +32,8 @@ public class PlayersUI {
             if (textMaker.playerName(color) == null) continue;
             Pane textFlow = new TextFlow();
             textFlow.getStyleClass().add("player");
+            if (color == PlayerColor.RED)
+                textFlow.getStyleClass().add("current");
             currentPlayer.addListener((o, old, next) -> {
                 if (old == color) textFlow.getStyleClass().remove("current");
                 if (next == color) textFlow.getStyleClass().add("current");
@@ -40,8 +42,9 @@ public class PlayersUI {
             textFlow.getChildren().add(new Circle(5, ColorMap.fillColor(color)));
 
             ObservableValue<String> playerPoints = points
-                    .map(messageBoard -> STR." \{textMaker.playerName(color)} : " +
-                            STR."\{textMaker.points(messageBoard.getOrDefault(color, 0))}\n");
+                    .map(point -> STR." \{textMaker.playerName(color)} : " +
+                            STR."\{textMaker.points(point.getOrDefault(color, 0))}\n");
+
             Text text = new Text();
             text.textProperty().bind(playerPoints);
             textFlow.getChildren().add(text);
@@ -55,7 +58,7 @@ public class PlayersUI {
                 textFlow.getChildren().add(hut);
             }
 
-            box.getChildren().add(new Text("   "));
+            textFlow.getChildren().add(new Text("   "));
 
             for (int i = 1; i <= 5; i++) {
                 Node pawn = Icon.newFor(color, Occupant.Kind.PAWN);

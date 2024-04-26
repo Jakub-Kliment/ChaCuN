@@ -31,14 +31,15 @@ public class MessageBoardUI {
 
         messageList.addListener((m, old, next) -> {
             for (int i = next.size() - old.size(); i > 0 ; i--) {
-                MessageBoard.Message boardMessage = next.get(next.size()-i);
+                MessageBoard.Message boardMessage = next.get(next.size() - i);
                 Text message = new Text(boardMessage.text());
                 message.setWrappingWidth(LARGE_TILE_FIT_SIZE);
                 message.setOnMouseEntered(e -> tileId.setValue(boardMessage.tileIds()));
-                message.setOnMouseExited(e -> tileId.setValue(new HashSet<>()));
+                message.setOnMouseExited(e -> tileId.setValue(Set.of()));
                 box.getChildren().add(message);
             }
         });
+
         runLater(() -> messagePane.setVvalue(1));
 
         return messagePane;

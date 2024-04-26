@@ -31,7 +31,7 @@ public class DecksUI {
         box.getChildren().add(currentTile);
 
         Text textCurrent = new Text();
-        textCurrent.visibleProperty().bind(text.map(s -> !s.isEmpty()));
+        textCurrent.visibleProperty().bind(text.map(txt -> !txt.isEmpty()));
         textCurrent.setOnMouseClicked(e -> event.accept(null));
         textCurrent.setWrappingWidth(0.8 * ImageLoader.LARGE_TILE_FIT_SIZE);
         currentTile.getChildren().add(textCurrent);
