@@ -19,26 +19,26 @@ public class MessageBoardUI {
 
     private MessageBoardUI() {}
 
-    public static Node create(ObservableValue<List<MessageBoard.Message>> listMessage,
+    public static Node create(ObservableValue<List<MessageBoard.Message>> messageList,
                               ObjectProperty<Set<Integer>> tileId) {
-        ScrollPane messagePane = new ScrollPane();
-        messagePane.getStylesheets().add("message-board.css");
 
+        ScrollPane messagePane = new ScrollPane();
+        messagePane.setId("message-board");
+        messagePane.getStylesheets().add("message-board.css");
 
         VBox box = new VBox();
         messagePane.setContent(box);
 
-        listMessage.addListener((l, old, next) -> {
+        messageList.addListener((m, old, next) -> {
             for (int i = next.size() - old.size(); i > 0 ; i--) {
-                MessageBoard.Message mess = next.get(next.size()-i);
-                Text message = new Text(mess.text());
+                MessageBoard.Message boardMessage = next.get(next.size()-i);
+                Text message = new Text(boardMessage.text());
                 message.setWrappingWidth(LARGE_TILE_FIT_SIZE);
-                message.setOnMouseEntered(e -> tileId.setValue(mess.tileIds()));
+                message.setOnMouseEntered(e -> tileId.setValue(boardMessage.tileIds()));
                 message.setOnMouseExited(e -> tileId.setValue(new HashSet<>()));
                 box.getChildren().add(message);
             }
         });
-
         runLater(() -> messagePane.setVvalue(1));
 
         return messagePane;

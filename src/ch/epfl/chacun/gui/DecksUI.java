@@ -1,9 +1,7 @@
 package ch.epfl.chacun.gui;
 
-import ch.epfl.chacun.Board;
 import ch.epfl.chacun.Occupant;
 import ch.epfl.chacun.Tile;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
@@ -12,20 +10,20 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-
 import java.util.function.Consumer;
 
 public class DecksUI {
-    private DecksUI(){}
 
-    public static Node create(ObservableValue<Tile> tileToPlace, ObservableValue<Integer> normalTile,
-                              ObservableValue<Integer> menhirTile, ObservableValue<String> text, Consumer<Occupant> event){
+    private DecksUI() {}
+
+    public static Node create(ObservableValue<Tile> tileToPlace,
+                              ObservableValue<Integer> normalTile,
+                              ObservableValue<Integer> menhirTile,
+                              ObservableValue<String> text,
+                              Consumer<Occupant> event) {
 
         VBox box = new VBox();
         box.getStylesheets().add("decks.css");
-
-
-
 
 
         StackPane currentTile = new StackPane();
@@ -35,24 +33,20 @@ public class DecksUI {
         Text textCurrent = new Text();
         textCurrent.visibleProperty().bind(text.map(s -> !s.isEmpty()));
         textCurrent.setOnMouseClicked(e -> event.accept(null));
-        textCurrent.setWrappingWidth(0.8*ImageLoader.LARGE_TILE_FIT_SIZE);
+        textCurrent.setWrappingWidth(0.8 * ImageLoader.LARGE_TILE_FIT_SIZE);
         currentTile.getChildren().add(textCurrent);
 
 
         ImageView imageCurrent = new ImageView();
-        ObservableValue<Image> image = tileToPlace.map(t -> ImageLoader.largeImageForTil(t.id()));
+        ObservableValue<Image> image = tileToPlace.map(t -> ImageLoader.largeImageForTile(t.id()));
         image.addListener((i, old, next) -> {
             imageCurrent.setImage(next);
         });
-        //TODO 2 ligne d'apres inutile je pense a verifier
+
         imageCurrent.setFitHeight(ImageLoader.LARGE_TILE_PIXEL_SIZE);
         imageCurrent.setFitWidth(ImageLoader.LARGE_TILE_PIXEL_SIZE);
         imageCurrent.visibleProperty().bind(text.map(String::isEmpty));
         currentTile.getChildren().add(imageCurrent);
-
-
-
-
 
 
         HBox hBoxDecks = new HBox();
@@ -63,7 +57,6 @@ public class DecksUI {
         hBoxDecks.getChildren().add(tileMenhir);
 
         ImageView imageMenhir = new ImageView(new Image("/512/MENHIR.jpg"));
-        //TODO Demande pk cette ligne doit etre là, est ce qu'elle difinit l'image ?
         imageMenhir.getStyleClass().add("MENHIR");
         imageMenhir.setFitWidth(ImageLoader.LARGE_TILE_FIT_SIZE);
         imageMenhir.setFitHeight(ImageLoader.LARGE_TILE_FIT_SIZE);
@@ -74,16 +67,10 @@ public class DecksUI {
         tileMenhir.getChildren().add(textMenhir);
 
 
-
-
-
-
-
         StackPane tileNormal = new StackPane();
         hBoxDecks.getChildren().add(tileNormal);
 
         ImageView imageNormal = new ImageView(new Image("/512/NORMAL.jpg"));
-        //TODO Demande pk cette ligne doit etre là, est ce qu'elle difinit l'image ?
         imageNormal.getStyleClass().add("NORMAL");
         imageNormal.setFitWidth(ImageLoader.LARGE_TILE_FIT_SIZE);
         imageNormal.setFitHeight(ImageLoader.LARGE_TILE_FIT_SIZE);
@@ -96,3 +83,4 @@ public class DecksUI {
         return box;
     }
 }
+

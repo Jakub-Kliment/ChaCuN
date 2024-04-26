@@ -61,7 +61,7 @@ public class ImageLoader {
      * @param id the id of the marker
      * @return the image for the marker with the given id
      */
-    public static Image largeImageForTil(int id) {
+    public static Image largeImageForTile(int id) {
         return new Image(STR."/512/\{id}.jpg");
     }
 }
