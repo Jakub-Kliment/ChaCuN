@@ -3,6 +3,8 @@ package ch.epfl.chacun.gui;
 import ch.epfl.chacun.*;
 import ch.epfl.chacun.tile.Tiles;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -69,14 +71,33 @@ public class BoardUI {
                     GameState gs = gameState.getValue();
                     Set<Integer> tileId = tileIds.getValue();
                     Rotation rotation = observableRotation.getValue();
+                    Set<Occupant> visibleOccupant = visibleOccupants.getValue();
                     Image imageData;
                     Color colorData;
                     Rotation rotationData;
+                    PlacedTile tile = gs.board().tileAt(pos);
 
-                    if (gs.board().tileAt(pos) != null){
-                        rotationData = gs.board().tileAt(pos).rotation();
-                        imageData = ImageLoader.largeImageForTile(gs.board().tileAt(pos).id());
-                        if (!tileId.isEmpty() && !tileId.contains(gs.board().tileAt(pos).id()))
+                    if (tile != null){
+                        rotationData = tile.rotation();
+                        imageData = ImageLoader.largeImageForTile(tile.id());
+                        for (Occupant tileOccupant : tile.potentialOccupants()){
+                            Node occupantImage = Icon.newFor(tile.placer(), tileOccupant.kind());
+                            occupantImage.visibleProperty().set(visibleOccupant.contains(tileOccupant));
+                            occupantImage.getStyleClass().add(STR."\{tileOccupant.kind()}_\{tileOccupant.zoneId()}");
+                            occupantImage.setOnMouseClicked(event -> occupant.accept(tileOccupant));
+                            occupantImage.rotateProperty().set(rotationData.negated().degreesCW());
+                            group.getChildren().add(occupantImage);
+                        }
+
+                        for (Zone.Meadow meadow : tile.meadowZones()){
+                            for (Animal animal : meadow.animals()){
+                                ImageView marker= new ImageView("/marker.png");
+                                marker.visibleProperty().set(gs.board().cancelledAnimals().contains(animal));
+                                marker.rotateProperty().set(rotationData.negated().degreesCW());
+                                group.getChildren().add(marker);
+                            }
+                        }
+                        if (!tileId.isEmpty() && !tileId.contains(tile.id()))
                             colorData = Color.BLACK;
                         else
                             colorData = Color.TRANSPARENT;
@@ -89,20 +110,20 @@ public class BoardUI {
                             } else {
                                 imageData = emptyTileImage;
                                 colorData = Color.WHITE;
-                                rotationData = null;// ????????
+                                rotationData = Rotation.NONE;// ????????
                             }
                         } else {
                             imageData = emptyTileImage;
                             colorData = ColorMap.fillColor(gs.currentPlayer());
-                            rotationData = null;
+                            rotationData = Rotation.NONE;
                         }
                     } else {
                         imageData = emptyTileImage;
                         colorData = Color.TRANSPARENT;
-                        rotationData = null;
+                        rotationData = Rotation.NONE;
                     }
                     return new CellData(imageData, rotationData, colorData);
-                }, gameState, tileIds, observableRotation);
+                }, gameState, tileIds, observableRotation, visibleOccupants);
 
                 group.rotateProperty().bind(data.map((dt) -> dt.rotation.degreesCW()));
                 ImageView imageTile = new ImageView();
@@ -119,7 +140,6 @@ public class BoardUI {
                     PlacedTile tile = next.board().tileAt(pos);
                     PlacedTile lastPlaceTile = next.board().lastPlacedTile();
                     if(tile != null && lastPlaceTile != null && tile.id() == lastPlaceTile.id()){
-                        image.setImage(cache.get(tile.id()));
 
                         for (Occupant tileOccupant : tile.potentialOccupants()){
                             Node occupantImage = Icon.newFor(tile.placer(), tileOccupant.kind());
@@ -150,7 +170,7 @@ public class BoardUI {
 
 
 
-                //Ajouter a la bonne pos
+                //TODO Ajouter a la bonne pos
                 gridPane.getChildren().add(group);
             }
         }
