@@ -17,8 +17,7 @@ public final class BoardUITest extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        var playerNames = Map.of(PlayerColor.RED, "Mario",
-                PlayerColor.BLUE, "Peach",
+        var playerNames = Map.of(PlayerColor.BLUE, "Mario",
                 PlayerColor.YELLOW, "Warrio",
                 PlayerColor.GREEN, "Luigi",
                 PlayerColor.PURPLE, "Waluigi");
