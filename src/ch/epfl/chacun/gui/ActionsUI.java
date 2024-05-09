@@ -27,10 +27,10 @@ public class ActionsUI {
         Text text = new Text();
         text.textProperty().bind(actions.map((list) -> {
             StringBuilder txt = new StringBuilder();
-            for (int i = 4; i>0; i--){
+            for (int i = 4; i > 0; i--) {
                 if (list.size() >= i)
-                    txt.append(STR."\{(list.size() + 1 - i) + ":" + list.get(list.size() - i)}");
-                if (!txt.isEmpty() && i>1)
+                    txt.append(STR."\{(list.size() + 1 - i)}:\{list.get(list.size() - i)}");
+                if (!txt.isEmpty() && i > 1)
                     txt.append(", ");
             }
             return txt.toString();
@@ -39,8 +39,6 @@ public class ActionsUI {
 
         TextField textField = new TextField();
         textField.setId("action-field");
-
-
 
 
         textField.setTextFormatter(new TextFormatter<>(change -> {

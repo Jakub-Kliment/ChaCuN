@@ -25,7 +25,7 @@ public class ActionsUITest extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        SimpleObjectProperty<List<String>> messages = new SimpleObjectProperty<>(List.of("MA BITE", "TA BITE"));
+        SimpleObjectProperty<List<String>> messages = new SimpleObjectProperty<>(List.of("A3", "K6", "M", "3E", "I8"));
         var actionsNode = ActionsUI.create(messages, s -> System.out.println(STR."String :\{s}"));
         var root2Node = new ScrollPane(actionsNode);
         primaryStage.setScene(new Scene(root2Node));
