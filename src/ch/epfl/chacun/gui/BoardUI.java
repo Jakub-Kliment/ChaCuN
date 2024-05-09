@@ -77,7 +77,6 @@ public class BoardUI {
                     Set<Integer> tileId = tileIds.getValue();
                     Rotation rotation = observableRotation.getValue();
                     boolean hoverPoprety = observableBooleanValue.get();
-//                    Set<Occupant> visibleOccupant = visibleOccupants.getValue();
                     Image imageData;
                     Color colorData;
                     Rotation rotationData;
@@ -86,28 +85,11 @@ public class BoardUI {
                     if (tile != null){
                         rotationData = tile.rotation();
                         imageData = cache.get(tile.id());
-//                        for (Occupant tileOccupant : tile.potentialOccupants()){
-//                            Node occupantImage = Icon.newFor(tile.placer(), tileOccupant.kind());
-//                            occupantImage.visibleProperty().set(visibleOccupant.contains(tileOccupant));
-//                            occupantImage.getStyleClass().add(STR."\{tileOccupant.kind()}_\{tileOccupant.zoneId()}");
-//                            occupantImage.setOnMouseClicked(event -> occupant.accept(tileOccupant));
-//                            occupantImage.rotateProperty().set(rotationData.negated().degreesCW());
-//                            group.getChildren().add(occupantImage);
-//                        }
-//
-//                        for (Zone.Meadow meadow : tile.meadowZones()){
-//                            for (Animal animal : meadow.animals()){
-//                                ImageView marker= new ImageView("/marker.png");
-//                                marker.visibleProperty().set(gs.board().cancelledAnimals().contains(animal));
-//                                marker.rotateProperty().set(rotationData.negated().degreesCW());
-//                                group.getChildren().add(marker);
-//                            }
-//                        }
                         if (!tileId.isEmpty() && !tileId.contains(tile.id()))
                             colorData = Color.BLACK;
                         else
                             colorData = Color.TRANSPARENT;
-                    } else if (gs.board().insertionPositions().contains(pos)) {
+                    } else if (gs.board().insertionPositions().contains(pos) && gs.tileToPlace() != null) {
                         if (hoverPoprety) {
                             imageData = cache.get(gs.tileToPlace().id());
                             rotationData = rotation;
@@ -127,7 +109,7 @@ public class BoardUI {
                         rotationData = Rotation.NONE;
                     }
                     return new CellData(imageData, rotationData, colorData);
-                }, gameState, tileIds, observableRotation/*, visibleOccupants*/, observableBooleanValue);
+                }, gameState, tileIds, observableRotation, observableBooleanValue);
 
                 tileObservableValue.addListener((t, old, next) -> {
                     for (Occupant tileOccupant : next.potentialOccupants()){
@@ -143,7 +125,6 @@ public class BoardUI {
                         for (Animal animal : meadow.animals()){
                             ImageView marker= new ImageView("/marker.png");
                             marker.visibleProperty().bind(gameState.map(gs -> gs.board().cancelledAnimals().contains(animal)));
-                            marker.rotateProperty().bind(data.map(dt -> dt.rotation.degreesCW()));
                             group.getChildren().add(marker);
                         }
                     }
