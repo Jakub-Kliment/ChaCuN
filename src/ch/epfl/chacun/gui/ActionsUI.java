@@ -35,11 +35,14 @@ public class ActionsUI {
             }
             return txt.toString();
         }));
+
         actionsBox.getChildren().add(text);
 
         TextField textField = new TextField();
         textField.setId("action-field");
-
+        textField.setOnAction(e -> {
+            eventHandler.accept(textField.getText());
+        });
 
         textField.setTextFormatter(new TextFormatter<>(change -> {
             // Obtenez un flux de caractères à partir du texte entré
