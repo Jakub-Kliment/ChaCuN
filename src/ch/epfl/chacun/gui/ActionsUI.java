@@ -1,5 +1,6 @@
 package ch.epfl.chacun.gui;
 
+import ch.epfl.chacun.Base32;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
@@ -28,9 +29,9 @@ public class ActionsUI {
         TextField textField = new TextField();
         textField.setId("action-field");
         textField.setTextFormatter(new TextFormatter<>(change -> {
-            change.setText(change.getText().replace(change.getText(), change.getText().toUpperCase()));
             return change;
         }));
+
         actionsBox.getChildren().add(textField);
 
         return actionsBox;
