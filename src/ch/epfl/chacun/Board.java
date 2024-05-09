@@ -102,7 +102,7 @@ public final class Board {
      * @return copy of the set of cancelled animals
      */
     public Set<Animal> cancelledAnimals() {
-        return Set.copyOf(cancelledAnimals);
+        return cancelledAnimals;
     }
 
     /**
@@ -169,9 +169,7 @@ public final class Board {
      * @return the set of all meadow areas on the board
      */
     public Set<Area<Zone.Meadow>> meadowAreas() {
-        ZonePartition<Zone.Meadow> meadowAreas =
-                new ZonePartition.Builder<>(zonePartitions.meadows()).build();
-        return meadowAreas.areas();
+        return zonePartitions.meadows().areas();
     }
 
 
@@ -181,9 +179,7 @@ public final class Board {
      * @return the set of all river system areas on the board
      */
     public Set<Area<Zone.Water>> riverSystemAreas() {
-        ZonePartition<Zone.Water> riverSystemAreas =
-                new ZonePartition.Builder<>(zonePartitions.riverSystems()).build();
-        return riverSystemAreas.areas();
+        return zonePartitions.riverSystems().areas();
     }
 
     /**
@@ -241,8 +237,7 @@ public final class Board {
             Pos pos = positionFromIndex(i);
             for (Direction direction : Direction.ALL)
                 if (tileAt(pos.neighbor(direction)) == null
-                        && Math.abs(pos.neighbor(direction).x()) <= REACH
-                        && Math.abs(pos.neighbor(direction).y()) <= REACH)
+                        && indexFromPosition(pos.neighbor(direction)) != -1)
                     insertionPositions.add(pos.neighbor(direction));
         }
         return insertionPositions;
@@ -467,8 +462,8 @@ public final class Board {
      */
     public Board withMoreCancelledAnimals(Set<Animal> newlyCancelledAnimals) {
         Set<Animal> allCancelledAnimals = new HashSet<>(newlyCancelledAnimals);
-        allCancelledAnimals.addAll(cancelledAnimals());
-        return new Board(placedTiles, index, zonePartitions, allCancelledAnimals);
+        allCancelledAnimals.addAll(cancelledAnimals);
+        return new Board(placedTiles, index, zonePartitions, Set.copyOf(allCancelledAnimals));
     }
 
     /**
@@ -503,12 +498,15 @@ public final class Board {
 
     /**
      * Private function that returns the index of a tile
-     * based on its position on the board.
+     * based on its position on the board. Returns -1 if
+     * the position is out of bounds (reach of the board).
      *
      * @param pos position of the tile
      * @return the index of the tile
      */
     private int indexFromPosition(Pos pos) {
+        if (Math.abs(pos.x()) > REACH || Math.abs(pos.y()) > REACH)
+            return -1;
         return (pos.y() + REACH) * (2 * REACH + 1) + (pos.x() + REACH);
     }
 

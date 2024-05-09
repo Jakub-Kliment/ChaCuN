@@ -127,8 +127,7 @@ public record ZonePartition<Z extends Zone> (Set<Area<Z>> areas) {
          * @throws IllegalArgumentException if the area is not in the partition
          */
         public void removeAllOccupantsOf(Area<Z> area) {
-            Preconditions.checkArgument(areas.contains(area));
-            areas.remove(area);
+            Preconditions.checkArgument(areas.remove(area));
             areas.add(area.withoutOccupants());
         }
 

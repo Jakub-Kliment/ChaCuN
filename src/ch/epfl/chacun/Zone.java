@@ -64,7 +64,7 @@ public sealed interface Zone {
      * @return the local id of the specific zone in the tile
      */
     default int localId() {
-        return id() % 10;
+        return localId(id());
     }
 
     /**

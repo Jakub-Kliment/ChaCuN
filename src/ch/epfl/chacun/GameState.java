@@ -262,7 +262,7 @@ public record GameState(List<PlayerColor> players,
         if (lastTilePotentialOccupants().isEmpty())
             return withTurnFinished();
         else return new GameState(players, tileDecks, null,
-                    board, Action.OCCUPY_TILE, messageBoard);
+                board, Action.OCCUPY_TILE, messageBoard);
     }
 
     /**
@@ -275,12 +275,15 @@ public record GameState(List<PlayerColor> players,
     private GameState withTurnFinished() {
         MessageBoard newMessageBoard = messageBoard;
         Board newBoard = board;
+        boolean menhirForest = false;
 
         // Score the forests and rivers closed by the last tile
         for (Area<Zone.Forest> forestArea : newBoard.forestsClosedByLastTile()) {
-            if (Area.hasMenhir(forestArea))
+            if (Area.hasMenhir(forestArea) && !menhirForest) {
                 newMessageBoard = newMessageBoard
                         .withClosedForestWithMenhir(currentPlayer(), forestArea);
+                menhirForest = true;
+            }
             newMessageBoard = newMessageBoard.withScoredForest(forestArea);
         }
 
@@ -293,9 +296,7 @@ public record GameState(List<PlayerColor> players,
 
         TileDecks newTileDecks = tileDecks;
         // Check if the next tile is a menhir tile or a normal tile
-        Tile.Kind kind = (newBoard.forestsClosedByLastTile()
-                .stream()
-                .anyMatch(Area::hasMenhir) &&
+        Tile.Kind kind = (menhirForest &&
                 newBoard.lastPlacedTile().kind() == Tile.Kind.NORMAL)
                 ? Tile.Kind.MENHIR : Tile.Kind.NORMAL;
 

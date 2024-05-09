@@ -42,8 +42,8 @@ public class ColorMapTest {
         assertNotEquals(Color.BLUE, blue);
 
         Color green = ColorMap.strokeColor(PlayerColor.GREEN);
-        assertEquals(Color.GREEN.deriveColor(0, 1, 0.6, 1), green);
-        assertNotEquals(Color.GREEN, green);
+        assertEquals(Color.LIME.deriveColor(0, 1, 0.6, 1), green);
+        assertNotEquals(Color.LIME, green);
 
         Color yellow = ColorMap.strokeColor(PlayerColor.YELLOW);
         assertEquals(Color.YELLOW.deriveColor(0,1,0.6,1), yellow);

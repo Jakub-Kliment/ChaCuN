@@ -44,7 +44,6 @@ public class BoardUI {
                 .setColor(0, 0, Color.gray(0.98));
 
 
-        //J'ai oulie d'utiliser le cache
         Map<Integer,Image> cache = Tiles.TILES
                 .stream()
                 .collect(Collectors.toMap(
@@ -76,7 +75,7 @@ public class BoardUI {
                     GameState gs = gameState.getValue();
                     Set<Integer> tileId = tileIds.getValue();
                     Rotation rotation = observableRotation.getValue();
-                    boolean hoverPoprety = observableBooleanValue.get();
+                    boolean hoverProperty = observableBooleanValue.get();
                     Image imageData;
                     Color colorData;
                     Rotation rotationData;
@@ -89,8 +88,8 @@ public class BoardUI {
                             colorData = Color.BLACK;
                         else
                             colorData = Color.TRANSPARENT;
-                    } else if (gs.board().insertionPositions().contains(pos) && gs.tileToPlace() != null) {
-                        if (hoverPoprety) {
+                    } else if (gs.board().insertionPositions().contains(pos)) {
+                        if (hoverProperty) {
                             imageData = cache.get(gs.tileToPlace().id());
                             rotationData = rotation;
                             if (gs.board().canAddTile(new PlacedTile(gs.tileToPlace(), gs.currentPlayer(), rotation, pos))) {
@@ -129,7 +128,6 @@ public class BoardUI {
                         }
                     }
                 });
-
 
                 group.rotateProperty().bind(data.map((dt) -> dt.rotation.degreesCW()));
 
@@ -172,5 +170,5 @@ public class BoardUI {
         }
         return scrollPane;
     }
-    private record CellData(Image image, Rotation rotation, Color color){}
+    private record CellData(Image image, Rotation rotation, Color color) {}
 }
