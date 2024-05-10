@@ -1,7 +1,7 @@
 package ch.epfl.chacun.gui;
 
 import ch.epfl.chacun.*;
-import ch.epfl.chacun.tile.Tiles;
+import ch.epfl.chacun.Tiles;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;

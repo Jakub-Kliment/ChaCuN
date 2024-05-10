@@ -2,14 +2,18 @@ package ch.epfl.chacun.gui;
 
 import ch.epfl.chacun.*;
 import javafx.application.Application;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.util.*;
 import java.util.random.RandomGenerator;
 import java.util.random.RandomGeneratorFactory;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class Main extends Application {
 
@@ -39,18 +43,45 @@ public class Main extends Application {
             rg = RandomGeneratorFactory.getDefault().create();
         }
         List<Tile> tiles = new ArrayList<>(Tiles.TILES);
-        Collections.shuffle(tiles);
+        Collections.shuffle(tiles, rg);
 
-        List<Tile> startingTile = Collector.of()
 
-        TileDecks decks = new TileDecks();
+//        TileDecks decks = new TileDecks();
         TextMaker textMaker = new TextMakerFr(players);
-        GameState state = GameState.initial(colors, decks, textMaker);
+//        GameState state = GameState.initial(colors, decks, textMaker);
+
+        BorderPane main = new BorderPane();
+
+        Node board = BoardUI.create(Board.REACH, );
+        main.setCenter(board);
 
 
-        BorderPane pane = new BorderPane();
+        BorderPane right = new BorderPane();
+        main.setRight(right);
 
-        Scene scene = new Scene(pane);
+
+        Node player = PlayersUI.create();
+        right.setTop(player);
+
+
+        Node messageBoard = MessageBoardUI.create();
+        right.setCenter(messageBoard);
+
+        VBox vbox = new VBox();
+        right.setBottom(vbox);
+
+        Node action = ActionsUI.create();
+        vbox.getChildren().add(action);
+
+        Node decks = DecksUI.create();
+        vbox.getChildren().add(decks);
+
+
+        Scene scene = new Scene(main);
         primaryStage.setScene(scene);
+        primaryStage.setTitle("ChaCuN");
+        primaryStage.setHeight(1080);
+        primaryStage.setWidth(1440);
+        primaryStage.show();
     }
 }
