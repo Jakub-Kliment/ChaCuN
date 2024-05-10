@@ -153,6 +153,8 @@ public class Main extends Application {
         primaryStage.setTitle("ChaCuN");
         primaryStage.setHeight(1080);
         primaryStage.setWidth(1440);
+
+        gameStateO.setValue(gameStateO.getValue().withStartingTilePlaced());
         primaryStage.show();
     }
 }
