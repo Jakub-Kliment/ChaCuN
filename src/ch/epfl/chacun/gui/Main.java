@@ -6,14 +6,13 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.util.*;
 import java.util.random.RandomGenerator;
 import java.util.random.RandomGeneratorFactory;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
+
 
 public class Main extends Application {
 
@@ -45,10 +44,17 @@ public class Main extends Application {
         List<Tile> tiles = new ArrayList<>(Tiles.TILES);
         Collections.shuffle(tiles, rg);
 
+        Map<Tile.Kind, List<Tile>> groupedTiles = tiles
+                .stream()
+                .collect(Collectors.groupingBy(Tile::kind));
 
-//        TileDecks decks = new TileDecks();
+        TileDecks tileDecks = new TileDecks(
+                groupedTiles.get(Tile.Kind.START),
+                groupedTiles.get(Tile.Kind.NORMAL),
+                groupedTiles.get(Tile.Kind.MENHIR));
+
         TextMaker textMaker = new TextMakerFr(players);
-//        GameState state = GameState.initial(colors, decks, textMaker);
+        GameState state = GameState.initial(colors, tileDecks, textMaker);
 
         BorderPane main = new BorderPane();
 
