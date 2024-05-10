@@ -61,6 +61,6 @@ public enum Rotation {
      * @return the rotation in degrees
      */
     public int degreesCW() {
-        return this.ordinal() * 90;
+        return quarterTurnsCW() * 90;
     }
 }

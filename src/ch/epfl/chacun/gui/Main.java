@@ -12,7 +12,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.random.RandomGenerator;
 import java.util.random.RandomGeneratorFactory;
 import java.util.stream.Collectors;
@@ -69,6 +68,8 @@ public class Main extends Application {
 
         BorderPane main = new BorderPane();
 
+
+
         Node board = BoardUI.create(Board.REACH, gameStateO, );
         main.setCenter(board);
 
@@ -95,7 +96,33 @@ public class Main extends Application {
         });
         vbox.getChildren().add(action);
 
-        Node decks = DecksUI.create();
+        ObservableValue<Tile> tileToPlace = new SimpleObjectProperty<>(
+                gameStateO.getValue()
+                        .tileToPlace());
+
+        ObservableValue<Integer> normalTiles = new SimpleObjectProperty<>(
+                gameStateO.getValue()
+                        .tileDecks()
+                        .deckSize(Tile.Kind.NORMAL));
+
+        ObservableValue<Integer> menhirTiles = new SimpleObjectProperty<>(
+                gameStateO.getValue()
+                        .tileDecks()
+                        .deckSize(Tile.Kind.MENHIR));
+
+        ObservableValue<String> text = new SimpleObjectProperty<>(
+                gameStateO.getValue()
+                        .messageBoard()
+                        .messages()
+                        .getLast()
+                        .text());
+
+        Node decks = DecksUI.create(tileToPlace, normalTiles, menhirTiles, text, o -> {
+            if (gameStateO.getValue().nextAction() == GameState.Action.OCCUPY_TILE)
+                gameStateO.map(gs -> gs.withNewOccupant(o));
+            else if (gameStateO.getValue().nextAction() == GameState.Action.RETAKE_PAWN)
+                gameStateO.map(gs -> gs.withOccupantRemoved(o));
+        });
         vbox.getChildren().add(decks);
 
 
