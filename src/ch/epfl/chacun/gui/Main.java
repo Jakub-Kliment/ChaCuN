@@ -2,6 +2,9 @@ package ch.epfl.chacun.gui;
 
 import ch.epfl.chacun.*;
 import javafx.application.Application;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -9,6 +12,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.random.RandomGenerator;
 import java.util.random.RandomGeneratorFactory;
 import java.util.stream.Collectors;
@@ -56,9 +60,16 @@ public class Main extends Application {
         TextMaker textMaker = new TextMakerFr(players);
         GameState state = GameState.initial(colors, tileDecks, textMaker);
 
+
+
+        ObjectProperty<Set<Integer>> tileIds = new SimpleObjectProperty<>(Set.of());
+        ObservableValue<GameState> gameStateO = new SimpleObjectProperty<>(state);
+        ObservableValue<List<MessageBoard.Message>> listObservable = gameStateO.map(gs -> gs.messageBoard().messages());
+
+
         BorderPane main = new BorderPane();
 
-        Node board = BoardUI.create(Board.REACH, );
+        Node board = BoardUI.create(Board.REACH, gameStateO, );
         main.setCenter(board);
 
 
@@ -66,17 +77,22 @@ public class Main extends Application {
         main.setRight(right);
 
 
-        Node player = PlayersUI.create();
+        Node player = PlayersUI.create(gameStateO, textMaker);
         right.setTop(player);
 
-
-        Node messageBoard = MessageBoardUI.create();
+        Node messageBoard = MessageBoardUI.create(listObservable, tileIds);
         right.setCenter(messageBoard);
 
         VBox vbox = new VBox();
         right.setBottom(vbox);
 
-        Node action = ActionsUI.create();
+        ObjectProperty<List<String>> listAction = new SimpleObjectProperty<>(new ArrayList<>());
+        Node action = ActionsUI.create(listAction, s -> {
+            ActionEncoder.decodeAndApply(gameStateO.getValue(), s);
+            List<String> newListAction = listAction.getValue();
+            newListAction.add(s);
+            listAction.setValue(newListAction);
+        });
         vbox.getChildren().add(action);
 
         Node decks = DecksUI.create();
