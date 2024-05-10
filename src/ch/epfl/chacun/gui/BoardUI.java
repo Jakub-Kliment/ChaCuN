@@ -1,7 +1,6 @@
 package ch.epfl.chacun.gui;
 
 import ch.epfl.chacun.*;
-import ch.epfl.chacun.Tiles;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
@@ -16,7 +15,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
 import java.util.Map;
@@ -76,9 +74,11 @@ public class BoardUI {
                     Set<Integer> tileId = tileIds.getValue();
                     Rotation rotation = observableRotation.getValue();
                     boolean hoverProperty = observableBooleanValue.get();
+
                     Image imageData;
                     Color colorData;
                     Rotation rotationData;
+
                     PlacedTile tile = gs.board().tileAt(pos);
 
                     if (tile != null){
@@ -119,7 +119,6 @@ public class BoardUI {
                         occupantImage.rotateProperty().bind(data.map(dt -> dt.rotation.degreesCW()));
                         group.getChildren().add(occupantImage);
                     }
-
                     for (Zone.Meadow meadow : next.meadowZones()){
                         for (Animal animal : meadow.animals()){
                             ImageView marker= new ImageView("/marker.png");
