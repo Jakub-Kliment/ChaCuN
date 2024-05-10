@@ -96,7 +96,7 @@ class MyMessageBoardTest {
     void withScoredHuntingTrap() {
         MessageBoard messageBoard = new MessageBoard(new textTest(), new ArrayList<>());
         Area<Zone.Meadow> meadow = new Area<>(new HashSet<>(Set.of(new Zone.Meadow(10, List.of(new Animal(101, Animal.Kind.DEER)), null), new Zone.Meadow(20, List.of(new Animal(201, Animal.Kind.DEER), new Animal(202, Animal.Kind.AUROCHS)), null))), new ArrayList<>(), 0);
-        MessageBoard newMessageBoard = messageBoard.withScoredHuntingTrap(PlayerColor.RED, meadow);
+        MessageBoard newMessageBoard = messageBoard.withScoredHuntingTrap(PlayerColor.RED, meadow, Set.of());
         assertEquals(newMessageBoard.messages().size(), 1);
         assertEquals(newMessageBoard.messages().getFirst().points(), 4);
         assertEquals(newMessageBoard.messages().getFirst().scorers(), Set.of(PlayerColor.RED));
@@ -107,7 +107,7 @@ class MyMessageBoardTest {
     void withScoredHuntingTrapNoPoint() {
         MessageBoard messageBoard = new MessageBoard(new textTest(), new ArrayList<>());
         Area<Zone.Meadow> meadow = new Area<>(new HashSet<>(Set.of(new Zone.Meadow(10, List.of(), null), new Zone.Meadow(20, List.of(), null))), new ArrayList<>(), 0);
-        MessageBoard newMessageBoard = messageBoard.withScoredHuntingTrap(PlayerColor.RED, meadow);
+        MessageBoard newMessageBoard = messageBoard.withScoredHuntingTrap(PlayerColor.RED, meadow, Set.of());
         assertEquals(messageBoard, newMessageBoard);
     }
 

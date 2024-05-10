@@ -95,8 +95,10 @@ public record MessageBoard(TextMaker textMaker, List<Message> messages) {
      * @param adjacentMeadow the meadow adjacent to the hunting trap
      * @return message board
      */
-    public MessageBoard withScoredHuntingTrap(PlayerColor scorer, Area<Zone.Meadow> adjacentMeadow) {
-        Map<Animal.Kind, Integer> animalCount = animalCount(adjacentMeadow, Set.of());
+    public MessageBoard withScoredHuntingTrap(PlayerColor scorer,
+                                              Area<Zone.Meadow> adjacentMeadow,
+                                              Set<Animal> cancelledAnimals) {
+        Map<Animal.Kind, Integer> animalCount = animalCount(adjacentMeadow, cancelledAnimals);
         int points = meadowPoints(animalCount);
         if (points == 0) return this;
 

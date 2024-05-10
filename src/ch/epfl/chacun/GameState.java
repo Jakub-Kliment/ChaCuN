@@ -79,7 +79,7 @@ public record GameState(List<PlayerColor> players,
                 null,
                 Board.EMPTY,
                 Action.START_GAME,
-                new MessageBoard(textMaker, new ArrayList<>()));
+                new MessageBoard(textMaker, List.of()));
     }
 
     /**
@@ -194,7 +194,7 @@ public record GameState(List<PlayerColor> players,
                         Area.animals(adjacentMeadow, newBoard.cancelledAnimals()));
 
                 newMessageBoard = newMessageBoard.withScoredHuntingTrap(
-                        currentPlayer(), adjacentMeadow);
+                        currentPlayer(), adjacentMeadow, newBoard.cancelledAnimals());
             }
             case Zone.Lake lake
                     when lake.specialPower() == Zone.SpecialPower.LOGBOAT ->
