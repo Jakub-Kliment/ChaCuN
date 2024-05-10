@@ -28,6 +28,7 @@ public class DecksUI {
 
         HBox hBoxDecks = new HBox();
         hBoxDecks.getStyleClass().add("decks");
+        hBoxDecks.setId("decks");
         box.getChildren().add(hBoxDecks);
 
         //Normale Tile
@@ -36,6 +37,7 @@ public class DecksUI {
 
         ImageView imageNormal = new ImageView(new Image("/512/NORMAL.jpg"));
         imageNormal.getStyleClass().add("NORMAL");
+        imageNormal.setId("NORMAL");
         imageNormal.setFitWidth(ImageLoader.LARGE_TILE_FIT_SIZE);
         imageNormal.setFitHeight(ImageLoader.LARGE_TILE_FIT_SIZE);
         tileNormal.getChildren().add(imageNormal);
@@ -50,6 +52,7 @@ public class DecksUI {
 
         ImageView imageMenhir = new ImageView(new Image("/512/MENHIR.jpg"));
         imageMenhir.getStyleClass().add("MENHIR");
+        imageMenhir.setId("MENHIR");
         imageMenhir.setFitWidth(ImageLoader.LARGE_TILE_FIT_SIZE);
         imageMenhir.setFitHeight(ImageLoader.LARGE_TILE_FIT_SIZE);
         tileMenhir.getChildren().add(imageMenhir);
@@ -62,6 +65,7 @@ public class DecksUI {
         //Current Tile
         StackPane currentTile = new StackPane();
         currentTile.getStyleClass().add("next-tile");
+        currentTile.setId("next-tile");
         box.getChildren().add(currentTile);
 
         ImageView imageCurrent = new ImageView();

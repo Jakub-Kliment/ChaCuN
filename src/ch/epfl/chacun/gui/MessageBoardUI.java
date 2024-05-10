@@ -22,8 +22,9 @@ public class MessageBoardUI {
                               ObjectProperty<Set<Integer>> tileId) {
 
         ScrollPane messagePane = new ScrollPane();
-        messagePane.setId("message-board");
         messagePane.getStylesheets().add("message-board.css");
+        messagePane.setId("message-board");
+
 
         VBox box = new VBox();
         messagePane.setContent(box);

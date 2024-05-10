@@ -52,9 +52,11 @@ public class BoardUI {
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.getStylesheets().add("board.css");
         scrollPane.getStyleClass().add("board-scroll-pane");
+        scrollPane.setId("board-scroll-pane");
 
         GridPane gridPane = new GridPane();
         gridPane.getStyleClass().add("board-grid");
+        gridPane.setId("board-grid");
         scrollPane.setContent(gridPane);
 
 
