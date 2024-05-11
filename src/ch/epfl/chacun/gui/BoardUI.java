@@ -125,7 +125,7 @@ public class BoardUI {
                         occupantImage.setOnMouseClicked(event -> {
                             occupant.accept(tileOccupant);
                         });
-                        occupantImage.rotateProperty().bind(data.map(dt -> dt.rotation.degreesCW()));
+                        occupantImage.rotateProperty().bind(data.map(dt -> dt.rotation.negated().degreesCW()));
                         group.getChildren().add(occupantImage);
                     }
                     for (Zone.Meadow meadow : next.meadowZones()){
