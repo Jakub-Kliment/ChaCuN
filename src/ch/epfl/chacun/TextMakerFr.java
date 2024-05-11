@@ -272,8 +272,10 @@ public class TextMakerFr implements TextMaker {
      */
     private String animalPoints(Map<Animal.Kind, Integer> animals) {
         // Sort the animals by their kind
-        List<Animal.Kind> sortedAnimals = animals.keySet().stream()
-                .filter(animal -> animals.get(animal) > 0)
+        List<Animal.Kind> sortedAnimals = animals.keySet()
+                .stream()
+                .filter(kind -> animals.get(kind) > 0)
+                .filter(kind -> kind != Animal.Kind.TIGER)
                 .sorted(Animal.Kind::compareTo)
                 .toList();
 

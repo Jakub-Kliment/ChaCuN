@@ -79,12 +79,12 @@ public class DecksUI {
 
         imageCurrent.setFitHeight(ImageLoader.LARGE_TILE_FIT_SIZE);
         imageCurrent.setFitWidth(ImageLoader.LARGE_TILE_FIT_SIZE);
-        imageCurrent.visibleProperty().bind(text.map(txt -> txt.isEmpty()));
+        imageCurrent.visibleProperty().bind(text.map(String::isEmpty));
         currentTile.getChildren().add(imageCurrent);
 
 
         Text textCurrent = new Text();
-        //textCurrent.getStyleClass().add("next-tile");
+        textCurrent.getStyleClass().add("next-tile");
         textCurrent.setId("next-tile");
         textCurrent.textProperty().bind(text);
         textCurrent.visibleProperty().bind(text.map(txt -> !txt.isEmpty()));
