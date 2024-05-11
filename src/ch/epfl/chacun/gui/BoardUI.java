@@ -91,7 +91,8 @@ public class BoardUI {
                             colorData = Color.BLACK;
                         else
                             colorData = Color.TRANSPARENT;
-                    } else if (gs.board().insertionPositions().contains(pos)) {
+                    } else if (gs.board().insertionPositions().contains(pos) &&
+                            gs.nextAction() == GameState.Action.PLACE_TILE) {
                         if (hoverProperty) {
                             imageData = cache.get(gs.tileToPlace().id());
                             rotationData = rotation;
