@@ -15,6 +15,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 
 import java.util.Map;
@@ -105,7 +106,7 @@ public class BoardUI {
                             rotationData = Rotation.NONE;
                         }
                     } else {
-                        imageData = null;
+                        imageData = emptyTileImage;
                         colorData = Color.TRANSPARENT;
                         rotationData = Rotation.NONE;
                     }
@@ -116,8 +117,14 @@ public class BoardUI {
                     for (Occupant tileOccupant : next.potentialOccupants()){
                         Node occupantImage = Icon.newFor(next.placer(), tileOccupant.kind());
                         occupantImage.visibleProperty().bind(visibleOccupants.map(list -> list.contains(tileOccupant)));
-                        occupantImage.getStyleClass().add(STR."\{tileOccupant.kind()}_\{tileOccupant.zoneId()}");
-                        occupantImage.setOnMouseClicked(event -> occupant.accept(tileOccupant));
+
+                        String kind = tileOccupant.kind() == Occupant.Kind.PAWN ? "pawn" : "hut";
+                        occupantImage.getStyleClass().add(STR."\{kind}_\{tileOccupant.zoneId()}");
+                        occupantImage.setId(STR."\{kind}_\{tileOccupant.zoneId()}");
+
+                        occupantImage.setOnMouseClicked(event -> {
+                            occupant.accept(tileOccupant);
+                        });
                         occupantImage.rotateProperty().bind(data.map(dt -> dt.rotation.degreesCW()));
                         group.getChildren().add(occupantImage);
                     }
@@ -168,7 +175,7 @@ public class BoardUI {
 
                 gridPane.add(group, x+reach, y+reach);
             }
-        }
+        };
         return scrollPane;
     }
     private record CellData(Image image, Rotation rotation, Color color) {}
