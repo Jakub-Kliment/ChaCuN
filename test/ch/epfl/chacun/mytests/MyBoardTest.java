@@ -2,7 +2,7 @@ package ch.epfl.chacun.mytests;
 
 import java.util.*;
 
-import ch.epfl.chacun.tile.Tiles;
+import ch.epfl.chacun.Tiles;
 import org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 

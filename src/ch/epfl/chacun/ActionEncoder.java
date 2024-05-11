@@ -17,7 +17,7 @@ public class ActionEncoder {
 
     public static StateAction withNewOccupant(GameState state, Occupant occupant) {
         if (occupant == null)
-            return new StateAction(state.withNewOccupant(null), Base32.encodeBits5(0x11111));
+            return new StateAction(state.withNewOccupant(null), Base32.encodeBits5(0b11111));
 
         int zoneId = occupant.zoneId();
         int kind = occupant.kind().ordinal();
@@ -28,7 +28,7 @@ public class ActionEncoder {
 
     public static StateAction withOccupantRemoved(GameState state, Occupant occupant) {
         if (occupant == null)
-            return new StateAction(state.withOccupantRemoved(null), Base32.encodeBits5(0x11111));
+            return new StateAction(state.withOccupantRemoved(null), Base32.encodeBits5(0b11111));
 
         String action = Base32.encodeBits5(sortedPawns(state).indexOf(occupant));
         return new StateAction(state.withOccupantRemoved(occupant), action);
@@ -46,7 +46,7 @@ public class ActionEncoder {
         int actionRepresentation = Base32.decode(action);
         switch (state.nextAction()) {
             case PLACE_TILE -> {
-                int rotation = actionRepresentation & 0x11;
+                int rotation = actionRepresentation & 0b11;
                 int position = actionRepresentation >> 2;
 
                 PlacedTile tile = new PlacedTile(
@@ -58,7 +58,7 @@ public class ActionEncoder {
                 return withPlacedTile(state, tile);
             }
             case OCCUPY_TILE -> {
-                int zone = actionRepresentation & 0xF;
+                int zone = actionRepresentation & 0b1111;
                 int kind = actionRepresentation >> 4;
                 return withNewOccupant(state,
                         new Occupant(kind == 0 ? Occupant.Kind.PAWN : Occupant.Kind.HUT,
@@ -77,7 +77,7 @@ public class ActionEncoder {
                 .board()
                 .insertionPositions()
                 .stream()
-                .sorted(Comparator.comparingInt(x -> x.x() * Board.REACH + x.y()))
+                .sorted(Comparator.comparingInt(Pos::x).thenComparingInt(Pos::y))
                 .toList();
     }
 
@@ -86,7 +86,7 @@ public class ActionEncoder {
                 .board()
                 .occupants()
                 .stream()
-                .filter( o -> o.kind() == Occupant.Kind.PAWN)
+                .filter(occupant -> occupant.kind() == Occupant.Kind.PAWN)
                 .sorted(Comparator.comparingInt(Occupant::zoneId))
                 .toList();
     }

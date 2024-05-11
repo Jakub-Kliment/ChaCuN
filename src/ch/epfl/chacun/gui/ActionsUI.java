@@ -25,7 +25,7 @@ public class ActionsUI {
         actionsBox.setId("actions");
 
         Text text = new Text();
-        text.textProperty().bind(actions.map((list) -> {
+        text.textProperty().bind(actions.map(list -> {
             StringBuilder txt = new StringBuilder();
             for (int i = 4; i > 0; i--) {
                 if (list.size() >= i)
