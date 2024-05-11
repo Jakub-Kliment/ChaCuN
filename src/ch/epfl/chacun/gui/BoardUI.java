@@ -61,12 +61,12 @@ public class BoardUI {
         scrollPane.setContent(gridPane);
 
 
-
         for (int x = -reach; x <= reach; x++) {
             for (int y = -reach; y <= reach; y++) {
 
                 Group group = new Group();
                 Pos pos = new Pos(x, y);
+
                 ObservableBooleanValue observableBooleanValue = group.hoverProperty();
 
                 ObservableValue<PlacedTile> tileObservableValue = gameState.map(gs -> gs.board().tileAt(pos));
@@ -175,8 +175,11 @@ public class BoardUI {
                 });
 
                 gridPane.add(group, x+reach, y+reach);
+
             }
-        };
+        }
+        scrollPane.setVvalue(0.5);
+        scrollPane.setHvalue(0.5);
         return scrollPane;
     }
     private record CellData(Image image, Rotation rotation, Color color) {}
