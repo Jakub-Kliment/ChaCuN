@@ -68,7 +68,12 @@ public class Main extends Application {
 
         BorderPane main = new BorderPane();
 
-        SimpleObjectProperty<Set<Occupant>> visibleOccupant = new SimpleObjectProperty<>(Set.of());
+        ObservableValue<Set<Occupant>> visibleOccupant = gameStateO.map(gs-> {
+            Set<Occupant> o = gs.board().occupants();
+            if (gs.nextAction() == GameState.Action.OCCUPY_TILE)
+                o.addAll(gs.lastTilePotentialOccupants());
+            return o;
+        });
 
         SimpleObjectProperty<Rotation> rotation = new SimpleObjectProperty<>(Rotation.NONE);
 
@@ -84,15 +89,15 @@ public class Main extends Application {
                 },
                 occupant -> {
                     GameState gameState = gameStateO.getValue();
-                    if (gameState.nextAction() == GameState.Action.OCCUPY_TILE)
+                    if (gameState.nextAction() == GameState.Action.OCCUPY_TILE) {
                         gameStateO.setValue(gameState.withNewOccupant(occupant));
+                    }
                     if (gameState.nextAction() == GameState.Action.RETAKE_PAWN)
                         gameStateO.setValue(gameState.withOccupantRemoved(occupant));
                 }
 
                 );
         main.setCenter(board);
-
 
         BorderPane right = new BorderPane();
         main.setRight(right);
@@ -111,10 +116,10 @@ public class Main extends Application {
 
 
         //GOOD surement
-        ObjectProperty<List<String>> listAction = new SimpleObjectProperty<>(new ArrayList<>());
+        ObjectProperty<List<String>> listAction = new SimpleObjectProperty<>(List.of());
         Node action = ActionsUI.create(listAction, s -> {
-            ActionEncoder.StateAction stateAction = ActionEncoder.decodeAndApply(gameStateO.getValue(), s);
-            gameStateO.setValue(stateAction.state());
+            GameState gs = ActionEncoder.decodeAndApply(gameStateO.getValue(), s).state();
+            gameStateO.setValue(gs);
             List<String> newListAction = listAction.getValue();
             newListAction.add(s);
             listAction.setValue(newListAction);
@@ -134,7 +139,7 @@ public class Main extends Application {
                 return gs.messageBoard().textMaker().clickToUnoccupy();
             if (gs.nextAction() == GameState.Action.OCCUPY_TILE)
                 return gs.messageBoard().textMaker().clickToOccupy();
-            return null;
+            return "";
         });
 
 

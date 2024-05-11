@@ -10,6 +10,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class DecksUI {
@@ -38,8 +40,8 @@ public class DecksUI {
         ImageView imageNormal = new ImageView(new Image("/512/NORMAL.jpg"));
         imageNormal.getStyleClass().add("NORMAL");
         imageNormal.setId("NORMAL");
-        imageNormal.setFitWidth(ImageLoader.LARGE_TILE_FIT_SIZE);
-        imageNormal.setFitHeight(ImageLoader.LARGE_TILE_FIT_SIZE);
+        imageNormal.setFitWidth(ImageLoader.NORMAL_TILE_FIT_SIZE);
+        imageNormal.setFitHeight(ImageLoader.NORMAL_TILE_FIT_SIZE);
         tileNormal.getChildren().add(imageNormal);
 
         Text textNormal = new Text();
@@ -53,8 +55,8 @@ public class DecksUI {
         ImageView imageMenhir = new ImageView(new Image("/512/MENHIR.jpg"));
         imageMenhir.getStyleClass().add("MENHIR");
         imageMenhir.setId("MENHIR");
-        imageMenhir.setFitWidth(ImageLoader.LARGE_TILE_FIT_SIZE);
-        imageMenhir.setFitHeight(ImageLoader.LARGE_TILE_FIT_SIZE);
+        imageMenhir.setFitWidth(ImageLoader.NORMAL_TILE_FIT_SIZE);
+        imageMenhir.setFitHeight(ImageLoader.NORMAL_TILE_FIT_SIZE);
         tileMenhir.getChildren().add(imageMenhir);
 
         Text textMenhir = new Text();
@@ -75,16 +77,19 @@ public class DecksUI {
             imageCurrent.setImage(next);
         });
 
-        imageCurrent.setFitHeight(ImageLoader.LARGE_TILE_PIXEL_SIZE);
-        imageCurrent.setFitWidth(ImageLoader.LARGE_TILE_PIXEL_SIZE);
-        imageCurrent.visibleProperty().bind(text.map(String::isEmpty));
+        imageCurrent.setFitHeight(ImageLoader.LARGE_TILE_FIT_SIZE);
+        imageCurrent.setFitWidth(ImageLoader.LARGE_TILE_FIT_SIZE);
+        imageCurrent.visibleProperty().bind(text.map(txt -> txt.isEmpty()));
         currentTile.getChildren().add(imageCurrent);
 
+
         Text textCurrent = new Text();
+        //textCurrent.getStyleClass().add("next-tile");
+        textCurrent.setId("next-tile");
         textCurrent.textProperty().bind(text);
         textCurrent.visibleProperty().bind(text.map(txt -> !txt.isEmpty()));
         textCurrent.setOnMouseClicked(e -> event.accept(null));
-        textCurrent.setWrappingWidth(0.8 * ImageLoader.LARGE_TILE_PIXEL_SIZE);
+        textCurrent.setWrappingWidth(0.8 * ImageLoader.LARGE_TILE_FIT_SIZE);
         currentTile.getChildren().add(textCurrent);
 
         return box;
