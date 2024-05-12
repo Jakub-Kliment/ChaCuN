@@ -129,9 +129,10 @@ public class BoardUI {
                         occupantImage.rotateProperty().bind(data.map(dt -> dt.rotation.negated().degreesCW()));
                         group.getChildren().add(occupantImage);
                     }
-                    for (Zone.Meadow meadow : next.meadowZones()){
+                    for (Zone.Meadow meadow : next.meadowZones()) {
                         for (Animal animal : meadow.animals()){
-                            ImageView marker = new ImageView("/marker.png");
+                            ImageView marker = new ImageView();
+                            marker.getStyleClass().add("marker");
                             marker.setId(STR."marker_\{animal.id()}");
                             marker.visibleProperty().bind(gameState.map(gs -> gs.board().cancelledAnimals().contains(animal)));
                             group.getChildren().add(marker);
