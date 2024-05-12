@@ -114,7 +114,6 @@ public class Main extends Application {
         right.setBottom(vbox);
 
 
-
         ObjectProperty<List<String>> listAction = new SimpleObjectProperty<>(new ArrayList<>());
         Node action = ActionsUI.create(listAction, s -> {
             GameState gs = ActionEncoder.decodeAndApply(gameStateO.getValue(), s).state();
@@ -142,7 +141,6 @@ public class Main extends Application {
         });
 
 
-        //GOOD surement
         Node decks = DecksUI.create(tileToPlace, normalTiles, menhirTiles, text, o -> {
             if (gameStateO.getValue().nextAction() == GameState.Action.OCCUPY_TILE)
                 gameStateO.setValue(gameStateO.getValue().withNewOccupant(o));

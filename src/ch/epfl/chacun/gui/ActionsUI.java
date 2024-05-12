@@ -21,7 +21,6 @@ public class ActionsUI {
 
         HBox actionsBox = new HBox();
         actionsBox.getStylesheets().add("actions.css");
-        actionsBox.getStyleClass().add("actions");
         actionsBox.setId("actions");
 
         Text text = new Text();
@@ -42,6 +41,7 @@ public class ActionsUI {
         textField.setId("action-field");
         textField.setOnAction(e -> {
             eventHandler.accept(textField.getText());
+            textField.clear();
         });
 
         textField.setTextFormatter(new TextFormatter<>(change -> {
