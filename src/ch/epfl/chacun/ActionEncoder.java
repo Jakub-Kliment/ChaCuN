@@ -60,13 +60,13 @@ public class ActionEncoder {
             case OCCUPY_TILE -> {
                 int zone = actionRepresentation & 0b1111;
                 int kind = actionRepresentation >> 4;
-                return withNewOccupant(state,
-                        new Occupant(kind == 0 ? Occupant.Kind.PAWN : Occupant.Kind.HUT,
-                                state.tileToPlace().id() * 10 + zone));
+                int zoneId = state.board().lastPlacedTile().id() * 10 + zone;
+                Occupant.Kind occupantKind = kind == 0 ? Occupant.Kind.PAWN : Occupant.Kind.HUT;
+
+                return withNewOccupant(state, new Occupant(occupantKind, zoneId));
             }
             case RETAKE_PAWN -> {
-                return withOccupantRemoved(state,
-                        sortedPawns(state).get(actionRepresentation));
+                return withOccupantRemoved(state, sortedPawns(state).get(actionRepresentation));
             }
         }
         return null;

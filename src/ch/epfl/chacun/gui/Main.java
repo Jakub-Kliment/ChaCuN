@@ -94,20 +94,19 @@ public class Main extends Application {
                     }
                     if (gameState.nextAction() == GameState.Action.RETAKE_PAWN)
                         gameStateO.setValue(gameState.withOccupantRemoved(occupant));
-                }
+                });
 
-                );
         main.setCenter(board);
 
         BorderPane right = new BorderPane();
         main.setRight(right);
 
 
-        //GOOD
+
         Node player = PlayersUI.create(gameStateO, textMaker);
         right.setTop(player);
 
-        //GOOD
+
         Node messageBoard = MessageBoardUI.create(listObservable, tileIds);
         right.setCenter(messageBoard);
 
@@ -115,8 +114,8 @@ public class Main extends Application {
         right.setBottom(vbox);
 
 
-        //GOOD surement
-        ObjectProperty<List<String>> listAction = new SimpleObjectProperty<>(List.of());
+
+        ObjectProperty<List<String>> listAction = new SimpleObjectProperty<>(new ArrayList<>());
         Node action = ActionsUI.create(listAction, s -> {
             GameState gs = ActionEncoder.decodeAndApply(gameStateO.getValue(), s).state();
             gameStateO.setValue(gs);

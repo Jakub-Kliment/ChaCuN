@@ -38,12 +38,27 @@ class ActionEncoderTest {
                 tileDecks.topTile(Tile.Kind.NORMAL),
                 gs.currentPlayer(),
                 Rotation.RIGHT,
-                new Pos(0, -1));
+                new Pos(-1, 0));
 
         ActionEncoder.StateAction stateAction = ActionEncoder.decodeAndApply(gs, "AB");
         GameState expected = stateAction.state();
         GameState actual = gs.withPlacedTile(placedTile);
         boolean isEqual = expected.equals(actual);
         assertTrue(isEqual);
+    }
+
+    @Test
+    void withOccupantWorksCorrectly() {
+        GameState gs = gameState.withStartingTilePlaced();
+        PlacedTile placedTile =  new PlacedTile(
+                tileDecks.topTile(Tile.Kind.NORMAL),
+                gs.currentPlayer(),
+                Rotation.RIGHT,
+                new Pos(0, -1));
+
+        gs = gs.withPlacedTile(placedTile);
+        GameState expected = ActionEncoder.decodeAndApply(gs, "B").state();
+        GameState actual = gs.withNewOccupant(new Occupant(Occupant.Kind.PAWN, 1));
+        assertEquals(expected, actual);
     }
 }
