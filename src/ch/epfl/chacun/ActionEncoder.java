@@ -58,6 +58,9 @@ public class ActionEncoder {
                 return withPlacedTile(state, tile);
             }
             case OCCUPY_TILE -> {
+                if (actionRepresentation == 0b11111)
+                    return withNewOccupant(state, null);
+
                 int zone = actionRepresentation & 0b1111;
                 int kind = actionRepresentation >> 4;
                 int zoneId = state.board().lastPlacedTile().id() * 10 + zone;
@@ -66,6 +69,8 @@ public class ActionEncoder {
                 return withNewOccupant(state, new Occupant(occupantKind, zoneId));
             }
             case RETAKE_PAWN -> {
+                if (actionRepresentation == 0b11111)
+                    return withOccupantRemoved(state, null);
                 return withOccupantRemoved(state, sortedPawns(state).get(actionRepresentation));
             }
         }
