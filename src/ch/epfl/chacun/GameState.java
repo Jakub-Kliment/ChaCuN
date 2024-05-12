@@ -279,7 +279,9 @@ public record GameState(List<PlayerColor> players,
 
         // Score the forests and rivers closed by the last tile
         for (Area<Zone.Forest> forestArea : newBoard.forestsClosedByLastTile()) {
-            if (Area.hasMenhir(forestArea) && !menhirForest) {
+            if (Area.hasMenhir(forestArea)
+                    && !menhirForest
+                    && tileDecks.deckSize(Tile.Kind.MENHIR) != 0) {
                 newMessageBoard = newMessageBoard
                         .withClosedForestWithMenhir(currentPlayer(), forestArea);
                 menhirForest = true;
