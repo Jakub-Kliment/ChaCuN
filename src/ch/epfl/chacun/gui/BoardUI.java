@@ -132,7 +132,7 @@ public class BoardUI {
                     for (Zone.Meadow meadow : next.meadowZones()){
                         for (Animal animal : meadow.animals()){
                             ImageView marker = new ImageView("/marker.png");
-                            marker.setId("marker");
+                            marker.setId(STR."marker_\{animal.id()}");
                             marker.visibleProperty().bind(gameState.map(gs -> gs.board().cancelledAnimals().contains(animal)));
                             group.getChildren().add(marker);
                         }

@@ -12,7 +12,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.random.RandomGenerator;
 import java.util.random.RandomGeneratorFactory;
 import java.util.stream.Collectors;
@@ -32,6 +31,7 @@ public class Main extends Application {
                 .stream()
                 .limit(names.size())
                 .toList();
+
         Map<PlayerColor, String> players = new HashMap<>();
         for (int i = 0; i < names.size(); ++i)
             players.put(colors.get(i), names.get(i));
@@ -39,7 +39,7 @@ public class Main extends Application {
 
         Map<String, String> parameters = getParameters().getNamed();
         RandomGenerator rg;
-        if (! parameters.isEmpty()) {
+        if (! parameters.isEmpty() && parameters.get("seed") != null) {
             long seed = Long.parseUnsignedLong(parameters.get("seed"));
             rg = RandomGeneratorFactory.getDefault().create(seed);
         } else {
