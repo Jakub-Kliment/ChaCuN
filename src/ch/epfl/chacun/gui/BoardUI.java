@@ -18,6 +18,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -42,12 +43,14 @@ public class BoardUI {
                 .getPixelWriter()
                 .setColor(0, 0, Color.gray(0.98));
 
-
+/*
         Map<Integer,Image> cache = Tiles.TILES
                 .stream()
                 .collect(Collectors.toMap(
                     Tile::id,
                     tile -> ImageLoader.largeImageForTile(tile.id())));
+ */
+        Map<Integer, Image> cache = new HashMap<>();
 
 
         ScrollPane scrollPane = new ScrollPane();
@@ -84,8 +87,9 @@ public class BoardUI {
 
                     PlacedTile tile = gs.board().tileAt(pos);
 
-                    if (tile != null){
+                    if (tile != null) {
                         rotationData = tile.rotation();
+                        cache.putIfAbsent(tile.id(), ImageLoader.largeImageForTile(tile.id()));
                         imageData = cache.get(tile.id());
                         if (!tileId.isEmpty() && !tileId.contains(tile.id()))
                             colorData = Color.BLACK;
@@ -94,6 +98,7 @@ public class BoardUI {
                     } else if (gs.board().insertionPositions().contains(pos) &&
                             gs.nextAction() == GameState.Action.PLACE_TILE) {
                         if (hoverProperty) {
+                            cache.putIfAbsent(gs.tileToPlace().id(), ImageLoader.largeImageForTile(gs.tileToPlace().id()));
                             imageData = cache.get(gs.tileToPlace().id());
                             rotationData = rotation;
                             if (gs.board().canAddTile(new PlacedTile(gs.tileToPlace(), gs.currentPlayer(), rotation, pos))) {
@@ -164,7 +169,10 @@ public class BoardUI {
 
 
                 group.setOnMouseClicked((e) -> {
-                    if (gameState.getValue().tileToPlace() != null && gameState.getValue().board().insertionPositions().contains(pos)) {
+                    // pq tileToPlace doit etre null !!!!!!!!
+                    if (gameState.getValue().tileToPlace() != null
+                            && gameState.getValue().board().insertionPositions().contains(pos)
+                            && e.isStillSincePress()) {
                         if (e.getButton() == MouseButton.PRIMARY)
                             position.accept(pos);
                         if (e.getButton() == MouseButton.SECONDARY)

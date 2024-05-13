@@ -38,8 +38,8 @@ public class MessageBoardUI {
                 box.getChildren().add(message);
             }
         });
-
-        runLater(() -> messagePane.setVvalue(1));
+        messagePane.layout();
+        messagePane.setVvalue(1);
 
         return messagePane;
     }
