@@ -139,6 +139,8 @@ public class BoardUI {
                             ImageView marker = new ImageView();
                             marker.getStyleClass().add("marker");
                             marker.setId(STR."marker_\{animal.id()}");
+                            marker.setFitHeight(ImageLoader.MARKER_FIT_SIZE);
+                            marker.setFitWidth(ImageLoader.MARKER_FIT_SIZE);
                             marker.visibleProperty().bind(gameState.map(gs -> gs.board().cancelledAnimals().contains(animal)));
                             group.getChildren().add(marker);
                         }
