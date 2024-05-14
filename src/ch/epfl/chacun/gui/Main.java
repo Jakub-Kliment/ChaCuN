@@ -61,7 +61,7 @@ public class Main extends Application {
         GameState state = GameState.initial(colors, tileDecks, textMaker);
 
 
-
+        ObjectProperty<List<String>> listAction = new SimpleObjectProperty<>(List.of());
         ObjectProperty<Set<Integer>> tileIds = new SimpleObjectProperty<>(Set.of());
         SimpleObjectProperty<GameState> gameStateO = new SimpleObjectProperty<>(state);
         ObservableValue<List<MessageBoard.Message>> listObservable = gameStateO.map(gs -> gs.messageBoard().messages());
@@ -83,6 +83,9 @@ public class Main extends Application {
                     GameState gameState = gameStateO.getValue();
                     PlacedTile placedTile = new PlacedTile(gameState.tileToPlace(), gameState.currentPlayer(), rotation.getValue(), pos);
                     if (gameState.board().canAddTile(placedTile)){
+                        List<String> newList = new ArrayList<>(listAction.getValue());
+                        newList.add(ActionEncoder.withPlacedTile(gameStateO.getValue(), placedTile).action());
+                        listAction.setValue(List.copyOf(newList));
                         gameStateO.setValue(gameState.withPlacedTile(placedTile));
                         rotation.setValue(Rotation.NONE);
                     }
@@ -90,10 +93,18 @@ public class Main extends Application {
                 occupant -> {
                     GameState gameState = gameStateO.getValue();
                     if (gameState.nextAction() == GameState.Action.OCCUPY_TILE) {
+                        List<String> newList = new ArrayList<>(listAction.getValue());
+                        newList.add(ActionEncoder.withNewOccupant(gameState, occupant).action());
+                        System.out.println(ActionEncoder.withNewOccupant(gameState, occupant).action());
+                        listAction.setValue(List.copyOf(newList));
                         gameStateO.setValue(gameState.withNewOccupant(occupant));
                     }
-                    if (gameState.nextAction() == GameState.Action.RETAKE_PAWN)
+                    if (gameState.nextAction() == GameState.Action.RETAKE_PAWN){
+                        List<String> newList = new ArrayList<>(listAction.getValue());
+                        newList.add(ActionEncoder.withOccupantRemoved(gameStateO.getValue(), occupant).action());
+                        listAction.setValue(List.copyOf(newList));
                         gameStateO.setValue(gameState.withOccupantRemoved(occupant));
+                    }
                 });
 
         main.setCenter(board);
@@ -114,13 +125,14 @@ public class Main extends Application {
         right.setBottom(vbox);
 
 
-        ObjectProperty<List<String>> listAction = new SimpleObjectProperty<>(new ArrayList<>());
         Node action = ActionsUI.create(listAction, s -> {
-            GameState gs = ActionEncoder.decodeAndApply(gameStateO.getValue(), s).state();
+            ActionEncoder.StateAction stateAction = ActionEncoder.decodeAndApply(gameStateO.getValue(), s);
+            GameState gs = stateAction.state();
             gameStateO.setValue(gs);
-            List<String> newListAction = listAction.getValue();
-            newListAction.add(s);
-            listAction.setValue(newListAction);
+            List<String> newList = new ArrayList<>(listAction.getValue());
+            //Utiliser s
+            newList.add(stateAction.action());
+            listAction.setValue(List.copyOf(newList));
         });
         vbox.getChildren().add(action);
 
@@ -142,10 +154,18 @@ public class Main extends Application {
 
 
         Node decks = DecksUI.create(tileToPlace, normalTiles, menhirTiles, text, o -> {
-            if (gameStateO.getValue().nextAction() == GameState.Action.OCCUPY_TILE)
+            if (gameStateO.getValue().nextAction() == GameState.Action.OCCUPY_TILE){
+                List<String> newList = new ArrayList<>(listAction.getValue());
+                newList.add(ActionEncoder.withNewOccupant(gameStateO.getValue(), o).action());
+                listAction.setValue(List.copyOf(newList));
                 gameStateO.setValue(gameStateO.getValue().withNewOccupant(o));
-            else if (gameStateO.getValue().nextAction() == GameState.Action.RETAKE_PAWN)
+            }
+            else if (gameStateO.getValue().nextAction() == GameState.Action.RETAKE_PAWN) {
+                List<String> newList = new ArrayList<>(listAction.getValue());
+                newList.add(ActionEncoder.withOccupantRemoved(gameStateO.getValue(), o).action());
+                listAction.setValue(List.copyOf(newList));
                 gameStateO.setValue(gameStateO.getValue().withOccupantRemoved(o));
+            }
         });
         vbox.getChildren().add(decks);
 

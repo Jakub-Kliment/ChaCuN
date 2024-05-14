@@ -19,7 +19,7 @@ public class ActionEncoder {
         if (occupant == null)
             return new StateAction(state.withNewOccupant(null), Base32.encodeBits5(0b11111));
 
-        int zoneId = occupant.zoneId();
+        int zoneId = Zone.localId(occupant.zoneId());
         int kind = occupant.kind().ordinal();
         String action = Base32.encodeBits5(kind << 4 | zoneId);
 

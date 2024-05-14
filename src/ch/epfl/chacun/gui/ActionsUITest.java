@@ -12,6 +12,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,7 +27,11 @@ public class ActionsUITest extends Application {
     public void start(Stage primaryStage) {
 
         SimpleObjectProperty<List<String>> messages = new SimpleObjectProperty<>(List.of("A3", "K6", "M", "3E", "I8"));
-        var actionsNode = ActionsUI.create(messages, s -> System.out.println(STR."String :\{s}"));
+        var actionsNode = ActionsUI.create(messages, s -> {
+            List<String> newList = new ArrayList<>(messages.getValue());
+            newList.add(s);
+            messages.setValue(List.copyOf(newList));
+        });
         var root2Node = new ScrollPane(actionsNode);
         primaryStage.setScene(new Scene(root2Node));
 

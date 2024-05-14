@@ -120,29 +120,31 @@ public class BoardUI {
                 }, gameState, tileIds, observableRotation, observableBooleanValue);
 
                 tileObservableValue.addListener((t, old, next) -> {
-                    for (Occupant tileOccupant : next.potentialOccupants()){
-                        Node occupantImage = Icon.newFor(next.placer(), tileOccupant.kind());
-                        occupantImage.visibleProperty().bind(visibleOccupants.map(list -> list.contains(tileOccupant)));
+                    if (old == null) {
+                        for (Occupant tileOccupant : next.potentialOccupants()) {
+                            Node occupantImage = Icon.newFor(next.placer(), tileOccupant.kind());
+                            occupantImage.visibleProperty().bind(visibleOccupants.map(list -> list.contains(tileOccupant)));
 
-                        String kind = tileOccupant.kind() == Occupant.Kind.PAWN ? "pawn" : "hut";
-                        occupantImage.getStyleClass().add(STR."\{kind}_\{tileOccupant.zoneId()}");
-                        occupantImage.setId(STR."\{kind}_\{tileOccupant.zoneId()}");
+                            String kind = tileOccupant.kind() == Occupant.Kind.PAWN ? "pawn" : "hut";
+                            occupantImage.getStyleClass().add(STR."\{kind}_\{tileOccupant.zoneId()}");
+                            occupantImage.setId(STR."\{kind}_\{tileOccupant.zoneId()}");
 
-                        occupantImage.setOnMouseClicked(event -> {
-                            occupant.accept(tileOccupant);
-                        });
-                        occupantImage.rotateProperty().bind(data.map(dt -> dt.rotation.negated().degreesCW()));
-                        group.getChildren().add(occupantImage);
-                    }
-                    for (Zone.Meadow meadow : next.meadowZones()) {
-                        for (Animal animal : meadow.animals()){
-                            ImageView marker = new ImageView();
-                            marker.getStyleClass().add("marker");
-                            marker.setId(STR."marker_\{animal.id()}");
-                            marker.setFitHeight(ImageLoader.MARKER_FIT_SIZE);
-                            marker.setFitWidth(ImageLoader.MARKER_FIT_SIZE);
-                            marker.visibleProperty().bind(gameState.map(gs -> gs.board().cancelledAnimals().contains(animal)));
-                            group.getChildren().add(marker);
+                            occupantImage.setOnMouseClicked(event -> {
+                                occupant.accept(tileOccupant);
+                            });
+                            occupantImage.rotateProperty().bind(data.map(dt -> dt.rotation.negated().degreesCW()));
+                            group.getChildren().add(occupantImage);
+                        }
+                        for (Zone.Meadow meadow : next.meadowZones()) {
+                            for (Animal animal : meadow.animals()) {
+                                ImageView marker = new ImageView();
+                                marker.getStyleClass().add("marker");
+                                marker.setId(STR."marker_\{animal.id()}");
+                                marker.setFitHeight(ImageLoader.MARKER_FIT_SIZE);
+                                marker.setFitWidth(ImageLoader.MARKER_FIT_SIZE);
+                                marker.visibleProperty().bind(gameState.map(gs -> gs.board().cancelledAnimals().contains(animal)));
+                                group.getChildren().add(marker);
+                            }
                         }
                     }
                 });
@@ -171,9 +173,8 @@ public class BoardUI {
 
 
                 group.setOnMouseClicked((e) -> {
-                    // pq tileToPlace doit etre null !!!!!!!!
-                    if (gameState.getValue().tileToPlace() != null
-                            && gameState.getValue().board().insertionPositions().contains(pos)
+                    // pq tileToPlace doit être null !!!!!!!!
+                    if (gameState.getValue().board().insertionPositions().contains(pos)
                             && e.isStillSincePress()) {
                         if (e.getButton() == MouseButton.PRIMARY)
                             position.accept(pos);
