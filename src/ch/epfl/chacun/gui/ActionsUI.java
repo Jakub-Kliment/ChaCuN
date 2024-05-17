@@ -40,8 +40,8 @@ public class ActionsUI {
         TextField textField = new TextField();
         textField.setId("action-field");
         textField.setOnAction(e -> {
-            eventHandler.accept(textField.getText());
             textField.clear();
+            eventHandler.accept(textField.getText());
         });
 
         textField.setTextFormatter(new TextFormatter<>(change -> {

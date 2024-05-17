@@ -95,7 +95,6 @@ public class Main extends Application {
                     if (gameState.nextAction() == GameState.Action.OCCUPY_TILE) {
                         List<String> newList = new ArrayList<>(listAction.getValue());
                         newList.add(ActionEncoder.withNewOccupant(gameState, occupant).action());
-                        System.out.println(ActionEncoder.withNewOccupant(gameState, occupant).action());
                         listAction.setValue(List.copyOf(newList));
                         gameStateO.setValue(gameState.withNewOccupant(occupant));
                     }
@@ -127,12 +126,13 @@ public class Main extends Application {
 
         Node action = ActionsUI.create(listAction, s -> {
             ActionEncoder.StateAction stateAction = ActionEncoder.decodeAndApply(gameStateO.getValue(), s);
-            GameState gs = stateAction.state();
-            gameStateO.setValue(gs);
-            List<String> newList = new ArrayList<>(listAction.getValue());
-            //Utiliser s
-            newList.add(stateAction.action());
-            listAction.setValue(List.copyOf(newList));
+            if (stateAction != null) {
+                GameState gs = stateAction.state();
+                gameStateO.setValue(gs);
+                List<String> newList = new ArrayList<>(listAction.getValue());
+                newList.add(stateAction.action());
+                listAction.setValue(List.copyOf(newList));
+            }
         });
         vbox.getChildren().add(action);
 
