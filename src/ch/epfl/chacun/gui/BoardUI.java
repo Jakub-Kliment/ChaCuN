@@ -15,14 +15,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class BoardUI {
 
@@ -43,19 +41,10 @@ public class BoardUI {
                 .getPixelWriter()
                 .setColor(0, 0, Color.gray(0.98));
 
-/*
-        Map<Integer,Image> cache = Tiles.TILES
-                .stream()
-                .collect(Collectors.toMap(
-                    Tile::id,
-                    tile -> ImageLoader.largeImageForTile(tile.id())));
- */
         Map<Integer, Image> cache = new HashMap<>();
-
 
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.getStylesheets().add("board.css");
-        scrollPane.getStyleClass().add("board-scroll-pane");
         scrollPane.setId("board-scroll-pane");
 
         GridPane gridPane = new GridPane();

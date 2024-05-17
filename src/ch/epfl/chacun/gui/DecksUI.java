@@ -11,7 +11,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 
 public class DecksUI {
@@ -24,16 +23,16 @@ public class DecksUI {
                               ObservableValue<String> text,
                               Consumer<Occupant> event) {
 
-        VBox box = new VBox();
-        box.getStylesheets().add("decks.css");
+        VBox mainBox = new VBox();
+        mainBox.getStylesheets().add("decks.css");
 
-        HBox hBoxDecks = new HBox();
-        hBoxDecks.setId("decks");
-        box.getChildren().add(hBoxDecks);
+        HBox decksBox = new HBox();
+        decksBox.setId("decks");
+        mainBox.getChildren().add(decksBox);
 
-        //Normale Tile
+        // Normal Tile
         StackPane tileNormal = new StackPane();
-        hBoxDecks.getChildren().add(tileNormal);
+        decksBox.getChildren().add(tileNormal);
 
         ImageView imageNormal = new ImageView(new Image("/256/NORMAL.jpg"));
         imageNormal.setId("NORMAL");
@@ -42,12 +41,12 @@ public class DecksUI {
         tileNormal.getChildren().add(imageNormal);
 
         Text textNormal = new Text();
-        textNormal.textProperty().bind(normalTile.map(i -> STR."\{i}"));
+        textNormal.textProperty().bind(normalTile.map(String::valueOf));
         tileNormal.getChildren().add(textNormal);
 
-        //Mehnir Tile
+        // Menhir Tile
         StackPane tileMenhir = new StackPane();
-        hBoxDecks.getChildren().add(tileMenhir);
+        decksBox.getChildren().add(tileMenhir);
 
         ImageView imageMenhir = new ImageView(new Image("/256/MENHIR.jpg"));
         imageMenhir.setId("MENHIR");
@@ -56,21 +55,19 @@ public class DecksUI {
         tileMenhir.getChildren().add(imageMenhir);
 
         Text textMenhir = new Text();
-        textMenhir.textProperty().bind(menhirTile.map(i -> STR."\{i}"));
+        textMenhir.textProperty().bind(menhirTile.map(String::valueOf));
         tileMenhir.getChildren().add(textMenhir);
 
 
         //Current Tile
         StackPane currentTile = new StackPane();
         currentTile.setId("next-tile");
-        box.getChildren().add(currentTile);
+        mainBox.getChildren().add(currentTile);
 
         ImageView imageCurrent = new ImageView();
         ObservableValue<Image> image = tileToPlace.map(t -> ImageLoader.largeImageForTile(t.id()));
         imageCurrent.setImage(image.getValue());
-        image.addListener((i, old, next) -> {
-            imageCurrent.setImage(next);
-        });
+        image.addListener((i, old, next) -> imageCurrent.setImage(next));
 
         imageCurrent.setFitHeight(ImageLoader.LARGE_TILE_FIT_SIZE);
         imageCurrent.setFitWidth(ImageLoader.LARGE_TILE_FIT_SIZE);
@@ -85,7 +82,7 @@ public class DecksUI {
         textCurrent.setWrappingWidth(0.8 * ImageLoader.LARGE_TILE_FIT_SIZE);
         currentTile.getChildren().add(textCurrent);
 
-        return box;
+        return mainBox;
     }
 }
 

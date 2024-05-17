@@ -12,14 +12,13 @@ import java.util.List;
 import java.util.Set;
 
 import static ch.epfl.chacun.gui.ImageLoader.*;
-import static javafx.application.Platform.runLater;
 
 public class MessageBoardUI {
 
     private MessageBoardUI() {}
 
     public static Node create(ObservableValue<List<MessageBoard.Message>> messageList,
-                              ObjectProperty<Set<Integer>> tileId) {
+                              ObjectProperty<Set<Integer>> tileIds) {
 
         ScrollPane messagePane = new ScrollPane();
 
@@ -29,18 +28,20 @@ public class MessageBoardUI {
         messagePane.setContent(box);
 
         messageList.addListener((m, old, next) -> {
-            for (int i = next.size() - old.size(); i > 0 ; i--) {
+            for (int i = next.size() - old.size(); i > 0 ; --i) {
                 MessageBoard.Message boardMessage = next.get(next.size() - i);
+
                 Text message = new Text(boardMessage.text());
                 message.setWrappingWidth(LARGE_TILE_FIT_SIZE);
-                message.setOnMouseEntered(e -> tileId.setValue(boardMessage.tileIds()));
-                message.setOnMouseExited(e -> tileId.setValue(Set.of()));
+                message.setOnMouseEntered(event -> tileIds.setValue(boardMessage.tileIds()));
+                message.setOnMouseExited(event -> tileIds.setValue(Set.of()));
+
                 box.getChildren().add(message);
             }
         });
+
         messagePane.layout();
         messagePane.setVvalue(1);
-
         return messagePane;
     }
 }

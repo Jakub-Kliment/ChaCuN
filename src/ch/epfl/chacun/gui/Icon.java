@@ -33,6 +33,7 @@ public class Icon {
                     "6 -6 L 6 -10 L 0 -10 L -2 -4 L -6 -2 L -8 -10 L -12 -10 L -8 6 Z");
         else
             svg.setContent("M -8 10 H 8 V 2 H 12 L 0 -10 L -12 2 H -8 Z");
+
         svg.setFill(ColorMap.fillColor(color));
         svg.setStroke(ColorMap.strokeColor(color));
         return svg;

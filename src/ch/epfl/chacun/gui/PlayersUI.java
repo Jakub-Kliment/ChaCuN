@@ -25,16 +25,17 @@ public class PlayersUI {
         box.setId("players");
 
         ObservableValue<Map<PlayerColor, Integer>> points =
-                gameState.map(gs -> gs.messageBoard().points());
+                gameState.map(state -> state.messageBoard().points());
         ObservableValue<PlayerColor> currentPlayer =
                 gameState.map(GameState::currentPlayer);
 
         for (PlayerColor player : gameState.getValue().players()) {
-            if (textMaker.playerName(player) == null) continue;
             Pane textFlow = new TextFlow();
             textFlow.getStyleClass().add("player");
+
             if (player == currentPlayer.getValue())
                 textFlow.getStyleClass().add("current");
+
             currentPlayer.addListener((o, old, next) -> {
                 if (next == player) textFlow.getStyleClass().add("current");
                 if (old == player) textFlow.getStyleClass().remove("current");
@@ -54,7 +55,7 @@ public class PlayersUI {
                 Node hut = Icon.newFor(player, Occupant.Kind.HUT);
                 int index = i;
                 ObservableValue<Double> opacity = gameState
-                        .map(gs -> gs.freeOccupantsCount(player, Occupant.Kind.HUT) >= index ? 1 : 0.1);
+                        .map(state -> state.freeOccupantsCount(player, Occupant.Kind.HUT) >= index ? 1 : 0.1);
                 hut.opacityProperty().bind(opacity);
                 textFlow.getChildren().add(hut);
             }
