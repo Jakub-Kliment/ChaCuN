@@ -19,6 +19,8 @@ public class ActionsUI {
     public static Node create(ObservableValue<List<String>> actions,
                               Consumer<String> eventHandler) {
 
+//        final int CHAR_MAX = 2;
+
         HBox actionsBox = new HBox();
         actionsBox.getStylesheets().add("actions.css");
         actionsBox.setId("actions");
@@ -48,12 +50,14 @@ public class ActionsUI {
             // Obtenez un flux de caractères à partir du texte entré
             String newText = change.getText();
 
-            newText = newText.chars() // Flux de caractères
+            //int remaining = CHAR_MAX - newText.length();
+
+            newText = newText.chars()// Flux de caractères
                     .mapToObj(c -> (char) c)
                     .map(Character::toUpperCase)// Convertir les entiers en caractères
-                    .filter(c -> Base32.isValid(c.toString())) // Filtrer les caractères autorisés
-                    .map(String::valueOf) // Convertir les caractères en chaînes de caractères
-                    .collect(Collectors.joining()); // Rassembler les caractères filtrés en une seule chaîne
+                    .map(String::valueOf)// Rassembler les caractères filtrés en une seule chaîne
+                    .filter(Base32::isValid) // Filtrer les caractères autorisés
+                    .collect(Collectors.joining());
 
             // Mettez à jour le texte du champ
             change.setText(newText);

@@ -190,11 +190,11 @@ public record GameState(List<PlayerColor> players,
                     when meadow.specialPower() == Zone.SpecialPower.HUNTING_TRAP -> {
                 Area<Zone.Meadow> adjacentMeadow = newBoard.adjacentMeadow(tile.pos(), meadow);
 
-                newBoard = newBoard.withMoreCancelledAnimals(
-                        Area.animals(adjacentMeadow, newBoard.cancelledAnimals()));
-
                 newMessageBoard = newMessageBoard.withScoredHuntingTrap(
                         currentPlayer(), adjacentMeadow, newBoard.cancelledAnimals());
+
+                newBoard = newBoard.withMoreCancelledAnimals(
+                        Area.animals(adjacentMeadow, newBoard.cancelledAnimals()));
             }
             case Zone.Lake lake
                     when lake.specialPower() == Zone.SpecialPower.LOGBOAT ->

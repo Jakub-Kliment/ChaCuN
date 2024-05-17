@@ -52,10 +52,48 @@ public class Main extends Application {
                 .stream()
                 .collect(Collectors.groupingBy(Tile::kind));
 
+        //Deck de base
         TileDecks tileDecks = new TileDecks(
                 groupedTiles.get(Tile.Kind.START),
                 groupedTiles.get(Tile.Kind.NORMAL),
                 groupedTiles.get(Tile.Kind.MENHIR));
+
+//        //Logboat Deck Normale
+//        TileDecks tileDecks = new TileDecks(
+//                List.of(Tiles.TILES.get(56)),
+//                List.of(Tiles.TILES.get(3), Tiles.TILES.get(4), Tiles.TILES.get(5), Tiles.TILES.get(6), Tiles.TILES.get(7), Tiles.TILES.get(11), Tiles.TILES.get(1)),
+//                List.of(Tiles.TILES.get(93)));
+
+//        //LogBoat limit
+//        TileDecks tileDecks = new TileDecks(
+//                List.of(Tiles.TILES.get(56)),
+//                List.of( Tiles.TILES.get(14), Tiles.TILES.get(1), Tiles.TILES.get(60)),
+//                List.of(Tiles.TILES.get(93)));
+
+//        //Chaman Deck
+//        TileDecks tileDecks = new TileDecks(
+//                List.of(Tiles.TILES.get(56)),
+//                List.of(Tiles.TILES.get(36), Tiles.TILES.get(35), Tiles.TILES.get(27), Tiles.TILES.get(39), Tiles.TILES.get(37)),
+//                List.of(Tiles.TILES.get(88)));
+
+//        //Hunting trap full animaux
+//        TileDecks tileDecks = new TileDecks(
+//                List.of(Tiles.TILES.get(56)),
+//                List.of(Tiles.TILES.get(61), Tiles.TILES.get(62), Tiles.TILES.get(15), Tiles.TILES.get(35), Tiles.TILES.get(16), Tiles.TILES.get(36),  Tiles.TILES.get(37), Tiles.TILES.get(76), Tiles.TILES.get(64), Tiles.TILES.get(68), Tiles.TILES.get(1)),
+//                List.of(Tiles.TILES.get(94)));
+
+//        //Hunting trap no animal
+//        TileDecks tileDecks = new TileDecks(
+//                List.of(Tiles.TILES.get(56)),
+//                List.of(Tiles.TILES.get(4), Tiles.TILES.get(3), Tiles.TILES.get(15), Tiles.TILES.get(46), Tiles.TILES.get(29), Tiles.TILES.get(12), Tiles.TILES.get(18), Tiles.TILES.get(1), Tiles.TILES.get(37)),
+//                List.of(Tiles.TILES.get(94)));
+
+//        //Hunting trap tiger
+//        TileDecks tileDecks = new TileDecks(
+//                List.of(Tiles.TILES.get(56)),
+//                List.of(Tiles.TILES.get(61), Tiles.TILES.get(62), Tiles.TILES.get(18), Tiles.TILES.get(35), Tiles.TILES.get(16), Tiles.TILES.get(36),  Tiles.TILES.get(37), Tiles.TILES.get(31), Tiles.TILES.get(64), Tiles.TILES.get(68), Tiles.TILES.get(1)),
+//                List.of(Tiles.TILES.get(94)));
+
 
         TextMaker textMaker = new TextMakerFr(players);
         GameState state = GameState.initial(colors, tileDecks, textMaker);
@@ -91,19 +129,21 @@ public class Main extends Application {
                     }
                 },
                 occupant -> {
+
                     GameState gameState = gameStateO.getValue();
                     if (gameState.nextAction() == GameState.Action.OCCUPY_TILE) {
                         List<String> newList = new ArrayList<>(listAction.getValue());
                         newList.add(ActionEncoder.withNewOccupant(gameState, occupant).action());
-                        System.out.println(ActionEncoder.withNewOccupant(gameState, occupant).action());
                         listAction.setValue(List.copyOf(newList));
                         gameStateO.setValue(gameState.withNewOccupant(occupant));
                     }
                     if (gameState.nextAction() == GameState.Action.RETAKE_PAWN){
-                        List<String> newList = new ArrayList<>(listAction.getValue());
-                        newList.add(ActionEncoder.withOccupantRemoved(gameStateO.getValue(), occupant).action());
-                        listAction.setValue(List.copyOf(newList));
-                        gameStateO.setValue(gameState.withOccupantRemoved(occupant));
+                        if (gameState.board().tileWithId(Zone.tileId(occupant.zoneId())).placer() == gameState.currentPlayer()){
+                            List<String> newList = new ArrayList<>(listAction.getValue());
+                            newList.add(ActionEncoder.withOccupantRemoved(gameStateO.getValue(), occupant).action());
+                            listAction.setValue(List.copyOf(newList));
+                            gameStateO.setValue(gameState.withOccupantRemoved(occupant));
+                        }
                     }
                 });
 
@@ -155,6 +195,7 @@ public class Main extends Application {
 
         Node decks = DecksUI.create(tileToPlace, normalTiles, menhirTiles, text, o -> {
             if (gameStateO.getValue().nextAction() == GameState.Action.OCCUPY_TILE){
+                //Faire méthode
                 List<String> newList = new ArrayList<>(listAction.getValue());
                 newList.add(ActionEncoder.withNewOccupant(gameStateO.getValue(), o).action());
                 listAction.setValue(List.copyOf(newList));
