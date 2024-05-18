@@ -37,11 +37,11 @@ public class MessageBoardUI {
                 message.setOnMouseExited(event -> tileIds.setValue(Set.of()));
 
                 box.getChildren().add(message);
+
+                messagePane.layout();
+                messagePane.setVvalue(1);
             }
         });
-
-        messagePane.layout();
-        messagePane.setVvalue(1);
         return messagePane;
     }
 }
