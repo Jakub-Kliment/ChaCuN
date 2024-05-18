@@ -46,7 +46,7 @@ public class TextMakerFr implements TextMaker {
      */
     @Override
     public String points(int points) {
-        return STR."\{points} point\{plural(points)}";
+        return STR."\{numberOf(points, "point")}";
     }
 
     /**
@@ -59,7 +59,7 @@ public class TextMakerFr implements TextMaker {
     @Override
     public String playerClosedForestWithMenhir(PlayerColor player) {
         return STR."\{playerName(player)} a fermé une forêt contenant " +
-                STR."un menhir et peut donc placer une tuile menhir.";
+                "un menhir et peut donc placer une tuile menhir.";
     }
 
     /**
@@ -74,7 +74,10 @@ public class TextMakerFr implements TextMaker {
      * @return the message of gained points for the majority occupants of the forest
      */
     @Override
-    public String playersScoredForest(Set<PlayerColor> scorers, int points, int mushroomGroupCount, int tileCount) {
+    public String playersScoredForest(Set<PlayerColor> scorers,
+                                      int points,
+                                      int mushroomGroupCount,
+                                      int tileCount) {
         String mushrooms = STR." et de \{numberOf(mushroomGroupCount, "groupe")} de champignons";
         return STR."\{playersObtained(scorers)} \{points(points)} " +
                 STR."\{majorityOccupants(scorers)} d'une forêt composée de " +
@@ -94,7 +97,10 @@ public class TextMakerFr implements TextMaker {
      * @return the message of gained points for the majority occupants of the river
      */
     @Override
-    public String playersScoredRiver(Set<PlayerColor> scorers, int points, int fishCount, int tileCount) {
+    public String playersScoredRiver(Set<PlayerColor> scorers,
+                                     int points,
+                                     int fishCount,
+                                     int tileCount) {
         String fish = STR." et contenant \{numberOf(fishCount, "poisson")}";
         return STR."\{playersObtained(scorers)} \{points(points)} " +
                 STR."\{majorityOccupants(scorers)} d'une rivière composée de " +
@@ -112,10 +118,12 @@ public class TextMakerFr implements TextMaker {
      * @return the message of gained points for the player who placed the hunting trap
      */
     @Override
-    public String playerScoredHuntingTrap(PlayerColor scorer, int points, Map<Animal.Kind, Integer> animals) {
+    public String playerScoredHuntingTrap(PlayerColor scorer,
+                                          int points,
+                                          Map<Animal.Kind, Integer> animals) {
         return STR."\{playersObtained(Set.of(scorer))} \{points(points)} " +
-                STR."en plaçant la fosse à pieux dans un pré dans lequel elle est entourée de " +
-                STR."\{animalPoints(animals)}.";
+                "en plaçant la fosse à pieux dans un pré dans lequel elle est " +
+                STR."entourée de \{animalPoints(animals)}.";
     }
 
     /**
@@ -130,7 +138,7 @@ public class TextMakerFr implements TextMaker {
     @Override
     public String playerScoredLogboat(PlayerColor scorer, int points, int lakeCount) {
         return STR."\{playersObtained(Set.of(scorer))} \{points(points)} " +
-                STR."en plaçant la pirogue dans un réseau hydrographique contenant " +
+                "en plaçant la pirogue dans un réseau hydrographique contenant " +
                 STR."\{numberOf(lakeCount, "lac")}.";
     }
 
@@ -144,7 +152,9 @@ public class TextMakerFr implements TextMaker {
      * @return the message of gained points for the majority occupants of the meadow
      */
     @Override
-    public String playersScoredMeadow(Set<PlayerColor> scorers, int points, Map<Animal.Kind, Integer> animals) {
+    public String playersScoredMeadow(Set<PlayerColor> scorers,
+                                      int points,
+                                      Map<Animal.Kind, Integer> animals) {
         return STR."\{playersObtained(scorers)} \{points(points)} " +
                 STR."\{majorityOccupants(scorers)} d'un pré contenant " +
                 STR."\{animalPoints(animals)}.";
@@ -177,10 +187,12 @@ public class TextMakerFr implements TextMaker {
      * @return the message of gained points for the majority occupants of the adjacent meadow to the pit trap
      */
     @Override
-    public String playersScoredPitTrap(Set<PlayerColor> scorers, int points, Map<Animal.Kind, Integer> animals) {
+    public String playersScoredPitTrap(Set<PlayerColor> scorers,
+                                       int points,
+                                       Map<Animal.Kind, Integer> animals) {
         return STR."\{playersObtained(scorers)} \{points(points)} " +
-                STR."\{majorityOccupants(scorers)} d'un pré contenant la grande fosse à pieux entourée de " +
-                STR."\{animalPoints(animals)}.";
+                STR."\{majorityOccupants(scorers)} d'un pré contenant la grande fosse à pieux " +
+                STR."entourée de \{animalPoints(animals)}.";
     }
 
     /**
@@ -195,8 +207,8 @@ public class TextMakerFr implements TextMaker {
     @Override
     public String playersScoredRaft(Set<PlayerColor> scorers, int points, int lakeCount) {
         return STR."\{playersObtained(scorers)} \{points(points)} " +
-                STR."\{majorityOccupants(scorers)} d'un réseau hydrographique contenant le radeau et " +
-                STR."\{ numberOf(lakeCount, "lac")}.";
+                STR."\{majorityOccupants(scorers)} d'un réseau hydrographique " +
+                STR."contenant le radeau et \{ numberOf(lakeCount, "lac")}.";
     }
 
     /**
@@ -271,11 +283,11 @@ public class TextMakerFr implements TextMaker {
      * @return the textual representation of the animals present in the meadow and their number
      */
     private String animalPoints(Map<Animal.Kind, Integer> animals) {
-        // Sort the animals by their kind
+        // Sort the animals by their kind and keep only keep those who scored points
         List<Animal.Kind> sortedAnimals = animals.keySet()
                 .stream()
-                .filter(kind -> animals.get(kind) > 0)
                 .filter(kind -> kind != Animal.Kind.TIGER)
+                .filter(kind -> animals.get(kind) > 0)
                 .sorted(Animal.Kind::compareTo)
                 .toList();
 
@@ -335,7 +347,7 @@ public class TextMakerFr implements TextMaker {
     }
 
     /**
-     * Private helper method that returns the plural form of the string (s)
+     * Private method that returns the plural form of the string
      * if the given number of points  is greater than one.
      *
      * @param points the number of points
