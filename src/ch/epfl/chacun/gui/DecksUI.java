@@ -38,7 +38,7 @@ public class DecksUI {
         StackPane nextTile = new StackPane();
         nextTile.setId("next-tile");
 
-        ImageView currentTileImage = resizedImageView(LARGE_TILE_FIT_SIZE);
+        ImageView currentTileImage = new ResizedImageView(LARGE_TILE_FIT_SIZE);
         ObservableValue<Image> image = tileToPlace.map(
                 tile -> ImageLoader.largeImageForTile(tile.id()));
 
@@ -60,7 +60,7 @@ public class DecksUI {
     private static StackPane tilePane(String id, ObservableValue<Integer> count) {
         StackPane pane = new StackPane();
 
-        ImageView imageView = resizedImageView(NORMAL_TILE_FIT_SIZE);
+        ImageView imageView = new ResizedImageView(NORMAL_TILE_FIT_SIZE);
         imageView.setId(id);
 
         Text text = new Text();
@@ -68,12 +68,5 @@ public class DecksUI {
 
         pane.getChildren().addAll(imageView, text);
         return pane;
-    }
-
-    private static ImageView resizedImageView(int size) {
-        ImageView imageView = new ImageView();
-        imageView.setFitWidth(size);
-        imageView.setFitHeight(size);
-        return imageView;
     }
 }

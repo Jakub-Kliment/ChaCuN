@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import static ch.epfl.chacun.gui.ImageLoader.*;
+
 public class BoardUI {
 
     private BoardUI() {}
@@ -43,15 +45,14 @@ public class BoardUI {
 
         Map<Integer, Image> cache = new HashMap<>();
 
-        ScrollPane scrollPane = new ScrollPane();
-        scrollPane.getStylesheets().add("board.css");
-        scrollPane.setId("board-scroll-pane");
+        ScrollPane boardScrollPane = new ScrollPane();
+        boardScrollPane.getStylesheets().add("board.css");
+        boardScrollPane.setId("board-scroll-pane");
 
         GridPane gridPane = new GridPane();
         gridPane.getStyleClass().add("board-grid");
         gridPane.setId("board-grid");
-        scrollPane.setContent(gridPane);
-
+        boardScrollPane.setContent(gridPane);
 
         for (int x = -reach; x <= reach; x++) {
             for (int y = -reach; y <= reach; y++) {
@@ -62,7 +63,6 @@ public class BoardUI {
                 ObservableBooleanValue observableBooleanValue = group.hoverProperty();
 
                 ObservableValue<PlacedTile> tileObservableValue = gameState.map(gs -> gs.board().tileAt(pos));
-
 
                 ObservableValue<CellData> data = Bindings.createObjectBinding(() -> {
                     GameState gs = gameState.getValue();
@@ -78,7 +78,7 @@ public class BoardUI {
 
                     if (tile != null) {
                         rotationData = tile.rotation();
-                        cache.putIfAbsent(tile.id(), ImageLoader.largeImageForTile(tile.id()));
+                        cache.putIfAbsent(tile.id(), largeImageForTile(tile.id()));
                         imageData = cache.get(tile.id());
                         if (!tileId.isEmpty() && !tileId.contains(tile.id()))
                             colorData = Color.BLACK;
@@ -87,7 +87,7 @@ public class BoardUI {
                     } else if (gs.board().insertionPositions().contains(pos) &&
                             gs.nextAction() == GameState.Action.PLACE_TILE) {
                         if (hoverProperty) {
-                            cache.putIfAbsent(gs.tileToPlace().id(), ImageLoader.largeImageForTile(gs.tileToPlace().id()));
+                            cache.putIfAbsent(gs.tileToPlace().id(), largeImageForTile(gs.tileToPlace().id()));
                             imageData = cache.get(gs.tileToPlace().id());
                             rotationData = rotation;
                             if (gs.board().canAddTile(new PlacedTile(gs.tileToPlace(), gs.currentPlayer(), rotation, pos))) {
@@ -108,7 +108,7 @@ public class BoardUI {
                     return new CellData(imageData, rotationData, colorData);
                 }, gameState, tileIds, observableRotation, observableBooleanValue);
 
-                tileObservableValue.addListener((t, old, next) -> {
+                tileObservableValue.addListener((tile, old, next) -> {
                     if (old == null) {
                         for (Occupant tileOccupant : next.potentialOccupants()) {
                             Node occupantImage = Icon.newFor(next.placer(), tileOccupant.kind());
@@ -121,16 +121,15 @@ public class BoardUI {
                             occupantImage.setOnMouseClicked(event -> {
                                 occupant.accept(tileOccupant);
                             });
+
                             occupantImage.rotateProperty().bind(data.map(dt -> dt.rotation.negated().degreesCW()));
                             group.getChildren().add(occupantImage);
                         }
                         for (Zone.Meadow meadow : next.meadowZones()) {
                             for (Animal animal : meadow.animals()) {
-                                ImageView marker = new ImageView();
+                                ImageView marker = new ResizedImageView(MARKER_FIT_SIZE);
                                 marker.getStyleClass().add("marker");
                                 marker.setId(STR."marker_\{animal.id()}");
-                                marker.setFitHeight(ImageLoader.MARKER_FIT_SIZE);
-                                marker.setFitWidth(ImageLoader.MARKER_FIT_SIZE);
                                 marker.visibleProperty().bind(gameState.map(gs -> gs.board().cancelledAnimals().contains(animal)));
                                 group.getChildren().add(marker);
                             }
@@ -143,9 +142,8 @@ public class BoardUI {
                 //Image monochrome de l'effet
                 ColorInput plain = new ColorInput();
                 plain.paintProperty().bind(data.map(dt -> dt.color));
-                plain.setHeight(ImageLoader.NORMAL_TILE_FIT_SIZE);
-                plain.setWidth(ImageLoader.NORMAL_TILE_FIT_SIZE);
-
+                plain.setHeight(NORMAL_TILE_FIT_SIZE);
+                plain.setWidth(NORMAL_TILE_FIT_SIZE);
 
                 Blend blend = new Blend(BlendMode.SRC_OVER);
                 blend.setOpacity(0.5);
@@ -153,36 +151,32 @@ public class BoardUI {
                 group.setEffect(blend);
 
                 //Image
-                ImageView imageTile = new ImageView();
+                ImageView imageTile = new ResizedImageView(NORMAL_TILE_FIT_SIZE);
                 imageTile.imageProperty().bind(data.map(dt -> dt.image));
-                imageTile.setFitHeight(ImageLoader.NORMAL_TILE_FIT_SIZE);
-                imageTile.setFitWidth(ImageLoader.NORMAL_TILE_FIT_SIZE);
                 imageTile.visibleProperty().bind(data.map(dt -> dt.image != null));
                 group.getChildren().add(imageTile);
 
-
                 group.setOnMouseClicked((e) -> {
-                    // pq tileToPlace doit être null !!!!!!!!
                     if (gameState.getValue().board().insertionPositions().contains(pos)
                             && e.isStillSincePress()) {
                         if (e.getButton() == MouseButton.PRIMARY)
                             position.accept(pos);
                         if (e.getButton() == MouseButton.SECONDARY)
-                            if (e.isAltDown()) {
+                            if (e.isAltDown())
                                 consumerRotation.accept(Rotation.RIGHT);
-                            } else {
+                            else
                                 consumerRotation.accept(Rotation.LEFT);
-                            }
                     }
                 });
 
-                gridPane.add(group, x+reach, y+reach);
-
+                gridPane.add(group, x + reach, y + reach);
             }
         }
-        scrollPane.setVvalue(0.5);
-        scrollPane.setHvalue(0.5);
-        return scrollPane;
+
+        boardScrollPane.setVvalue(0.5);
+        boardScrollPane.setHvalue(0.5);
+        return boardScrollPane;
     }
+
     private record CellData(Image image, Rotation rotation, Color color) {}
 }
