@@ -13,6 +13,8 @@ import javafx.scene.text.Text;
 
 import java.util.function.Consumer;
 
+import static ch.epfl.chacun.gui.ImageLoader.*;
+
 public class DecksUI {
 
     private DecksUI() {}
@@ -20,69 +22,58 @@ public class DecksUI {
     public static Node create(ObservableValue<Tile> tileToPlace,
                               ObservableValue<Integer> normalTile,
                               ObservableValue<Integer> menhirTile,
-                              ObservableValue<String> text,
-                              Consumer<Occupant> event) {
+                              ObservableValue<String> message,
+                              Consumer<Occupant> occupant) {
 
         VBox mainBox = new VBox();
         mainBox.getStylesheets().add("decks.css");
 
         HBox decksBox = new HBox();
         decksBox.setId("decks");
-        mainBox.getChildren().add(decksBox);
+        StackPane normalTilePane = tilePane("NORMAL", normalTile);
+        StackPane menhirTilePane = tilePane("MENHIR", menhirTile);
+        decksBox.getChildren().addAll(normalTilePane, menhirTilePane);
 
-        // Normal Tile
-        StackPane tileNormal = new StackPane();
-        decksBox.getChildren().add(tileNormal);
+        // Current Tile
+        StackPane nextTile = new StackPane();
+        nextTile.setId("next-tile");
 
-        ImageView imageNormal = new ImageView(new Image("/256/NORMAL.jpg"));
-        imageNormal.setId("NORMAL");
-        imageNormal.setFitWidth(ImageLoader.NORMAL_TILE_FIT_SIZE);
-        imageNormal.setFitHeight(ImageLoader.NORMAL_TILE_FIT_SIZE);
-        tileNormal.getChildren().add(imageNormal);
+        ImageView currentTileImage = resizedImageView(LARGE_TILE_FIT_SIZE);
+        ObservableValue<Image> image = tileToPlace.map(
+                tile -> ImageLoader.largeImageForTile(tile.id()));
 
-        Text textNormal = new Text();
-        textNormal.textProperty().bind(normalTile.map(String::valueOf));
-        tileNormal.getChildren().add(textNormal);
+        image.addListener((current, oldImage, nextImage) -> currentTileImage.setImage(nextImage));
+        currentTileImage.setImage(image.getValue());
+        currentTileImage.visibleProperty().bind(message.map(String::isEmpty));
 
-        // Menhir Tile
-        StackPane tileMenhir = new StackPane();
-        decksBox.getChildren().add(tileMenhir);
+        Text currentText = new Text();
+        currentText.textProperty().bind(message);
+        currentText.setWrappingWidth(0.8 * LARGE_TILE_FIT_SIZE);
+        currentText.visibleProperty().bind(message.map(text -> !text.isEmpty()));
+        currentText.setOnMouseClicked(event -> occupant.accept(null));
 
-        ImageView imageMenhir = new ImageView(new Image("/256/MENHIR.jpg"));
-        imageMenhir.setId("MENHIR");
-        imageMenhir.setFitWidth(ImageLoader.NORMAL_TILE_FIT_SIZE);
-        imageMenhir.setFitHeight(ImageLoader.NORMAL_TILE_FIT_SIZE);
-        tileMenhir.getChildren().add(imageMenhir);
-
-        Text textMenhir = new Text();
-        textMenhir.textProperty().bind(menhirTile.map(String::valueOf));
-        tileMenhir.getChildren().add(textMenhir);
-
-
-        //Current Tile
-        StackPane currentTile = new StackPane();
-        currentTile.setId("next-tile");
-        mainBox.getChildren().add(currentTile);
-
-        ImageView imageCurrent = new ImageView();
-        ObservableValue<Image> image = tileToPlace.map(t -> ImageLoader.largeImageForTile(t.id()));
-        imageCurrent.setImage(image.getValue());
-        image.addListener((i, old, next) -> imageCurrent.setImage(next));
-
-        imageCurrent.setFitHeight(ImageLoader.LARGE_TILE_FIT_SIZE);
-        imageCurrent.setFitWidth(ImageLoader.LARGE_TILE_FIT_SIZE);
-        imageCurrent.visibleProperty().bind(text.map(String::isEmpty));
-        currentTile.getChildren().add(imageCurrent);
-
-
-        Text textCurrent = new Text();
-        textCurrent.textProperty().bind(text);
-        textCurrent.visibleProperty().bind(text.map(txt -> !txt.isEmpty()));
-        textCurrent.setOnMouseClicked(e -> event.accept(null));
-        textCurrent.setWrappingWidth(0.8 * ImageLoader.LARGE_TILE_FIT_SIZE);
-        currentTile.getChildren().add(textCurrent);
-
+        nextTile.getChildren().addAll(currentTileImage, currentText);
+        mainBox.getChildren().addAll(decksBox, nextTile);
         return mainBox;
     }
-}
 
+    private static StackPane tilePane(String id, ObservableValue<Integer> count) {
+        StackPane pane = new StackPane();
+
+        ImageView imageView = resizedImageView(NORMAL_TILE_FIT_SIZE);
+        imageView.setId(id);
+
+        Text text = new Text();
+        text.textProperty().bind(count.map(String::valueOf));
+
+        pane.getChildren().addAll(imageView, text);
+        return pane;
+    }
+
+    private static ImageView resizedImageView(int size) {
+        ImageView imageView = new ImageView();
+        imageView.setFitWidth(size);
+        imageView.setFitHeight(size);
+        return imageView;
+    }
+}

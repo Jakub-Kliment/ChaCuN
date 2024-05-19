@@ -14,6 +14,8 @@ import javafx.scene.text.TextFlow;
 
 import java.util.Map;
 
+import static ch.epfl.chacun.Occupant.*;
+
 public class PlayersUI {
 
     private PlayersUI() {}
@@ -26,6 +28,7 @@ public class PlayersUI {
 
         ObservableValue<Map<PlayerColor, Integer>> points =
                 gameState.map(state -> state.messageBoard().points());
+
         ObservableValue<PlayerColor> currentPlayer = gameState.map(GameState::currentPlayer);
 
         for (PlayerColor player : gameState.getValue().players()) {
@@ -33,43 +36,39 @@ public class PlayersUI {
             textFlow.getStyleClass().add("player");
             box.getChildren().add(textFlow);
 
-            currentPlayer.addListener((o, old, next) -> {
-                if (next == player) textFlow.getStyleClass().add("current");
-                if (old == player) textFlow.getStyleClass().remove("current");
+            currentPlayer.addListener((current, oldPlayer, nextPlayer) -> {
+                if (nextPlayer == player) textFlow.getStyleClass().add("current");
+                if (oldPlayer == player) textFlow.getStyleClass().remove("current");
             });
 
-            textFlow.getChildren().add(new Circle(5, ColorMap.fillColor(player)));
+            Circle circle = new Circle(5, ColorMap.fillColor(player));
 
-            ObservableValue<String> playerPoints = points
-                    .map(individualPoints -> STR." \{textMaker.playerName(player)} : " +
+            ObservableValue<String> playerPoints = points.map(
+                    individualPoints -> STR." \{textMaker.playerName(player)} : " +
                             STR."\{textMaker.points(individualPoints.getOrDefault(player, 0))}\n");
 
-            Text text = new Text();
-            text.textProperty().bind(playerPoints);
-            textFlow.getChildren().add(text);
+            Text textPoints = new Text();
+            textPoints.textProperty().bind(playerPoints);
+            textFlow.getChildren().addAll(circle, textPoints);
 
-            for (int i = 0; i < Occupant.occupantsCount(Occupant.Kind.HUT); i++) {
-                Node hut = Icon.newFor(player, Occupant.Kind.HUT);
+            int pawnCount = occupantsCount(Kind.PAWN);
+            int hutCount = occupantsCount(Kind.HUT);
+
+            for (int i = 1; i <= hutCount + pawnCount; i++) {
+                Occupant.Kind kind = i <= hutCount ? Kind.HUT : Kind.PAWN;
+
                 int index = i;
+                ObservableValue<Double> opacity = gameState.map(state -> {
+                    int count = index - (kind == Kind.HUT ? 0 : hutCount);
+                    return state.freeOccupantsCount(player, kind) >= count ? 1 : 0.1;
+                });
 
-                ObservableValue<Double> opacity = gameState
-                        .map(state -> state.freeOccupantsCount(player, Occupant.Kind.HUT) > index ? 1 : 0.1);
+                Node occupant = Icon.newFor(player, kind);
+                occupant.opacityProperty().bind(opacity);
+                textFlow.getChildren().add(occupant);
 
-                hut.opacityProperty().bind(opacity);
-                textFlow.getChildren().add(hut);
-            }
-
-            textFlow.getChildren().add(new Text("   "));
-
-            for (int i = 0; i < Occupant.occupantsCount(Occupant.Kind.PAWN); i++) {
-                Node pawn = Icon.newFor(player, Occupant.Kind.PAWN);
-                int index = i;
-
-                ObservableValue<Double> opacity = gameState
-                        .map((c -> c.freeOccupantsCount(player, Occupant.Kind.PAWN) > index ? 1 : 0.1));
-
-                pawn.opacityProperty().bind(opacity);
-                textFlow.getChildren().add(pawn);
+                if (index == hutCount)
+                    textFlow.getChildren().add(new Text("   "));
             }
         }
         return box;

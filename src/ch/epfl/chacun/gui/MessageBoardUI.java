@@ -11,8 +11,6 @@ import javafx.scene.text.Text;
 import java.util.List;
 import java.util.Set;
 
-import static ch.epfl.chacun.gui.ImageLoader.*;
-
 public class MessageBoardUI {
 
     private MessageBoardUI() {}
@@ -22,21 +20,21 @@ public class MessageBoardUI {
 
         ScrollPane messagePane = new ScrollPane();
 
-        VBox box = new VBox();
-        box.getStylesheets().add("message-board.css");
-        box.setId("message-board");
-        messagePane.setContent(box);
+        VBox messageBox = new VBox();
+        messageBox.getStylesheets().add("message-board.css");
+        // demander !!!!!!!
+        //messageBox.setId("message-board");
+        messagePane.setContent(messageBox);
 
-        messageList.addListener((m, old, next) -> {
-            for (int i = next.size() - old.size(); i > 0 ; --i) {
-                MessageBoard.Message boardMessage = next.get(next.size() - i);
+        messageList.addListener((list, oldList, nextList) -> {
+            for (int i = nextList.size() - oldList.size(); i > 0 ; --i) {
+                MessageBoard.Message boardMessage = nextList.get(nextList.size() - i);
 
                 Text message = new Text(boardMessage.text());
-                message.setWrappingWidth(LARGE_TILE_FIT_SIZE);
+                message.setWrappingWidth(ImageLoader.LARGE_TILE_FIT_SIZE);
                 message.setOnMouseEntered(event -> tileIds.setValue(boardMessage.tileIds()));
                 message.setOnMouseExited(event -> tileIds.setValue(Set.of()));
-
-                box.getChildren().add(message);
+                messageBox.getChildren().add(message);
 
                 messagePane.layout();
                 messagePane.setVvalue(1);
