@@ -37,6 +37,8 @@ public class BoardUI {
                               Consumer<Pos> position,
                               Consumer<Occupant> occupant) {
 
+        // Demander !!!!!!!!!!
+        Preconditions.checkArgument(reach > 0);
 
         WritableImage emptyTileImage = new WritableImage(1, 1);
         emptyTileImage
@@ -50,51 +52,52 @@ public class BoardUI {
         boardScrollPane.setId("board-scroll-pane");
 
         GridPane gridPane = new GridPane();
-        gridPane.getStyleClass().add("board-grid");
         gridPane.setId("board-grid");
         boardScrollPane.setContent(gridPane);
 
         for (int x = -reach; x <= reach; x++) {
             for (int y = -reach; y <= reach; y++) {
-
                 Group group = new Group();
-                Pos pos = new Pos(x, y);
+                Pos currentPos = new Pos(x, y);
 
-                ObservableBooleanValue observableBooleanValue = group.hoverProperty();
+                ObservableBooleanValue hoverProperty = group.hoverProperty();
 
-                ObservableValue<PlacedTile> tileObservableValue = gameState.map(gs -> gs.board().tileAt(pos));
+                ObservableValue<PlacedTile> observableTile = gameState.map(
+                        state -> state.board().tileAt(currentPos));
 
                 ObservableValue<CellData> data = Bindings.createObjectBinding(() -> {
                     GameState gs = gameState.getValue();
-                    Set<Integer> tileId = tileIds.getValue();
-                    Rotation rotation = observableRotation.getValue();
-                    boolean hoverProperty = observableBooleanValue.get();
+                    Set<Integer> currentIds = tileIds.getValue();
 
                     Image imageData;
                     Color colorData;
                     Rotation rotationData;
 
-                    PlacedTile tile = gs.board().tileAt(pos);
+                    PlacedTile tile = gs.board().tileAt(currentPos);
 
                     if (tile != null) {
                         rotationData = tile.rotation();
                         cache.putIfAbsent(tile.id(), largeImageForTile(tile.id()));
                         imageData = cache.get(tile.id());
-                        if (!tileId.isEmpty() && !tileId.contains(tile.id()))
+
+                        if (!currentIds.isEmpty() && !currentIds.contains(tile.id()))
                             colorData = Color.BLACK;
                         else
                             colorData = Color.TRANSPARENT;
-                    } else if (gs.board().insertionPositions().contains(pos) &&
-                            gs.nextAction() == GameState.Action.PLACE_TILE) {
-                        if (hoverProperty) {
+
+                    } else if (gs.board().insertionPositions().contains(currentPos)
+                            && gs.nextAction() == GameState.Action.PLACE_TILE) {
+
+                        if (hoverProperty.get()) {
                             cache.putIfAbsent(gs.tileToPlace().id(), largeImageForTile(gs.tileToPlace().id()));
                             imageData = cache.get(gs.tileToPlace().id());
-                            rotationData = rotation;
-                            if (gs.board().canAddTile(new PlacedTile(gs.tileToPlace(), gs.currentPlayer(), rotation, pos))) {
+                            rotationData = observableRotation.getValue();
+
+                            if (gs.board().canAddTile(new PlacedTile(gs.tileToPlace(), gs.currentPlayer(), rotationData, currentPos)))
                                 colorData = Color.TRANSPARENT;
-                            } else {
+                            else
                                 colorData = Color.WHITE;
-                            }
+
                         } else {
                             imageData = emptyTileImage;
                             colorData = ColorMap.fillColor(gs.currentPlayer());
@@ -106,9 +109,9 @@ public class BoardUI {
                         rotationData = Rotation.NONE;
                     }
                     return new CellData(imageData, rotationData, colorData);
-                }, gameState, tileIds, observableRotation, observableBooleanValue);
+                }, gameState, tileIds, observableRotation, hoverProperty);
 
-                tileObservableValue.addListener((tile, old, next) -> {
+                observableTile.addListener((tile, old, next) -> {
                     if (old == null) {
                         for (Occupant tileOccupant : next.potentialOccupants()) {
                             Node occupantImage = Icon.newFor(next.placer(), tileOccupant.kind());
@@ -118,19 +121,20 @@ public class BoardUI {
                             occupantImage.getStyleClass().add(STR."\{kind}_\{tileOccupant.zoneId()}");
                             occupantImage.setId(STR."\{kind}_\{tileOccupant.zoneId()}");
 
-                            occupantImage.setOnMouseClicked(event -> {
-                                occupant.accept(tileOccupant);
-                            });
+                            occupantImage.setOnMouseClicked(event -> occupant.accept(tileOccupant));
 
                             occupantImage.rotateProperty().bind(data.map(dt -> dt.rotation.negated().degreesCW()));
                             group.getChildren().add(occupantImage);
                         }
+
                         for (Zone.Meadow meadow : next.meadowZones()) {
                             for (Animal animal : meadow.animals()) {
                                 ImageView marker = new ResizedImageView(MARKER_FIT_SIZE);
                                 marker.getStyleClass().add("marker");
                                 marker.setId(STR."marker_\{animal.id()}");
-                                marker.visibleProperty().bind(gameState.map(gs -> gs.board().cancelledAnimals().contains(animal)));
+
+                                marker.visibleProperty().bind(gameState.map(
+                                        state -> state.board().cancelledAnimals().contains(animal)));
                                 group.getChildren().add(marker);
                             }
                         }
@@ -157,15 +161,15 @@ public class BoardUI {
                 group.getChildren().add(imageTile);
 
                 group.setOnMouseClicked((e) -> {
-                    if (gameState.getValue().board().insertionPositions().contains(pos)
+                    if (gameState.getValue().board().insertionPositions().contains(currentPos)
                             && e.isStillSincePress()) {
                         if (e.getButton() == MouseButton.PRIMARY)
-                            position.accept(pos);
-                        if (e.getButton() == MouseButton.SECONDARY)
-                            if (e.isAltDown())
-                                consumerRotation.accept(Rotation.RIGHT);
-                            else
-                                consumerRotation.accept(Rotation.LEFT);
+                            position.accept(currentPos);
+
+                        if (e.getButton() == MouseButton.SECONDARY) {
+                            Rotation rot = e.isAltDown() ? Rotation.RIGHT : Rotation.LEFT;
+                            consumerRotation.accept(rot);
+                        }
                     }
                 });
 
