@@ -5,6 +5,8 @@ import java.util.List;
 
 public class ActionEncoder {
 
+    private final static int NULL_OCCUPANT = 0b11111;
+
     private ActionEncoder() {}
 
     public static StateAction withPlacedTile(GameState state, PlacedTile tile) {
@@ -17,7 +19,7 @@ public class ActionEncoder {
 
     public static StateAction withNewOccupant(GameState state, Occupant occupant) {
         if (occupant == null)
-            return new StateAction(state.withNewOccupant(null), Base32.encodeBits5(0b11111));
+            return new StateAction(state.withNewOccupant(null), Base32.encodeBits5(NULL_OCCUPANT));
 
         int zoneId = Zone.localId(occupant.zoneId());
         int kind = occupant.kind().ordinal();
@@ -28,7 +30,7 @@ public class ActionEncoder {
 
     public static StateAction withOccupantRemoved(GameState state, Occupant occupant) {
         if (occupant == null)
-            return new StateAction(state.withOccupantRemoved(null), Base32.encodeBits5(0b11111));
+            return new StateAction(state.withOccupantRemoved(null), Base32.encodeBits5(NULL_OCCUPANT));
 
         String action = Base32.encodeBits5(sortedPawns(state).indexOf(occupant));
         return new StateAction(state.withOccupantRemoved(occupant), action);
@@ -58,18 +60,19 @@ public class ActionEncoder {
                 return withPlacedTile(state, tile);
             }
             case OCCUPY_TILE -> {
-                if (actionRepresentation == 0b11111)
+                if (actionRepresentation == NULL_OCCUPANT)
                     return withNewOccupant(state, null);
 
                 int zone = actionRepresentation & 0b1111;
                 int kind = actionRepresentation >> 4;
+                // peut etre trouver mieux !!!!!!!
                 int zoneId = state.board().lastPlacedTile().id() * 10 + zone;
                 Occupant.Kind occupantKind = kind == 0 ? Occupant.Kind.PAWN : Occupant.Kind.HUT;
 
                 return withNewOccupant(state, new Occupant(occupantKind, zoneId));
             }
             case RETAKE_PAWN -> {
-                if (actionRepresentation == 0b11111)
+                if (actionRepresentation == NULL_OCCUPANT)
                     return withOccupantRemoved(state, null);
                 return withOccupantRemoved(state, sortedPawns(state).get(actionRepresentation));
             }

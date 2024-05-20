@@ -25,7 +25,6 @@ public class ActionsUI {
         actionsBox.setId("actions");
 
         Text text = new Text();
-        actionsBox.getChildren().add(text);
         text.textProperty().bind(actions.map(list -> {
             StringJoiner txt = new StringJoiner(", ", "", " ");
             for (int i = Math.min(4, list.size()); i > 0; i--)
@@ -33,9 +32,14 @@ public class ActionsUI {
             return txt.toString();
         }));
 
+        TextField textField = getTextField(eventHandler);
+        actionsBox.getChildren().addAll(text, textField);
+        return actionsBox;
+    }
+
+    private static TextField getTextField(Consumer<String> eventHandler) {
         TextField textField = new TextField();
         textField.setId("action-field");
-        actionsBox.getChildren().add(textField);
 
         textField.setTextFormatter(new TextFormatter<>(change -> {
             String newText = change.getText();
@@ -55,6 +59,6 @@ public class ActionsUI {
             textField.clear();
         });
 
-        return actionsBox;
+        return textField;
     }
 }
