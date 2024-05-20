@@ -165,19 +165,20 @@ public class Main extends Application {
                 },
                 occupant -> {
                     GameState gameState = gameStateO.getValue();
-                    if (gameState.nextAction() == GameState.Action.OCCUPY_TILE) {
+                    if (gameState.nextAction() == GameState.Action.OCCUPY_TILE
+                            && gameState.lastTilePotentialOccupants().contains(occupant)) {
                         List<String> newList = new ArrayList<>(actionsList.getValue());
                         newList.add(ActionEncoder.withNewOccupant(gameState, occupant).action());
                         actionsList.setValue(List.copyOf(newList));
                         gameStateO.setValue(gameState.withNewOccupant(occupant));
                     }
-                    if (gameState.nextAction() == GameState.Action.RETAKE_PAWN){
-                        if (gameState.board().tileWithId(Zone.tileId(occupant.zoneId())).placer() == gameState.currentPlayer()) {
-                            List<String> newList = new ArrayList<>(actionsList.getValue());
-                            newList.add(ActionEncoder.withOccupantRemoved(gameStateO.getValue(), occupant).action());
-                            actionsList.setValue(List.copyOf(newList));
-                            gameStateO.setValue(gameState.withOccupantRemoved(occupant));
-                        }
+                    if (gameState.nextAction() == GameState.Action.RETAKE_PAWN
+                            && occupant.kind() == Occupant.Kind.PAWN
+                            && gameState.board().tileWithId(Zone.tileId(occupant.zoneId())).placer() == gameState.currentPlayer()) {
+                        List<String> newList = new ArrayList<>(actionsList.getValue());
+                        newList.add(ActionEncoder.withOccupantRemoved(gameStateO.getValue(), occupant).action());
+                        actionsList.setValue(List.copyOf(newList));
+                        gameStateO.setValue(gameState.withOccupantRemoved(occupant));
                     }
                 });
         mainPane.setCenter(board);
