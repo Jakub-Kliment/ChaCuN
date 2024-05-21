@@ -52,7 +52,7 @@ public class ImageLoader {
      * @return the image for the tile with the given id
      */
     public static Image normalImageForTile(int id) {
-        return new Image(String.format("/256/%02d.jpg", id));
+        return new Image(String.format("/%d/%02d.jpg", NORMAL_TILE_PIXEL_SIZE, id));
     }
 
     /**
@@ -62,6 +62,6 @@ public class ImageLoader {
      * @return the image for the marker with the given id
      */
     public static Image largeImageForTile(int id) {
-        return new Image(String.format("/512/%02d.jpg", id));
+        return new Image(String.format("/%d/%02d.jpg", LARGE_TILE_PIXEL_SIZE, id));
     }
 }
