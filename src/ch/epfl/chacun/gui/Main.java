@@ -117,6 +117,11 @@ public class Main extends Application {
 //                List.of(Tiles.TILES.get(61), Tiles.TILES.get(62), Tiles.TILES.get(18), Tiles.TILES.get(35), Tiles.TILES.get(16), Tiles.TILES.get(36),  Tiles.TILES.get(37), Tiles.TILES.get(31), Tiles.TILES.get(64), Tiles.TILES.get(68), Tiles.TILES.get(15), Tiles.TILES.get(26)),
 //                List.of(Tiles.TILES.get(92), Tiles.TILES.get(85)));
 
+//        //Logboat Deck Normale
+//        TileDecks tileDecks = new TileDecks(
+//                List.of(Tiles.TILES.get(56)),
+//                List.of(Tiles.TILES.get(3), Tiles.TILES.get(4), Tiles.TILES.get(5), Tiles.TILES.get(6), Tiles.TILES.get(7), Tiles.TILES.get(11), Tiles.TILES.get(1)),
+//                List.of(Tiles.TILES.get(91)));
 
 
         TextMaker textMaker = new TextMakerFr(players);
