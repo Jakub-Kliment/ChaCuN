@@ -11,32 +11,32 @@ import javafx.scene.image.Image;
 public class ImageLoader {
 
     /**
-     * Large tile pixel size
+     * Pixel size of a large tile
      */
     public static final int LARGE_TILE_PIXEL_SIZE = 512;
 
     /**
-     * Large tile fit size
+     * Large tile fit size (with higher resolution)
      */
     public static final int LARGE_TILE_FIT_SIZE = LARGE_TILE_PIXEL_SIZE / 2;
 
     /**
-     * Normal tile pixel size
+     * Pixel size of a normal tile
      */
     public static final int NORMAL_TILE_PIXEL_SIZE = 256;
 
     /**
-     * Normal tile fit size
+     * Normal tile fit size (with higher resolution)
      */
     public static final int NORMAL_TILE_FIT_SIZE = NORMAL_TILE_PIXEL_SIZE / 2;
 
     /**
-     * Marker pixel size
+     * Pixel size of the marker
      */
     public static final int MARKER_PIXEL_SIZE = 96;
 
     /**
-     * Marker fit size
+     * Marker fit size (with higher resolution)
      */
     public static final int MARKER_FIT_SIZE = MARKER_PIXEL_SIZE / 2;
 
@@ -46,7 +46,7 @@ public class ImageLoader {
     private ImageLoader() {}
 
     /**
-     * Returns the normal size image for the tile with the given id.
+     * Returns the normal pixel sized image with the given id.
      *
      * @param id the id of the tile
      * @return the image for the tile with the given id
@@ -56,7 +56,7 @@ public class ImageLoader {
     }
 
     /**
-     * Returns large the image for the marker with the given id.
+     * Returns the large pixel sized image with the given id.
      *
      * @param id the id of the marker
      * @return the image for the marker with the given id

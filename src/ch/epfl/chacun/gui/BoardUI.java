@@ -77,7 +77,8 @@ public class BoardUI {
 
                     if (tile != null) {
                         rotationData = tile.rotation();
-                        cache.putIfAbsent(tile.id(), largeImageForTile(tile.id()));
+                        // demander !!!!!!!!!
+                        cache.putIfAbsent(tile.id(), normalImageForTile(tile.id()));
                         imageData = cache.get(tile.id());
 
                         if (!currentIds.isEmpty() && !currentIds.contains(tile.id()))
@@ -89,7 +90,8 @@ public class BoardUI {
                             && gs.nextAction() == GameState.Action.PLACE_TILE) {
 
                         if (hoverProperty.get()) {
-                            cache.putIfAbsent(gs.tileToPlace().id(), largeImageForTile(gs.tileToPlace().id()));
+                            // demander !!!!!!!!!
+                            cache.putIfAbsent(gs.tileToPlace().id(), normalImageForTile(gs.tileToPlace().id()));
                             imageData = cache.get(gs.tileToPlace().id());
                             rotationData = observableRotation.getValue();
 
