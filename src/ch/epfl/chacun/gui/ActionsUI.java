@@ -13,7 +13,7 @@ import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class ActionsUI {
+public final class ActionsUI {
 
     private ActionsUI() {}
 

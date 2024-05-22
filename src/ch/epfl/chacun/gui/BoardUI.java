@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 
 import static ch.epfl.chacun.gui.ImageLoader.*;
 
-public class BoardUI {
+public final class BoardUI {
 
     private BoardUI() {}
 

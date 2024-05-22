@@ -11,7 +11,7 @@ import javafx.scene.shape.SVGPath;
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
  */
-public class Icon {
+public final class Icon {
 
     /**
      * Private constructor that prevents instantiation.

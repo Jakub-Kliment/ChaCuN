@@ -17,7 +17,7 @@ import java.util.random.RandomGeneratorFactory;
 import java.util.stream.Collectors;
 
 
-public class Main extends Application {
+public final class Main extends Application {
 
     private final static String TITLE = "ChaCuN";
 

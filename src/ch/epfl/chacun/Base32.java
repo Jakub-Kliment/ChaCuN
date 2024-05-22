@@ -1,6 +1,9 @@
 package ch.epfl.chacun;
 
-public class Base32 {
+/**
+ * Base32 encoding and decoding.
+ */
+public final class Base32 {
 
     private Base32() {}
 

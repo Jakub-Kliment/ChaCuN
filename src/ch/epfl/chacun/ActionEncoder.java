@@ -3,7 +3,7 @@ package ch.epfl.chacun;
 import java.util.Comparator;
 import java.util.List;
 
-public class ActionEncoder {
+public final class ActionEncoder {
 
     private final static int NULL_OCCUPANT = 0b11111;
 

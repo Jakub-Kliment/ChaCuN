@@ -8,7 +8,7 @@ import javafx.scene.image.Image;
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
  */
-public class ImageLoader {
+public final class ImageLoader {
 
     /**
      * Pixel size of a large tile

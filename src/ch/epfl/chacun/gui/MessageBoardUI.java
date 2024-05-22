@@ -18,7 +18,7 @@ import java.util.Set;
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
  */
-public class MessageBoardUI {
+public final class MessageBoardUI {
 
     /**
      * Private constructor to prevent instantiation.
