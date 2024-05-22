@@ -107,6 +107,7 @@ public final class ActionEncoder {
         // Decoding the action based on the next action of the game state
         switch (state.nextAction()) {
             case PLACE_TILE -> {
+                // mask ou pas !!!!!!!!
                 int rotation = actionRepresentation & 0b11;
                 int position = actionRepresentation >> 2;
 
@@ -122,9 +123,10 @@ public final class ActionEncoder {
                 if (actionRepresentation == NULL_OCCUPANT)
                     return withNewOccupant(state, null);
 
+                // mask ou pas !!!!!!!!
                 int zone = actionRepresentation & 0b1111;
                 int kind = actionRepresentation >> 4;
-                // peut etre trouver mieux !!!!!!!
+                // peut-être trouver mieux !!!!!!!
                 int zoneId = state.board().lastPlacedTile().id() * 10 + zone;
                 Occupant.Kind occupantKind = kind == 0 ? Occupant.Kind.PAWN : Occupant.Kind.HUT;
 
