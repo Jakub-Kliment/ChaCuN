@@ -45,8 +45,7 @@ public final class MessageBoardUI {
         // Create a vertical box to put the scrollable pane into
         VBox messageBox = new VBox();
         messageBox.getStylesheets().add("message-board.css");
-        // demander !!!!!!!
-        //messageBox.setId("message-board");
+        messageBox.setId("message-board");
         messagePane.setContent(messageBox);
 
         // Listener that updates the message board as soon as a new message is added

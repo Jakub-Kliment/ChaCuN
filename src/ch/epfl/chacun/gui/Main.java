@@ -89,11 +89,11 @@ public final class Main extends Application {
                 .stream()
                 .collect(Collectors.groupingBy(Tile::kind));
 
-        // Create the tile decks
-        TileDecks tileDecks = new TileDecks(
-                groupedTiles.get(Tile.Kind.START),
-                groupedTiles.get(Tile.Kind.NORMAL),
-                groupedTiles.get(Tile.Kind.MENHIR));
+//        // Create the tile decks
+//        TileDecks tileDecks = new TileDecks(
+//                groupedTiles.get(Tile.Kind.START),
+//                groupedTiles.get(Tile.Kind.NORMAL),
+//                groupedTiles.get(Tile.Kind.MENHIR));
 
 //        //Logboat Deck Normale
 //        TileDecks tileDecks = new TileDecks(
@@ -107,11 +107,11 @@ public final class Main extends Application {
 //                List.of( Tiles.TILES.get(14), Tiles.TILES.get(1), Tiles.TILES.get(60)),
 //                List.of(Tiles.TILES.get(93)));
 
-//        //Chaman Deck
-//        TileDecks tileDecks = new TileDecks(
-//                List.of(Tiles.TILES.get(56)),
-//                List.of(Tiles.TILES.get(36), Tiles.TILES.get(35), Tiles.TILES.get(27), Tiles.TILES.get(39), Tiles.TILES.get(37)),
-//                List.of(Tiles.TILES.get(88)));
+        //Chaman Deck
+        TileDecks tileDecks = new TileDecks(
+                List.of(Tiles.TILES.get(56)),
+                List.of(Tiles.TILES.get(36), Tiles.TILES.get(35), Tiles.TILES.get(27), Tiles.TILES.get(39), Tiles.TILES.get(37)),
+                List.of(Tiles.TILES.get(88)));
 
 //        //Hunting trap full animaux
 //        TileDecks tileDecks = new TileDecks(

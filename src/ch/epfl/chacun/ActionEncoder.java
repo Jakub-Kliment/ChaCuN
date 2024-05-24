@@ -14,6 +14,16 @@ public final class ActionEncoder {
     private final static int NULL_OCCUPANT = 0b11111;
 
     /**
+     * The mask to extract the rotation from the action.
+     */
+    private final static int ROTATION_MASK = 0b11;
+
+    /**
+     * The mask to extract the zone from the action.
+     */
+    private final static int ZONE_MASK = 0b1111;
+
+    /**
      * Private constructor to prevent instantiation.
      */
     private ActionEncoder() {}
@@ -109,7 +119,7 @@ public final class ActionEncoder {
         switch (state.nextAction()) {
             case PLACE_TILE -> {
                 // mask ou pas !!!!!!!!
-                int rotation = actionRepresentation & 0b11;
+                int rotation = actionRepresentation & ROTATION_MASK;
                 int position = actionRepresentation >> 2;
 
                 PlacedTile tile = new PlacedTile(
@@ -124,21 +134,32 @@ public final class ActionEncoder {
                 if (actionRepresentation == NULL_OCCUPANT)
                     return withNewOccupant(state, null);
 
-                // mask ou pas !!!!!!!!
-                int zone = actionRepresentation & 0b1111;
+                int zone = actionRepresentation & ZONE_MASK;
                 int kind = actionRepresentation >> 4;
-                // peut-être trouver mieux !!!!!!!
-                int zoneId = state.board().lastPlacedTile().id() * 10 + zone;
-                Occupant.Kind occupantKind = kind == 0 ? Occupant.Kind.PAWN : Occupant.Kind.HUT;
-                Preconditions.checkArgument(state.freeOccupantsCount(state.currentPlayer(), occupantKind) > 0);
 
-                return withNewOccupant(state, new Occupant(occupantKind, zoneId));
+                for (Occupant occupant : state.lastTilePotentialOccupants())
+                    if (Zone.localId(occupant.zoneId()) == zone
+                            && occupant.kind().ordinal() == kind)
+                        return withNewOccupant(state, occupant);
+
+                return null;
             }
             case RETAKE_PAWN -> {
                 if (actionRepresentation == NULL_OCCUPANT)
                     return withOccupantRemoved(state, null);
-                Preconditions.checkArgument(state.board().tileWithId(Zone.tileId(sortedPawns(state).get(actionRepresentation).zoneId())).placer() == state.currentPlayer());
-                return withOccupantRemoved(state, sortedPawns(state).get(actionRepresentation));
+
+                List<Occupant> sortedPawns = sortedPawns(state)
+                        .stream()
+                        .filter(occupant -> state
+                                .board()
+                                .tileWithId(Zone.tileId(occupant.zoneId()))
+                                .placer() == state.currentPlayer())
+                        .toList();
+
+                for (Occupant occupant : state.board().occupants())
+                    if (sortedPawns.contains(occupant))
+                        return withOccupantRemoved(state, sortedPawns(state).get(actionRepresentation));
+                return null;
             }
         }
         return null;

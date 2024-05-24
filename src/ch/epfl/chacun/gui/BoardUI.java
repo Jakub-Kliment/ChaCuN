@@ -69,9 +69,8 @@ public final class BoardUI {
                               Consumer<Rotation> consumerRotation,
                               Consumer<Pos> position,
                               Consumer<Occupant> occupant) {
-        // Demander !!!!!!!!!!
-        Preconditions.checkArgument(reach > 0);
 
+        Preconditions.checkArgument(reach > 0);
         // Empty tile image in a visible shade of gray
         WritableImage emptyTileImage = new WritableImage(1, 1);
         emptyTileImage
@@ -117,7 +116,6 @@ public final class BoardUI {
                     // Get the image, rotation, and color of the cell based on the game state
                     if (tile != null) {
                         rotationData = tile.rotation();
-                        // demander !!!!!!!!!
                         cache.putIfAbsent(tile.id(), normalImageForTile(tile.id()));
                         imageData = cache.get(tile.id());
 
@@ -131,12 +129,13 @@ public final class BoardUI {
                             && gs.nextAction() == GameState.Action.PLACE_TILE) {
 
                         if (hoverProperty.get()) {
-                            // demander !!!!!!!!!
-                            cache.putIfAbsent(gs.tileToPlace().id(), normalImageForTile(gs.tileToPlace().id()));
+                            cache.putIfAbsent(gs.tileToPlace().id(),
+                                    normalImageForTile(gs.tileToPlace().id()));
                             imageData = cache.get(gs.tileToPlace().id());
                             rotationData = rotationO.getValue();
 
-                            if (gs.board().canAddTile(new PlacedTile(gs.tileToPlace(), gs.currentPlayer(), rotationData, currentPos)))
+                            if (gs.board().canAddTile(new PlacedTile(
+                                    gs.tileToPlace(), gs.currentPlayer(), rotationData, currentPos)))
                                 colorData = Color.TRANSPARENT;
                             else
                                 colorData = Color.WHITE;
@@ -160,7 +159,8 @@ public final class BoardUI {
                         // Add occupants to the tile
                         for (Occupant tileOccupant : next.potentialOccupants()) {
                             Node occupantImage = Icon.newFor(next.placer(), tileOccupant.kind());
-                            occupantImage.visibleProperty().bind(visibleOccupantsO.map(list -> list.contains(tileOccupant)));
+                            occupantImage.visibleProperty().bind(visibleOccupantsO.map(
+                                    list -> list.contains(tileOccupant)));
 
                             String kind = tileOccupant.kind() == Occupant.Kind.PAWN ? "pawn" : "hut";
                             occupantImage.getStyleClass().add(STR."\{kind}_\{tileOccupant.zoneId()}");
@@ -168,7 +168,8 @@ public final class BoardUI {
 
                             occupantImage.setOnMouseClicked(event -> occupant.accept(tileOccupant));
 
-                            occupantImage.rotateProperty().bind(data.map(dt -> dt.rotation.negated().degreesCW()));
+                            occupantImage.rotateProperty().bind(data.map(
+                                    dt -> dt.rotation.negated().degreesCW()));
                             group.getChildren().add(occupantImage);
                         }
 
@@ -187,10 +188,10 @@ public final class BoardUI {
                     }
                 });
 
-                // Add the rotation of the tile to the group
+                // Add the rotation of the tile
                 group.rotateProperty().bind(data.map((dt) -> dt.rotation.degreesCW()));
 
-                // !!!!!!!!!!
+                // Add the color filters of the tile
                 ColorInput plain = new ColorInput();
                 plain.paintProperty().bind(data.map(dt -> dt.color));
                 plain.setHeight(NORMAL_TILE_FIT_SIZE);
