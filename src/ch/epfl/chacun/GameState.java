@@ -374,11 +374,18 @@ public record GameState(List<PlayerColor> players,
         }
 
         // Count the final points and determine the winners
-        int maxPoints = Collections.max(newMessageBoard.points().values());
-        Set<PlayerColor> winners = newMessageBoard.points().entrySet().stream()
-                .filter(entry -> entry.getValue() == maxPoints)
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toSet());
+        int maxPoints;
+        Set<PlayerColor> winners;
+        if (newMessageBoard.points().values().isEmpty()) {
+            maxPoints = 0;
+            winners = new HashSet<>(players);
+        } else {
+            maxPoints = Collections.max(newMessageBoard.points().values());
+            winners = newMessageBoard.points().entrySet().stream()
+                    .filter(entry -> entry.getValue() == maxPoints)
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.toSet());
+        }
 
         newMessageBoard = newMessageBoard.withWinners(winners, maxPoints);
         return new GameState(players, tileDecks, null,
