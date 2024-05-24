@@ -16,6 +16,8 @@ import java.util.random.RandomGenerator;
 import java.util.random.RandomGeneratorFactory;
 import java.util.stream.Collectors;
 
+import static ch.epfl.chacun.ActionEncoder.*;
+
 
 /**
  * The main class of the ChaCuN game containing the main method.
@@ -71,7 +73,6 @@ public final class Main extends Application {
         for (int i = 0; i < names.size(); ++i)
             players.put(colors.get(i), names.get(i));
 
-
         // Create the tile decks and shuffle the tiles randomly
         Map<String, String> parameters = getParameters().getNamed();
         RandomGenerator randomGenerator;
@@ -89,11 +90,11 @@ public final class Main extends Application {
                 .stream()
                 .collect(Collectors.groupingBy(Tile::kind));
 
-//        // Create the tile decks
-//        TileDecks tileDecks = new TileDecks(
-//                groupedTiles.get(Tile.Kind.START),
-//                groupedTiles.get(Tile.Kind.NORMAL),
-//                groupedTiles.get(Tile.Kind.MENHIR));
+        // Create the tile decks
+        TileDecks tileDecks = new TileDecks(
+                groupedTiles.get(Tile.Kind.START),
+                groupedTiles.get(Tile.Kind.NORMAL),
+                groupedTiles.get(Tile.Kind.MENHIR));
 
 //        //Logboat Deck Normale
 //        TileDecks tileDecks = new TileDecks(
@@ -107,11 +108,11 @@ public final class Main extends Application {
 //                List.of( Tiles.TILES.get(14), Tiles.TILES.get(1), Tiles.TILES.get(60)),
 //                List.of(Tiles.TILES.get(93)));
 
-        //Chaman Deck
-        TileDecks tileDecks = new TileDecks(
-                List.of(Tiles.TILES.get(56)),
-                List.of(Tiles.TILES.get(36), Tiles.TILES.get(35), Tiles.TILES.get(27), Tiles.TILES.get(39), Tiles.TILES.get(37), Tiles.TILES.get(21), Tiles.TILES.get(53), Tiles.TILES.get(48), Tiles.TILES.get(39)),
-                List.of(Tiles.TILES.get(88)));
+//        //Chaman Deck
+//        TileDecks tileDecks = new TileDecks(
+//                List.of(Tiles.TILES.get(56)),
+//                List.of(Tiles.TILES.get(36), Tiles.TILES.get(35), Tiles.TILES.get(27), Tiles.TILES.get(39), Tiles.TILES.get(37), Tiles.TILES.get(21), Tiles.TILES.get(53), Tiles.TILES.get(48), Tiles.TILES.get(40)),
+//                List.of(Tiles.TILES.get(88)));
 
 //        //Hunting trap full animaux
 //        TileDecks tileDecks = new TileDecks(
@@ -193,8 +194,7 @@ public final class Main extends Application {
                             consumerPos);
                     if (gameState.board().canAddTile(placedTile)) {
                         List<String> newList = new ArrayList<>(actionsList.getValue());
-                        newList.add(ActionEncoder.withPlacedTile(
-                                gameStateO.getValue(), placedTile).action());
+                        newList.add(withPlacedTile(gameStateO.getValue(), placedTile).action());
 
                         actionsList.setValue(List.copyOf(newList));
                         gameStateO.setValue(gameState.withPlacedTile(placedTile));
@@ -206,15 +206,16 @@ public final class Main extends Application {
                     if (gameState.nextAction() == GameState.Action.OCCUPY_TILE
                             && gameState.lastTilePotentialOccupants().contains(occupant)) {
                         List<String> newList = new ArrayList<>(actionsList.getValue());
-                        newList.add(ActionEncoder.withNewOccupant(gameState, occupant).action());
+                        newList.add(withNewOccupant(gameState, occupant).action());
                         actionsList.setValue(List.copyOf(newList));
                         gameStateO.setValue(gameState.withNewOccupant(occupant));
                     }
                     if (gameState.nextAction() == GameState.Action.RETAKE_PAWN
                             && occupant.kind() == Occupant.Kind.PAWN
-                            && gameState.board().tileWithId(Zone.tileId(occupant.zoneId())).placer() == gameState.currentPlayer()) {
+                            && gameState.board().tileWithId(
+                                    Zone.tileId(occupant.zoneId())).placer() == gameState.currentPlayer()) {
                         List<String> newList = new ArrayList<>(actionsList.getValue());
-                        newList.add(ActionEncoder.withOccupantRemoved(gameStateO.getValue(), occupant).action());
+                        newList.add(withOccupantRemoved(gameStateO.getValue(), occupant).action());
                         actionsList.setValue(List.copyOf(newList));
                         gameStateO.setValue(gameState.withOccupantRemoved(occupant));
                     }
@@ -237,8 +238,8 @@ public final class Main extends Application {
         VBox vbox = new VBox();
         right.setBottom(vbox);
 
-        Node action = ActionsUI.create(actionsList, s -> {
-            ActionEncoder.StateAction stateAction = ActionEncoder.decodeAndApply(gameStateO.getValue(), s);
+        Node action = ActionsUI.create(actionsList, string -> {
+            StateAction stateAction = decodeAndApply(gameStateO.getValue(), string);
             if (stateAction != null) {
                 GameState gameState = stateAction.state();
                 gameStateO.setValue(gameState);
@@ -267,15 +268,14 @@ public final class Main extends Application {
         // Create the decks UI and set it on the bottom (right side)
         Node decks = DecksUI.create(tileToPlace, normalTiles, menhirTiles, text, occupant -> {
             if (gameStateO.getValue().nextAction() == GameState.Action.OCCUPY_TILE){
-                //Faire méthode !!!!!!!
                 List<String> newList = new ArrayList<>(actionsList.getValue());
-                newList.add(ActionEncoder.withNewOccupant(gameStateO.getValue(), occupant).action());
+                newList.add(withNewOccupant(gameStateO.getValue(), occupant).action());
                 actionsList.setValue(List.copyOf(newList));
                 gameStateO.setValue(gameStateO.getValue().withNewOccupant(occupant));
             }
             else if (gameStateO.getValue().nextAction() == GameState.Action.RETAKE_PAWN) {
                 List<String> newList = new ArrayList<>(actionsList.getValue());
-                newList.add(ActionEncoder.withOccupantRemoved(gameStateO.getValue(), occupant).action());
+                newList.add(withOccupantRemoved(gameStateO.getValue(), occupant).action());
                 actionsList.setValue(List.copyOf(newList));
                 gameStateO.setValue(gameStateO.getValue().withOccupantRemoved(occupant));
             }
