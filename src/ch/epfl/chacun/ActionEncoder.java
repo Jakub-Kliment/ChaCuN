@@ -40,6 +40,7 @@ public class ActionEncoder {
         try {
             return decode(state, action);
         } catch (Exception exception) {
+            System.out.println(exception.getMessage());
             return null;
         }
     }
@@ -68,12 +69,14 @@ public class ActionEncoder {
                 // peut etre trouver mieux !!!!!!!
                 int zoneId = state.board().lastPlacedTile().id() * 10 + zone;
                 Occupant.Kind occupantKind = kind == 0 ? Occupant.Kind.PAWN : Occupant.Kind.HUT;
+                Preconditions.checkArgument(state.freeOccupantsCount(state.currentPlayer(), occupantKind) > 0);
 
                 return withNewOccupant(state, new Occupant(occupantKind, zoneId));
             }
             case RETAKE_PAWN -> {
                 if (actionRepresentation == NULL_OCCUPANT)
                     return withOccupantRemoved(state, null);
+                Preconditions.checkArgument(state.board().tileWithId(Zone.tileId(sortedPawns(state).get(actionRepresentation).zoneId())).placer() == state.currentPlayer());
                 return withOccupantRemoved(state, sortedPawns(state).get(actionRepresentation));
             }
         }
