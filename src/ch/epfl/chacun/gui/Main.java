@@ -17,21 +17,50 @@ import java.util.random.RandomGeneratorFactory;
 import java.util.stream.Collectors;
 
 
+/**
+ * The main class of the ChaCuN game containing the main method.
+ * It creates the GUI from all UI components by putting all together,
+ * creates the game state and starts the game.
+ *
+ * @author Alexis Grillet-Aubert (381587)
+ * @author Jakub Kliment (380660)
+ */
 public final class Main extends Application {
 
+    /**
+     * The title of the game.
+     */
     private final static String TITLE = "ChaCuN";
 
+    /**
+     * The width of the screen.
+     */
     private final static int SCREEN_WIDTH = 1440;
 
+    /**
+     * The height of the screen.
+     */
     private final static int SCREEN_HEIGHT = 1080;
 
+    /**
+     * The main method of the game which launches the game.
+     *
+     * @param args the command line arguments
+     */
     public static void main(String[] args) {
         launch(args);
     }
 
+    /**
+     * Starts the game by creating the GUI and the game state.
+     *
+     * @param primaryStage the primary stage of the game
+     * @throws Exception if an exception occurs
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
 
+        // Get the names of the players from the command line arguments and assign them colors
         List<String> names = getParameters().getUnnamed();
         List<PlayerColor> colors = PlayerColor.ALL
                 .stream()
@@ -43,6 +72,7 @@ public final class Main extends Application {
             players.put(colors.get(i), names.get(i));
 
 
+        // Create the tile decks and shuffle the tiles randomly
         Map<String, String> parameters = getParameters().getNamed();
         RandomGenerator randomGenerator;
         if (! parameters.isEmpty() && parameters.get("seed") != null) {
@@ -59,7 +89,7 @@ public final class Main extends Application {
                 .stream()
                 .collect(Collectors.groupingBy(Tile::kind));
 
-        //Deck de base
+        // Create the tile decks
         TileDecks tileDecks = new TileDecks(
                 groupedTiles.get(Tile.Kind.START),
                 groupedTiles.get(Tile.Kind.NORMAL),
@@ -119,6 +149,7 @@ public final class Main extends Application {
 
 
 
+        // Create the text maker game state
         TextMaker textMaker = new TextMakerFr(players);
         GameState state = GameState.initial(colors, tileDecks, textMaker);
 
@@ -128,6 +159,7 @@ public final class Main extends Application {
         ObservableValue<List<MessageBoard.Message>> messageList = gameStateO.map(
                 gameState -> gameState.messageBoard().messages());
 
+        // Create the main pane of the game
         BorderPane mainPane = new BorderPane();
 
         ObservableValue<Set<Occupant>> visibleOccupants = gameStateO.map(gameState-> {
@@ -139,6 +171,7 @@ public final class Main extends Application {
 
         SimpleObjectProperty<Rotation> rotation = new SimpleObjectProperty<>(Rotation.NONE);
 
+        // Create the board of the game and set it to the center
         Node board = BoardUI.create(
                 Board.REACH,
                 gameStateO,
@@ -183,15 +216,19 @@ public final class Main extends Application {
                 });
         mainPane.setCenter(board);
 
+        // Create the right side of the GUI
         BorderPane right = new BorderPane();
         mainPane.setRight(right);
 
+        // Create the player UI and set it to the top (right side)
         Node player = PlayersUI.create(gameStateO, textMaker);
         right.setTop(player);
 
+        // Create the message board UI and set it to the center (right side)
         Node messageBoard = MessageBoardUI.create(messageList, tileIds);
         right.setCenter(messageBoard);
 
+        // Create the actions UI and set it under the message board (right side)
         VBox vbox = new VBox();
         right.setBottom(vbox);
 
@@ -222,9 +259,10 @@ public final class Main extends Application {
             return "";
         });
 
+        // Create the decks UI and set it on the bottom (right side)
         Node decks = DecksUI.create(tileToPlace, normalTiles, menhirTiles, text, occupant -> {
             if (gameStateO.getValue().nextAction() == GameState.Action.OCCUPY_TILE){
-                //Faire méthode
+                //Faire méthode !!!!!!!
                 List<String> newList = new ArrayList<>(actionsList.getValue());
                 newList.add(ActionEncoder.withNewOccupant(gameStateO.getValue(), occupant).action());
                 actionsList.setValue(List.copyOf(newList));
@@ -239,12 +277,14 @@ public final class Main extends Application {
         });
         vbox.getChildren().add(decks);
 
+        // Create the scene of the game and set it to the primary stage
         Scene scene = new Scene(mainPane);
         primaryStage.setScene(scene);
         primaryStage.setTitle(TITLE);
         primaryStage.setHeight(SCREEN_HEIGHT);
         primaryStage.setWidth(SCREEN_WIDTH);
 
+        // Set the starting tile to be placed to start the game
         gameStateO.setValue(gameStateO.getValue().withStartingTilePlaced());
         primaryStage.show();
     }
