@@ -110,7 +110,7 @@ public final class Main extends Application {
         //Chaman Deck
         TileDecks tileDecks = new TileDecks(
                 List.of(Tiles.TILES.get(56)),
-                List.of(Tiles.TILES.get(36), Tiles.TILES.get(35), Tiles.TILES.get(27), Tiles.TILES.get(39), Tiles.TILES.get(37)),
+                List.of(Tiles.TILES.get(36), Tiles.TILES.get(35), Tiles.TILES.get(27), Tiles.TILES.get(39), Tiles.TILES.get(37), Tiles.TILES.get(21), Tiles.TILES.get(53), Tiles.TILES.get(48), Tiles.TILES.get(39)),
                 List.of(Tiles.TILES.get(88)));
 
 //        //Hunting trap full animaux
