@@ -3,8 +3,8 @@ package ch.epfl.chacun.gui;
 import javafx.scene.image.ImageView;
 
 /**
- * A class decorator that represents decorates an ImageView
- * that is resized to a square of a given size because most of the
+ * A class decorator that decorates the java class ImageView
+ * by resizing to a square of a given size because most of the
  * images in the game are of square shape.
  */
 public class ResizedImageView extends ImageView {
