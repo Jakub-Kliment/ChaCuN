@@ -13,9 +13,15 @@ import javafx.scene.shape.SVGPath;
  */
 public final class Icon {
 
+    /**
+     * The SVG path for the pawn icon.
+     */
     private final static String PAWN_SVG_PATH = "M -10 10 H -4 L 0 2 L 6 10 H 12 L 5 0 L " +
             "12 -2 L 12 -4 L 6 -6 L 6 -10 L 0 -10 L -2 -4 L -6 -2 L -8 -10 L -12 -10 L -8 6 Z";
 
+    /**
+     * The SVG path for the hut icon.
+     */
     private final static String HUT_SVG_PATH = "M -8 10 H 8 V 2 H 12 L 0 -10 L -12 2 H -8 Z";
     /**
      * Private constructor that prevents instantiation.
