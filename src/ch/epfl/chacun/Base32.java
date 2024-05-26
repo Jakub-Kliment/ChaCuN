@@ -19,14 +19,14 @@ public final class Base32 {
     public static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
     /**
-     * The mask for extracting the 5 least significant bits of an integer.
-     */
-    public static final int CHARACTER_MASK = 0x0000_001F;
-
-    /**
      * The number of bits in a single letter.
      */
     public static final int CHARACTER_BIT_SIZE = 5;
+
+    /**
+     * The mask for extracting the 5 least significant bits of an integer.
+     */
+    public static final int CHARACTER_MASK = (1 << CHARACTER_BIT_SIZE) - 1;
 
     /**
      * Checks if the given string is a valid base-32 string.
