@@ -103,46 +103,53 @@ public final class BoardUI {
                         state -> state.board().tileAt(currentPos));
 
                 // Observable data for the cell changing based on the game state
-                ObservableValue<CellData> data = Bindings.createObjectBinding(() -> {
-                    GameState gs = gameStateO.getValue();
+                ObservableValue<CellData> cellData = Bindings.createObjectBinding(() -> {
+                    GameState state = gameStateO.getValue();
                     Set<Integer> currentIds = tileIdsO.getValue();
 
                     Image imageData;
                     Color colorData;
                     Rotation rotationData;
 
-                    PlacedTile tile = gs.board().tileAt(currentPos);
+                    PlacedTile tile = state.board().tileAt(currentPos);
 
                     // Get the image, rotation, and color of the cell based on the game state
                     if (tile != null) {
+                        int id = tile.id();
                         rotationData = tile.rotation();
-                        cache.putIfAbsent(tile.id(), normalImageForTile(tile.id()));
-                        imageData = cache.get(tile.id());
+
+                        cache.putIfAbsent(id, normalImageForTile(id));
+                        imageData = cache.get(id);
 
                         // If the tile is not in the set of tile ids, color it black, else transparent
-                        if (!currentIds.isEmpty() && !currentIds.contains(tile.id()))
-                            colorData = Color.BLACK;
-                        else
-                            colorData = Color.TRANSPARENT;
+                        colorData = (!currentIds.isEmpty() && !currentIds.contains(id))
+                                ? Color.BLACK
+                                : Color.TRANSPARENT;
 
-                    } else if (gs.board().insertionPositions().contains(currentPos)
-                            && gs.nextAction() == GameState.Action.PLACE_TILE) {
+                    } else if (state.board().insertionPositions().contains(currentPos)
+                            && state.nextAction() == GameState.Action.PLACE_TILE) {
 
                         if (hoverProperty.get()) {
-                            cache.putIfAbsent(gs.tileToPlace().id(),
-                                    normalImageForTile(gs.tileToPlace().id()));
-                            imageData = cache.get(gs.tileToPlace().id());
+                            Tile tileToPlace = state.tileToPlace();
+                            int id = tileToPlace.id();
+
+                            cache.putIfAbsent(id, normalImageForTile(id));
+                            imageData = cache.get(id);
                             rotationData = rotationO.getValue();
 
-                            if (gs.board().canAddTile(new PlacedTile(
-                                    gs.tileToPlace(), gs.currentPlayer(), rotationData, currentPos)))
-                                colorData = Color.TRANSPARENT;
-                            else
-                                colorData = Color.WHITE;
+                            PlacedTile potentialTile = new PlacedTile(
+                                    tileToPlace,
+                                    state.currentPlayer(),
+                                    rotationData,
+                                    currentPos);
 
+                            // Change color cellData based on the possibility of placement
+                            colorData = state.board().canAddTile(potentialTile)
+                                    ? Color.TRANSPARENT
+                                    : Color.WHITE;
                         } else {
                             imageData = emptyTileImage;
-                            colorData = ColorMap.fillColor(gs.currentPlayer());
+                            colorData = ColorMap.fillColor(state.currentPlayer());
                             rotationData = Rotation.NONE;
                         }
                     } else {
@@ -154,27 +161,28 @@ public final class BoardUI {
                 }, gameStateO, tileIdsO, rotationO, hoverProperty);
 
                 // Add a listener to the observable tile to add occupants and meadow markers
-                observableTile.addListener((tile, old, next) -> {
-                    if (old == null) {
+                observableTile.addListener((tile, oldTile, nextTile) -> {
+                    if (oldTile == null) {
                         // Add occupants to the tile
-                        for (Occupant tileOccupant : next.potentialOccupants()) {
-                            Node occupantImage = Icon.newFor(next.placer(), tileOccupant.kind());
+                        for (Occupant tileOccupant : nextTile.potentialOccupants()) {
+                            Node occupantImage = Icon.newFor(nextTile.placer(), tileOccupant.kind());
+
                             occupantImage.visibleProperty().bind(visibleOccupantsO.map(
                                     list -> list.contains(tileOccupant)));
 
                             String kind = tileOccupant.kind() == Occupant.Kind.PAWN ? "pawn" : "hut";
-                            occupantImage.getStyleClass().add(STR."\{kind}_\{tileOccupant.zoneId()}");
                             occupantImage.setId(STR."\{kind}_\{tileOccupant.zoneId()}");
 
                             occupantImage.setOnMouseClicked(event -> occupant.accept(tileOccupant));
 
-                            occupantImage.rotateProperty().bind(data.map(
-                                    dt -> dt.rotation.negated().degreesCW()));
+                            occupantImage.rotateProperty().bind(cellData.map(
+                                    cell -> cell.rotation.negated().degreesCW()));
+
                             group.getChildren().add(occupantImage);
                         }
 
                         // Add meadow markers for the animals
-                        for (Zone.Meadow meadow : next.meadowZones()) {
+                        for (Zone.Meadow meadow : nextTile.meadowZones()) {
                             for (Animal animal : meadow.animals()) {
                                 ImageView marker = new ResizedImageView(MARKER_FIT_SIZE);
                                 marker.getStyleClass().add("marker");
@@ -182,6 +190,7 @@ public final class BoardUI {
 
                                 marker.visibleProperty().bind(gameStateO.map(
                                         state -> state.board().cancelledAnimals().contains(animal)));
+
                                 group.getChildren().add(marker);
                             }
                         }
@@ -189,11 +198,11 @@ public final class BoardUI {
                 });
 
                 // Add the rotation of the tile
-                group.rotateProperty().bind(data.map((dt) -> dt.rotation.degreesCW()));
+                group.rotateProperty().bind(cellData.map(cell -> cell.rotation.degreesCW()));
 
                 // Add the color filters of the tile
                 ColorInput plain = new ColorInput();
-                plain.paintProperty().bind(data.map(dt -> dt.color));
+                plain.paintProperty().bind(cellData.map(cell -> cell.color));
                 plain.setHeight(NORMAL_TILE_FIT_SIZE);
                 plain.setWidth(NORMAL_TILE_FIT_SIZE);
 
@@ -204,21 +213,21 @@ public final class BoardUI {
 
                 // Image view for the tile
                 ImageView imageTile = new ResizedImageView(NORMAL_TILE_FIT_SIZE);
-                imageTile.imageProperty().bind(data.map(dt -> dt.image));
-                imageTile.visibleProperty().bind(data.map(dt -> dt.image != null));
+                imageTile.imageProperty().bind(cellData.map(cell -> cell.image));
+                imageTile.visibleProperty().bind(cellData.map(cell -> cell.image != null));
                 group.getChildren().add(imageTile);
 
                 // Handle the player's interaction with the tile (place or rotate it)
-                group.setOnMouseClicked( event  -> {
+                group.setOnMouseClicked(event  -> {
                     if (gameStateO.getValue().board().insertionPositions().contains(currentPos)
-                            && event .isStillSincePress()) {
-                        if (event .getButton() == MouseButton.PRIMARY)
+                            && event.isStillSincePress()) {
+
+                        if (event.getButton() == MouseButton.PRIMARY)
                             position.accept(currentPos);
 
-                        if (event .getButton() == MouseButton.SECONDARY) {
-                            Rotation rot = event .isAltDown() ? Rotation.RIGHT : Rotation.LEFT;
-                            consumerRotation.accept(rot);
-                        }
+                        if (event.getButton() == MouseButton.SECONDARY)
+                            consumerRotation.accept(
+                                    event.isAltDown() ? Rotation.RIGHT : Rotation.LEFT);
                     }
                 });
 
