@@ -37,8 +37,7 @@ public final class Base32 {
     public static boolean isValid(String s) {
         Preconditions.checkArgument(s != null);
         if (s.isEmpty()) return false;
-        return s.chars()
-                .allMatch(c -> ALPHABET.indexOf(c) != -1);
+        return s.chars().allMatch(c -> ALPHABET.indexOf(c) != -1);
     }
 
     /**
