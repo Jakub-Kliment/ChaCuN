@@ -57,7 +57,7 @@ public final class Main extends Application {
      * Starts the game by creating the GUI and the game state.
      *
      * @param primaryStage the primary stage of the game
-     * @throws Exception if an exception occurs
+     * @throws Exception if any exception occurs
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -159,14 +159,15 @@ public final class Main extends Application {
         TextMaker textMaker = new TextMakerFr(players);
         GameState state = GameState.initial(colors, tileDecks, textMaker);
 
+        // Create the main pane of the game
+        BorderPane mainPane = new BorderPane();
+
         ObjectProperty<List<String>> actionsList = new SimpleObjectProperty<>(List.of());
         ObjectProperty<Set<Integer>> tileIds = new SimpleObjectProperty<>(Set.of());
+
         SimpleObjectProperty<GameState> gameStateO = new SimpleObjectProperty<>(state);
         ObservableValue<List<MessageBoard.Message>> messageList = gameStateO.map(
                 gameState -> gameState.messageBoard().messages());
-
-        // Create the main pane of the game
-        BorderPane mainPane = new BorderPane();
 
         ObservableValue<Set<Occupant>> visibleOccupants = gameStateO.map(gameState-> {
             Set<Occupant> occupants = gameState.board().occupants();
@@ -187,36 +188,33 @@ public final class Main extends Application {
                 consumerRot -> rotation.setValue(rotation.getValue().add(consumerRot)),
                 consumerPos -> {
                     GameState gameState = gameStateO.getValue();
+                    // faire ça dans boardUI
                     PlacedTile placedTile = new PlacedTile(
                             gameState.tileToPlace(),
                             gameState.currentPlayer(),
                             rotation.getValue(),
                             consumerPos);
                     if (gameState.board().canAddTile(placedTile)) {
-                        List<String> newList = new ArrayList<>(actionsList.getValue());
-                        newList.add(withPlacedTile(gameStateO.getValue(), placedTile).action());
-
-                        actionsList.setValue(List.copyOf(newList));
+                        actionsList.setValue(withNewAction(actionsList.getValue(),
+                                withPlacedTile(gameStateO.getValue(), placedTile).action()));
                         gameStateO.setValue(gameState.withPlacedTile(placedTile));
                         rotation.setValue(Rotation.NONE);
                     }
                 },
                 occupant -> {
+                    // ca aussi
                     GameState gameState = gameStateO.getValue();
                     if (gameState.nextAction() == GameState.Action.OCCUPY_TILE
                             && gameState.lastTilePotentialOccupants().contains(occupant)) {
-                        List<String> newList = new ArrayList<>(actionsList.getValue());
-                        newList.add(withNewOccupant(gameState, occupant).action());
-                        actionsList.setValue(List.copyOf(newList));
+                        actionsList.setValue(withNewAction(actionsList.getValue(),
+                                withNewOccupant(gameState, occupant).action()));
                         gameStateO.setValue(gameState.withNewOccupant(occupant));
-                    }
-                    if (gameState.nextAction() == GameState.Action.RETAKE_PAWN
+                    } else if (gameState.nextAction() == GameState.Action.RETAKE_PAWN
                             && occupant.kind() == Occupant.Kind.PAWN
-                            && gameState.board().tileWithId(
-                                    Zone.tileId(occupant.zoneId())).placer() == gameState.currentPlayer()) {
-                        List<String> newList = new ArrayList<>(actionsList.getValue());
-                        newList.add(withOccupantRemoved(gameStateO.getValue(), occupant).action());
-                        actionsList.setValue(List.copyOf(newList));
+                            && gameState.board().tileWithId(Zone.tileId(
+                                    occupant.zoneId())).placer() == gameState.currentPlayer()) {
+                        actionsList.setValue(withNewAction(actionsList.getValue(),
+                                withOccupantRemoved(gameStateO.getValue(), occupant).action()));
                         gameStateO.setValue(gameState.withOccupantRemoved(occupant));
                     }
                 });
@@ -241,11 +239,8 @@ public final class Main extends Application {
         Node action = ActionsUI.create(actionsList, string -> {
             StateAction stateAction = decodeAndApply(gameStateO.getValue(), string);
             if (stateAction != null) {
-                GameState gameState = stateAction.state();
-                gameStateO.setValue(gameState);
-                List<String> newList = new ArrayList<>(actionsList.getValue());
-                newList.add(stateAction.action());
-                actionsList.setValue(List.copyOf(newList));
+                gameStateO.setValue(stateAction.state());
+                actionsList.setValue(withNewAction(actionsList.getValue(), stateAction.action()));
             }
         });
         vbox.getChildren().add(action);
@@ -267,16 +262,13 @@ public final class Main extends Application {
 
         // Create the decks UI and set it on the bottom (right side)
         Node decks = DecksUI.create(tileToPlace, normalTiles, menhirTiles, text, occupant -> {
-            if (gameStateO.getValue().nextAction() == GameState.Action.OCCUPY_TILE){
-                List<String> newList = new ArrayList<>(actionsList.getValue());
-                newList.add(withNewOccupant(gameStateO.getValue(), occupant).action());
-                actionsList.setValue(List.copyOf(newList));
+            if (gameStateO.getValue().nextAction() == GameState.Action.OCCUPY_TILE) {
+                actionsList.setValue(withNewAction(actionsList.getValue(),
+                        withNewOccupant(gameStateO.getValue(), occupant).action()));
                 gameStateO.setValue(gameStateO.getValue().withNewOccupant(occupant));
-            }
-            else if (gameStateO.getValue().nextAction() == GameState.Action.RETAKE_PAWN) {
-                List<String> newList = new ArrayList<>(actionsList.getValue());
-                newList.add(withOccupantRemoved(gameStateO.getValue(), occupant).action());
-                actionsList.setValue(List.copyOf(newList));
+            } else if (gameStateO.getValue().nextAction() == GameState.Action.RETAKE_PAWN) {
+                actionsList.setValue(withNewAction(actionsList.getValue(),
+                        withOccupantRemoved(gameStateO.getValue(), occupant).action()));
                 gameStateO.setValue(gameStateO.getValue().withOccupantRemoved(occupant));
             }
         });
@@ -292,5 +284,19 @@ public final class Main extends Application {
         // Set the starting tile to be placed to start the game
         gameStateO.setValue(gameStateO.getValue().withStartingTilePlaced());
         primaryStage.show();
+    }
+
+    /**
+     * Private static helper method that adds a new
+     * action to the list of actions.
+     *
+     * @param old the old list of actions
+     * @param action the new action to add
+     * @return the new list of actions
+     */
+    private static List<String> withNewAction(List<String> old, String action) {
+        List<String> newList = new ArrayList<>(old);
+        newList.add(action);
+        return newList;
     }
 }
