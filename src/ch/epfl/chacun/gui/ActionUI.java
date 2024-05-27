@@ -21,12 +21,12 @@ import java.util.stream.Collectors;
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
  */
-public final class ActionsUI {
+public final class ActionUI {
 
     /**
      * Private constructor to prevent instantiation.
      */
-    private ActionsUI() {}
+    private ActionUI() {}
 
     /**
      * Creates a UI element displaying the actions that the players took.

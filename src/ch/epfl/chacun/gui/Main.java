@@ -236,7 +236,7 @@ public final class Main extends Application {
         VBox vbox = new VBox();
         right.setBottom(vbox);
 
-        Node action = ActionsUI.create(actionsList, string -> {
+        Node action = ActionUI.create(actionsList, string -> {
             StateAction stateAction = decodeAndApply(gameStateO.getValue(), string);
             if (stateAction != null) {
                 gameStateO.setValue(stateAction.state());
