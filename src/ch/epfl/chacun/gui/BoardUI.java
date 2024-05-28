@@ -118,7 +118,8 @@ public final class BoardUI {
                         int id = tile.id();
                         rotationData = tile.rotation();
 
-                        cache.putIfAbsent(id, normalImageForTile(id));
+                        if (!cache.containsKey(id))
+                            cache.put(id, normalImageForTile(id));
                         imageData = cache.get(id);
 
                         // If the tile is not in the set of tile ids, color it black, else transparent
@@ -133,7 +134,8 @@ public final class BoardUI {
                             Tile tileToPlace = state.tileToPlace();
                             int id = tileToPlace.id();
 
-                            cache.putIfAbsent(id, normalImageForTile(id));
+                            if (!cache.containsKey(id))
+                                cache.put(id, normalImageForTile(id));
                             imageData = cache.get(id);
                             rotationData = rotationO.getValue();
 
