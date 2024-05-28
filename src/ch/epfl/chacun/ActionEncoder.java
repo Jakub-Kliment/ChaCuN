@@ -90,12 +90,14 @@ public final class ActionEncoder {
      * @param occupant the occupant to remove
      * @return the new game state and the encoded action
      */
-    public static StateAction withOccupantRemoved(GameState state, Occupant occupant) {
+    public static StateAction withOccupantRemoved(GameState state, Occupant occupant){
         if (occupant == null)
             return new StateAction(state.withOccupantRemoved(null), Base32.encodeBits5(NULL_OCCUPANT));
-
-        String action = Base32.encodeBits5(sortedPawns(state).indexOf(occupant));
-        return new StateAction(state.withOccupantRemoved(occupant), action);
+        if (state.currentPlayer() != state.board().tileWithId(Zone.tileId(occupant.zoneId())).placer()){
+            String action = Base32.encodeBits5(sortedPawns(state).indexOf(occupant));
+            return new StateAction(state.withOccupantRemoved(occupant), action);
+        }
+        return null;
     }
 
     /**
@@ -159,8 +161,7 @@ public final class ActionEncoder {
                 if (actionRepresentation == NULL_OCCUPANT)
                     return withOccupantRemoved(state, null);
 
-                if (state.board().tileWithId(Zone.tileId(sortedPawns(state).get(actionRepresentation).zoneId())).placer() == state.currentPlayer())
-                    return withOccupantRemoved(state, sortedPawns(state).get(actionRepresentation));
+                return withOccupantRemoved(state, sortedPawns(state).get(actionRepresentation));
             }
         }
         throw new EncoderException();

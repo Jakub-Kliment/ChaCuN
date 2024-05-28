@@ -155,7 +155,7 @@ public final class Main extends Application {
 //                List.of(Tiles.TILES.get(91)));
 
 
-        // Create the text maker game state
+        // Create the text maker and game state
         TextMaker textMaker = new TextMakerFr(players);
         GameState state = GameState.initial(colors, tileDecks, textMaker);
 
@@ -293,6 +293,8 @@ public final class Main extends Application {
      * @param action the new action to add
      * @return the new list of actions
      */
+
+    //TODO mofifié
     private static List<String> withNewAction(List<String> old, String action) {
         List<String> newList = new ArrayList<>(old);
         newList.add(action);
