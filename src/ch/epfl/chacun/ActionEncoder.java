@@ -107,7 +107,7 @@ public final class ActionEncoder {
     public static StateAction decodeAndApply(GameState state, String action) {
         try {
             return decode(state, action);
-        } catch (Exception exception) {
+        } catch (EncoderExeption encoderExeption) {
             return null;
         }
     }
@@ -121,7 +121,9 @@ public final class ActionEncoder {
      * @param action the action to decode and apply
      * @return the new game state and the decoded action
      */
-    private static StateAction decode(GameState state, String action) {
+    private static StateAction decode(GameState state, String action) throws EncoderExeption {
+        if (action.length()>2)
+            throw new EncoderExeption();
         int actionRepresentation = Base32.decode(action);
 
         // Decoding the action based on the next action of the game state
@@ -156,21 +158,12 @@ public final class ActionEncoder {
                 if (actionRepresentation == NULL_OCCUPANT)
                     return withOccupantRemoved(state, null);
 
-                List<Occupant> sortedPawns = sortedPawns(state)
-                        .stream()
-                        .filter(occupant -> state
-                                .board()
-                                .tileWithId(Zone.tileId(occupant.zoneId()))
-                                .placer() == state.currentPlayer())
-                        .toList();
+                if (state.board().tileWithId(Zone.tileId(sortedPawns(state).get(actionRepresentation).zoneId())).placer() == state.currentPlayer())
+                    return withOccupantRemoved(state, sortedPawns(state).get(actionRepresentation));
 
-                for (Occupant occupant : state.board().occupants())
-                    if (sortedPawns.contains(occupant))
-                        return withOccupantRemoved(state, sortedPawns(state).get(actionRepresentation));
-                return null;
             }
         }
-        return null;
+        throw new EncoderExeption();
     }
 
     /**
@@ -212,4 +205,8 @@ public final class ActionEncoder {
      * to simplify the return of the functions that encode and decode actions.
      */
     public record StateAction(GameState state, String action) {}
+
+    private static class EncoderExeption extends Exception{
+        public EncoderExeption() {}
+    }
 }

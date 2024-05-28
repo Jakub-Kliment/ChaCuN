@@ -69,7 +69,6 @@ public final class Base32 {
      * @return the decoded bits
      */
     public static int decode(String s) {
-        Preconditions.checkArgument(isValid(s) && s.length() <= 2);
         return s.chars()
                 .map(ALPHABET::indexOf)
                 .reduce(0, (acc, c) -> (acc << CHARACTER_BIT_SIZE) | c);
