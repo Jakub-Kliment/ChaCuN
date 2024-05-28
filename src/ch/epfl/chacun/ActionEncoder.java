@@ -24,6 +24,16 @@ public final class ActionEncoder {
     private final static int ZONE_MASK = 0b1111;
 
     /**
+     * The shift to extract the position from the action.
+     */
+    private final static int POSITION_SHIFT = 2;
+
+    /**
+     * The shift to extract the occupant kind from the action.
+     */
+    private final static int OCCUPANT_KIND_SHIFT = 4;
+
+    /**
      * Private constructor to prevent instantiation.
      */
     private ActionEncoder() {}
@@ -40,7 +50,7 @@ public final class ActionEncoder {
     public static StateAction withPlacedTile(GameState state, PlacedTile tile) {
         int rot = tile.rotation().ordinal();
         int pos = sortedPositions(state).indexOf(tile.pos());
-        String action = Base32.encodeBits10(pos << 2 | rot);
+        String action = Base32.encodeBits10(pos << POSITION_SHIFT | rot);
 
         return new StateAction(state.withPlacedTile(tile), action);
     }
@@ -61,7 +71,7 @@ public final class ActionEncoder {
 
         int zoneId = Zone.localId(occupant.zoneId());
         int kind = occupant.kind().ordinal();
-        String action = Base32.encodeBits5(kind << 4 | zoneId);
+        String action = Base32.encodeBits5(kind << OCCUPANT_KIND_SHIFT | zoneId);
 
         return new StateAction(state.withNewOccupant(occupant), action);
     }
@@ -98,7 +108,6 @@ public final class ActionEncoder {
         try {
             return decode(state, action);
         } catch (Exception exception) {
-            System.out.println(exception.getMessage());
             return null;
         }
     }
@@ -118,9 +127,8 @@ public final class ActionEncoder {
         // Decoding the action based on the next action of the game state
         switch (state.nextAction()) {
             case PLACE_TILE -> {
-                // mask ou pas !!!!!!!!
                 int rotation = actionRepresentation & ROTATION_MASK;
-                int position = actionRepresentation >> 2;
+                int position = actionRepresentation >> POSITION_SHIFT;
 
                 PlacedTile tile = new PlacedTile(
                         state.tileToPlace(),
@@ -135,7 +143,7 @@ public final class ActionEncoder {
                     return withNewOccupant(state, null);
 
                 int zone = actionRepresentation & ZONE_MASK;
-                int kind = actionRepresentation >> 4;
+                int kind = actionRepresentation >> OCCUPANT_KIND_SHIFT;
 
                 for (Occupant occupant : state.lastTilePotentialOccupants())
                     if (Zone.localId(occupant.zoneId()) == zone
