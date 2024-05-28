@@ -12,6 +12,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.random.RandomGenerator;
 import java.util.random.RandomGeneratorFactory;
 import java.util.stream.Collectors;
@@ -196,27 +197,12 @@ public final class Main extends Application {
 
                     StateAction stateAction = withPlacedTile(gameState, placedTile);
                     if (stateAction != null) {
-                        actionsList.setValue(withNewAction(
-                                actionsList.getValue(), stateAction.action()));
-                        gameStateO.setValue(stateAction.state());
+                        withNewAction(actionsList, stateAction, gameStateO);
                         rotation.setValue(Rotation.NONE);
                     }
                 },
                 occupant -> {
-                    GameState gameState = gameStateO.getValue();
-                    StateAction stateAction;
-
-                    switch (gameState.nextAction()) {
-                        case OCCUPY_TILE -> stateAction = withNewOccupant(gameState, occupant);
-                        case RETAKE_PAWN -> stateAction = withOccupantRemoved(gameState, occupant);
-                        default -> stateAction = null;
-                    }
-
-                    if (stateAction != null) {
-                        actionsList.setValue(withNewAction(
-                                actionsList.getValue(), stateAction.action()));
-                        gameStateO.setValue(stateAction.state());
-                    }
+                    occupantConsumer(occupant, actionsList, gameStateO);
                 });
         mainPane.setCenter(board);
 
@@ -240,7 +226,7 @@ public final class Main extends Application {
             StateAction stateAction = decodeAndApply(gameStateO.getValue(), string);
             if (stateAction != null) {
                 gameStateO.setValue(stateAction.state());
-                actionsList.setValue(withNewAction(actionsList.getValue(), stateAction.action()));
+                withNewAction(actionsList, stateAction, gameStateO);
             }
         });
         vbox.getChildren().add(action);
@@ -262,15 +248,7 @@ public final class Main extends Application {
 
         // Create the decks UI and set it on the bottom (right side)
         Node decks = DecksUI.create(tileToPlace, normalTiles, menhirTiles, text, occupant -> {
-            if (gameStateO.getValue().nextAction() == GameState.Action.OCCUPY_TILE) {
-                actionsList.setValue(withNewAction(actionsList.getValue(),
-                        withNewOccupant(gameStateO.getValue(), occupant).action()));
-                gameStateO.setValue(gameStateO.getValue().withNewOccupant(occupant));
-            } else if (gameStateO.getValue().nextAction() == GameState.Action.RETAKE_PAWN) {
-                actionsList.setValue(withNewAction(actionsList.getValue(),
-                        withOccupantRemoved(gameStateO.getValue(), occupant).action()));
-                gameStateO.setValue(gameStateO.getValue().withOccupantRemoved(occupant));
-            }
+            occupantConsumer(occupant, actionsList, gameStateO);
         });
         vbox.getChildren().add(decks);
 
@@ -290,15 +268,27 @@ public final class Main extends Application {
      * Private static helper method that adds a new
      * action to the list of actions.
      *
-     * @param old the old list of actions
-     * @param action the new action to add
-     * @return the new list of actions
+     * @param actionsList the old list of actions
+     * @param stateAction the new action to add
      */
 
     //TODO mofifié
-    private static List<String> withNewAction(List<String> old, String action) {
-        List<String> newList = new ArrayList<>(old);
-        newList.add(action);
-        return newList;
+    private static void withNewAction(ObjectProperty<List<String>> actionsList, StateAction stateAction, SimpleObjectProperty<GameState> state) {
+        List<String> list = actionsList.getValue();
+        list.add(stateAction.action());
+        actionsList.setValue(list);
+        state.setValue(stateAction.state());
+    }
+
+    private static void occupantConsumer(Occupant occupant, ObjectProperty<List<String>> actionsList, SimpleObjectProperty<GameState> observableState) {
+        GameState gameState = observableState.getValue();
+        StateAction stateAction;
+        switch (gameState.nextAction()) {
+            case OCCUPY_TILE -> stateAction = withNewOccupant(gameState, occupant);
+            case RETAKE_PAWN -> stateAction = withOccupantRemoved(gameState, occupant);
+            default -> stateAction = null;
+        }
+        if (stateAction != null)
+            withNewAction(actionsList, stateAction, observableState);
     }
 }
