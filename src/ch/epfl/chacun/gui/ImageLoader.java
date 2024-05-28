@@ -3,7 +3,8 @@ package ch.epfl.chacun.gui;
 import javafx.scene.image.Image;
 
 /**
- * Immutable class that creates images for the tiles and markers.
+ * Immutable class to help with the process of loading
+ * images of tiles and markers from ressources.
  *
  * @author Alexis Grillet-Aubert (381587)
  * @author Jakub Kliment (380660)
