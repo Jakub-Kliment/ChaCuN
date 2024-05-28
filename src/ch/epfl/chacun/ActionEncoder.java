@@ -95,8 +95,10 @@ public final class ActionEncoder {
         if (occupant == null)
             return new StateAction(state.withOccupantRemoved(null), Base32.encodeBits5(NULL_OCCUPANT));
 
-        if (state.currentPlayer() == state.board().tileWithId(Zone.tileId(occupant.zoneId())).placer()) {
-            String action = Base32.encodeBits5(sortedPawns(state).indexOf(occupant));
+        List<Occupant> sortedPawns = sortedPawns(state);
+        if (state.currentPlayer() == state.board().tileWithId(Zone.tileId(occupant.zoneId())).placer()
+                && sortedPawns.contains(occupant)) {
+            String action = Base32.encodeBits5(sortedPawns.indexOf(occupant));
             return new StateAction(state.withOccupantRemoved(occupant), action);
         }
         return null;
