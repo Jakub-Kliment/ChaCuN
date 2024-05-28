@@ -9,7 +9,6 @@ import javafx.scene.image.Image;
  * @author Jakub Kliment (380660)
  */
 public final class ImageLoader {
-    static int count = 0;
 
     /**
      * Pixel size of a large tile
