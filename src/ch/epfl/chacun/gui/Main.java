@@ -202,20 +202,19 @@ public final class Main extends Application {
                     }
                 },
                 occupant -> {
-                    // ca aussi
                     GameState gameState = gameStateO.getValue();
-                    if (gameState.nextAction() == GameState.Action.OCCUPY_TILE
-                            && gameState.lastTilePotentialOccupants().contains(occupant)) {
-                        actionsList.setValue(withNewAction(actionsList.getValue(),
-                                withNewOccupant(gameState, occupant).action()));
-                        gameStateO.setValue(gameState.withNewOccupant(occupant));
-                    } else if (gameState.nextAction() == GameState.Action.RETAKE_PAWN
-                            && occupant.kind() == Occupant.Kind.PAWN
-                            && gameState.board().tileWithId(Zone.tileId(
-                                    occupant.zoneId())).placer() == gameState.currentPlayer()) {
-                        actionsList.setValue(withNewAction(actionsList.getValue(),
-                                withOccupantRemoved(gameStateO.getValue(), occupant).action()));
-                        gameStateO.setValue(gameState.withOccupantRemoved(occupant));
+                    StateAction stateAction;
+
+                    switch (gameState.nextAction()) {
+                        case OCCUPY_TILE -> stateAction = withNewOccupant(gameState, occupant);
+                        case RETAKE_PAWN -> stateAction = withOccupantRemoved(gameState, occupant);
+                        default -> stateAction = null;
+                    }
+
+                    if (stateAction != null) {
+                        actionsList.setValue(withNewAction(
+                                actionsList.getValue(), stateAction.action()));
+                        gameStateO.setValue(stateAction.state());
                     }
                 });
         mainPane.setCenter(board);

@@ -73,7 +73,11 @@ public final class ActionEncoder {
         int kind = occupant.kind().ordinal();
         String action = Base32.encodeBits5(kind << OCCUPANT_KIND_SHIFT | zoneId);
 
-        return new StateAction(state.withNewOccupant(occupant), action);
+        for (Occupant potentialOccupant : state.lastTilePotentialOccupants())
+            if (potentialOccupant.zoneId() == occupant.zoneId()
+                    && potentialOccupant.kind() == occupant.kind())
+                return new StateAction(state.withNewOccupant(occupant), action);
+        return null;
     }
 
     /**
@@ -107,7 +111,7 @@ public final class ActionEncoder {
     public static StateAction decodeAndApply(GameState state, String action) {
         try {
             return decode(state, action);
-        } catch (EncoderExeption encoderExeption) {
+        } catch (EncoderException encoderException) {
             return null;
         }
     }
@@ -120,10 +124,10 @@ public final class ActionEncoder {
      * @param state the game state to apply the action to
      * @param action the action to decode and apply
      * @return the new game state and the decoded action
+     * @throws EncoderException if the action is invalid
      */
-    private static StateAction decode(GameState state, String action) throws EncoderExeption {
-        if (action.length()>2)
-            throw new EncoderExeption();
+    private static StateAction decode(GameState state, String action) throws EncoderException {
+        if (action.length() > 2) throw new EncoderException();
         int actionRepresentation = Base32.decode(action);
 
         // Decoding the action based on the next action of the game state
@@ -146,13 +150,10 @@ public final class ActionEncoder {
 
                 int zone = actionRepresentation & ZONE_MASK;
                 int kind = actionRepresentation >> OCCUPANT_KIND_SHIFT;
-
-                for (Occupant occupant : state.lastTilePotentialOccupants())
-                    if (Zone.localId(occupant.zoneId()) == zone
-                            && occupant.kind().ordinal() == kind)
+                for (Occupant occupant : state.lastTilePotentialOccupants()) {
+                    if (Zone.localId(occupant.zoneId()) == zone && occupant.kind().ordinal() == kind)
                         return withNewOccupant(state, occupant);
-
-                return null;
+                }
             }
             case RETAKE_PAWN -> {
                 if (actionRepresentation == NULL_OCCUPANT)
@@ -160,10 +161,9 @@ public final class ActionEncoder {
 
                 if (state.board().tileWithId(Zone.tileId(sortedPawns(state).get(actionRepresentation).zoneId())).placer() == state.currentPlayer())
                     return withOccupantRemoved(state, sortedPawns(state).get(actionRepresentation));
-
             }
         }
-        throw new EncoderExeption();
+        throw new EncoderException();
     }
 
     /**
@@ -206,7 +206,7 @@ public final class ActionEncoder {
      */
     public record StateAction(GameState state, String action) {}
 
-    private static class EncoderExeption extends Exception{
-        public EncoderExeption() {}
+    private static class EncoderException extends Exception {
+        public EncoderException() {}
     }
 }
