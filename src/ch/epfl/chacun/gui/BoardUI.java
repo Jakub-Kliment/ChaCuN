@@ -118,10 +118,7 @@ public final class BoardUI {
                         int id = tile.id();
                         rotationData = tile.rotation();
 
-//                        if (!cache.containsKey(id))
-//                            cache.put(id, normalImageForTile(id));
                         imageData = cache.computeIfAbsent(id, ImageLoader::normalImageForTile);
-//                        imageData = cache.get(id);
 
                         // If the tile is not in the set of tile ids, color it black, else transparent
                         colorData = (!currentIds.isEmpty() && !currentIds.contains(id))
@@ -133,12 +130,10 @@ public final class BoardUI {
 
                         if (hoverProperty.get()) {
                             Tile tileToPlace = state.tileToPlace();
-                            int id = tileToPlace.id();
 
-//                            if (!cache.containsKey(id))
-//                                cache.put(id, normalImageForTile(id));
-                            imageData = cache.computeIfAbsent(id, ImageLoader::normalImageForTile);
-//                            imageData = cache.get(id);
+                            imageData = cache.computeIfAbsent(
+                                    tileToPlace.id(),
+                                    ImageLoader::normalImageForTile);
                             rotationData = rotationO.getValue();
 
                             PlacedTile potentialTile = new PlacedTile(
