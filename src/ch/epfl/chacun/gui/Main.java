@@ -201,9 +201,8 @@ public final class Main extends Application {
                         rotation.setValue(Rotation.NONE);
                     }
                 },
-                occupant -> {
-                    occupantConsumer(occupant, actionsList, gameStateO);
-                });
+                occupant -> occupantConsumer(occupant, actionsList, gameStateO)
+                );
         mainPane.setCenter(board);
 
         // Create the right side of the GUI
@@ -247,9 +246,9 @@ public final class Main extends Application {
         });
 
         // Create the decks UI and set it on the bottom (right side)
-        Node decks = DecksUI.create(tileToPlace, normalTiles, menhirTiles, text, occupant -> {
-            occupantConsumer(occupant, actionsList, gameStateO);
-        });
+        Node decks = DecksUI.create(tileToPlace, normalTiles, menhirTiles, text, occupant ->
+            occupantConsumer(occupant, actionsList, gameStateO)
+        );
         vbox.getChildren().add(decks);
 
         // Create the scene of the game and set it to the primary stage
@@ -268,19 +267,32 @@ public final class Main extends Application {
      * Private static helper method that adds a new
      * action to the list of actions.
      *
-     * @param actionsList the old list of actions
-     * @param stateAction the new action to add
+     * @param actionsList the old observable list of actions
+     * @param stateAction the new state action with the new action and state
+     * @param state the observable state of the game
      */
+    private static void withNewAction(ObjectProperty<List<String>> actionsList,
+                                      StateAction stateAction,
+                                      SimpleObjectProperty<GameState> state) {
 
-    //TODO mofifié
-    private static void withNewAction(ObjectProperty<List<String>> actionsList, StateAction stateAction, SimpleObjectProperty<GameState> state) {
-        List<String> list = actionsList.getValue();
+        List<String> list = new ArrayList<>(actionsList.getValue());
         list.add(stateAction.action());
         actionsList.setValue(list);
         state.setValue(stateAction.state());
     }
 
-    private static void occupantConsumer(Occupant occupant, ObjectProperty<List<String>> actionsList, SimpleObjectProperty<GameState> observableState) {
+    /**
+     * Private static helper method that consumes an occupant
+     * and adds a new action to the list of actions.
+     *
+     * @param occupant the occupant to consume
+     * @param actionsList the list of actions
+     * @param observableState the observable state of the game
+     */
+    private static void occupantConsumer(Occupant occupant,
+                                         ObjectProperty<List<String>> actionsList,
+                                         SimpleObjectProperty<GameState> observableState) {
+
         GameState gameState = observableState.getValue();
         StateAction stateAction;
         switch (gameState.nextAction()) {
