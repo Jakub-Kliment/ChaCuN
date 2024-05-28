@@ -188,16 +188,17 @@ public final class Main extends Application {
                 consumerRot -> rotation.setValue(rotation.getValue().add(consumerRot)),
                 consumerPos -> {
                     GameState gameState = gameStateO.getValue();
-                    // faire ça dans boardUI
                     PlacedTile placedTile = new PlacedTile(
                             gameState.tileToPlace(),
                             gameState.currentPlayer(),
                             rotation.getValue(),
                             consumerPos);
-                    if (gameState.board().canAddTile(placedTile)) {
-                        actionsList.setValue(withNewAction(actionsList.getValue(),
-                                withPlacedTile(gameStateO.getValue(), placedTile).action()));
-                        gameStateO.setValue(gameState.withPlacedTile(placedTile));
+
+                    StateAction stateAction = withPlacedTile(gameState, placedTile);
+                    if (stateAction != null) {
+                        actionsList.setValue(withNewAction(
+                                actionsList.getValue(), stateAction.action()));
+                        gameStateO.setValue(stateAction.state());
                         rotation.setValue(Rotation.NONE);
                     }
                 },

@@ -48,11 +48,14 @@ public final class ActionEncoder {
      * @return the new game state and the encoded action
      */
     public static StateAction withPlacedTile(GameState state, PlacedTile tile) {
-        int rot = tile.rotation().ordinal();
-        int pos = sortedPositions(state).indexOf(tile.pos());
-        String action = Base32.encodeBits10(pos << POSITION_SHIFT | rot);
+        if (state.board().canAddTile(tile)) {
+            int rot = tile.rotation().ordinal();
+            int pos = sortedPositions(state).indexOf(tile.pos());
+            String action = Base32.encodeBits10(pos << POSITION_SHIFT | rot);
 
-        return new StateAction(state.withPlacedTile(tile), action);
+            return new StateAction(state.withPlacedTile(tile), action);
+        }
+        return  null;
     }
 
     /**
@@ -69,14 +72,12 @@ public final class ActionEncoder {
         if (occupant == null)
             return new StateAction(state.withNewOccupant(null), Base32.encodeBits5(NULL_OCCUPANT));
 
-        int zoneId = Zone.localId(occupant.zoneId());
-        int kind = occupant.kind().ordinal();
-        String action = Base32.encodeBits5(kind << OCCUPANT_KIND_SHIFT | zoneId);
-
-        for (Occupant potentialOccupant : state.lastTilePotentialOccupants())
-            if (potentialOccupant.zoneId() == occupant.zoneId()
-                    && potentialOccupant.kind() == occupant.kind())
-                return new StateAction(state.withNewOccupant(occupant), action);
+        if (state.lastTilePotentialOccupants().contains(occupant)) {
+            int zoneId = Zone.localId(occupant.zoneId());
+            int kind = occupant.kind().ordinal();
+            String action = Base32.encodeBits5(kind << OCCUPANT_KIND_SHIFT | zoneId);
+            return new StateAction(state.withNewOccupant(occupant), action);
+        }
         return null;
     }
 
@@ -90,10 +91,11 @@ public final class ActionEncoder {
      * @param occupant the occupant to remove
      * @return the new game state and the encoded action
      */
-    public static StateAction withOccupantRemoved(GameState state, Occupant occupant){
+    public static StateAction withOccupantRemoved(GameState state, Occupant occupant) {
         if (occupant == null)
             return new StateAction(state.withOccupantRemoved(null), Base32.encodeBits5(NULL_OCCUPANT));
-        if (state.currentPlayer() != state.board().tileWithId(Zone.tileId(occupant.zoneId())).placer()){
+
+        if (state.currentPlayer() != state.board().tileWithId(Zone.tileId(occupant.zoneId())).placer()) {
             String action = Base32.encodeBits5(sortedPawns(state).indexOf(occupant));
             return new StateAction(state.withOccupantRemoved(occupant), action);
         }
@@ -152,8 +154,10 @@ public final class ActionEncoder {
 
                 int zone = actionRepresentation & ZONE_MASK;
                 int kind = actionRepresentation >> OCCUPANT_KIND_SHIFT;
+
                 for (Occupant occupant : state.lastTilePotentialOccupants()) {
-                    if (Zone.localId(occupant.zoneId()) == zone && occupant.kind().ordinal() == kind)
+                    if (Zone.localId(occupant.zoneId()) == zone
+                            && occupant.kind().ordinal() == kind)
                         return withNewOccupant(state, occupant);
                 }
             }
@@ -207,6 +211,10 @@ public final class ActionEncoder {
      */
     public record StateAction(GameState state, String action) {}
 
+    /**
+     * Private exception to handle exceptions thrown during
+     * the encoding and decoding process of actions.
+     */
     private static class EncoderException extends Exception {
         public EncoderException() {}
     }
