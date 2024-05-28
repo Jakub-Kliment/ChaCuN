@@ -9,6 +9,7 @@ import javafx.scene.image.Image;
  * @author Jakub Kliment (380660)
  */
 public final class ImageLoader {
+    static int count = 0;
 
     /**
      * Pixel size of a large tile
@@ -52,6 +53,7 @@ public final class ImageLoader {
      * @return the image for the tile with the given id
      */
     public static Image normalImageForTile(int id) {
+        System.out.println(++count);
         return new Image(String.format("/%d/%02d.jpg", NORMAL_TILE_PIXEL_SIZE, id));
     }
 
