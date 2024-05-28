@@ -53,7 +53,6 @@ public final class ImageLoader {
      * @return the image for the tile with the given id
      */
     public static Image normalImageForTile(int id) {
-        System.out.println(++count);
         return new Image(String.format("/%d/%02d.jpg", NORMAL_TILE_PIXEL_SIZE, id));
     }
 
