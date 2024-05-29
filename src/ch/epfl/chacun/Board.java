@@ -205,6 +205,7 @@ public final class Board {
             if (adjacentPositions.contains(tileWithId(zone.tileId()).pos()))
                 adjacentMeadow.add(zone);
 
+
         return new Area<>(adjacentMeadow, meadowArea.occupants(), 0);
     }
 
@@ -235,10 +236,12 @@ public final class Board {
         Set<Pos> insertionPositions = new HashSet<>();
         for (int i : index) {
             Pos pos = positionFromIndex(i);
-            for (Direction direction : Direction.ALL)
-                if (tileAt(pos.neighbor(direction)) == null
-                        && indexFromPosition(pos.neighbor(direction)) != -1)
-                    insertionPositions.add(pos.neighbor(direction));
+            for (Direction direction : Direction.ALL){
+                Pos neighbor = pos.neighbor(direction);
+                if (tileAt(neighbor) == null
+                        && indexFromPosition(neighbor) != -1)
+                    insertionPositions.add(neighbor);
+            }
         }
         return insertionPositions;
     }
