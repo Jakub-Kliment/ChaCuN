@@ -172,7 +172,10 @@ public final class BoardUI {
                             String kind = tileOccupant.kind() == Occupant.Kind.PAWN ? "pawn" : "hut";
                             occupantImage.setId(STR."\{kind}_\{tileOccupant.zoneId()}");
 
-                            occupantImage.setOnMouseClicked(event -> occupant.accept(tileOccupant));
+                            occupantImage.setOnMouseClicked(event -> {
+                                    if (event.isStillSincePress())
+                                        occupant.accept(tileOccupant);
+                            });
 
                             occupantImage.rotateProperty().bind(cellData.map(
                                     cell -> cell.rotation.negated().degreesCW()));
