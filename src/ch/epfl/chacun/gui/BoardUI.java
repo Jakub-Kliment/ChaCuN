@@ -205,10 +205,12 @@ public final class BoardUI {
                 plain.setHeight(NORMAL_TILE_FIT_SIZE);
                 plain.setWidth(NORMAL_TILE_FIT_SIZE);
 
-                Blend blend = new Blend(BlendMode.SRC_OVER);
-                blend.setOpacity(0.5);
-                blend.setTopInput(plain);
-                group.setEffect(blend);
+                Blend blendR = new Blend(BlendMode.SRC_OVER);
+                blendR.setOpacity(0.5);
+                blendR.setTopInput(plain);
+
+                ObservableValue<Blend> blend =cellData.map(cellData1 -> !cellData1.color.equals(Color.TRANSPARENT) ? blendR : null);
+                group.effectProperty().bind(blend);
 
                 // Image view for the tile
                 ImageView imageTile = new ResizedImageView(NORMAL_TILE_FIT_SIZE);
