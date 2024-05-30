@@ -236,10 +236,9 @@ public final class Board {
         Set<Pos> insertionPositions = new HashSet<>();
         for (int i : index) {
             Pos pos = positionFromIndex(i);
-            for (Direction direction : Direction.ALL){
+            for (Direction direction : Direction.ALL) {
                 Pos neighbor = pos.neighbor(direction);
-                if (tileAt(neighbor) == null
-                        && indexFromPosition(neighbor) != -1)
+                if (tileAt(neighbor) == null && indexFromPosition(neighbor) != -1)
                     insertionPositions.add(neighbor);
             }
         }
