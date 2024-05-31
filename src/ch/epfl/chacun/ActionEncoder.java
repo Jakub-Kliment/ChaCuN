@@ -139,6 +139,7 @@ public final class ActionEncoder {
         // Decoding the action based on the next action of the game state
         switch (state.nextAction()) {
             case PLACE_TILE -> {
+                if (action.length() != 2) throw new EncoderException();
                 int rotation = actionRepresentation & ROTATION_MASK;
                 int position = actionRepresentation >> POSITION_SHIFT;
 
@@ -164,6 +165,7 @@ public final class ActionEncoder {
                 }
             }
             case RETAKE_PAWN -> {
+                if (action.length() != 1) throw new EncoderException();
                 if (actionRepresentation == NULL_OCCUPANT)
                     return withOccupantRemoved(state, null);
 
