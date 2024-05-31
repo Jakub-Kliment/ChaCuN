@@ -212,7 +212,10 @@ public final class BoardUI {
                 blendR.setOpacity(0.5);
                 blendR.setTopInput(plain);
 
-                ObservableValue<Blend> blend =cellData.map(cellData1 -> !cellData1.color.equals(Color.TRANSPARENT) ? blendR : null);
+                ObservableValue<Blend> blend = cellData.map(
+                        cellData1 -> !cellData1.color.equals(Color.TRANSPARENT)
+                                ? blendR
+                                : null);
                 group.effectProperty().bind(blend);
 
                 // Image view for the tile
