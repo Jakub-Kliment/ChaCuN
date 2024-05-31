@@ -90,11 +90,16 @@ public final class Main extends Application {
                 .stream()
                 .collect(Collectors.groupingBy(Tile::kind));
 
-        // Create the tile decks
+//        // Create the tile decks
+//        TileDecks tileDecks = new TileDecks(
+//                groupedTiles.get(Tile.Kind.START),
+//                groupedTiles.get(Tile.Kind.NORMAL),
+//                groupedTiles.get(Tile.Kind.MENHIR));
+
         TileDecks tileDecks = new TileDecks(
-                groupedTiles.get(Tile.Kind.START),
-                groupedTiles.get(Tile.Kind.NORMAL),
-                groupedTiles.get(Tile.Kind.MENHIR));
+                List.of(Tiles.TILES.get(56)),
+                List.of(Tiles.TILES.get(68), Tiles.TILES.get(37), Tiles.TILES.get(35)),
+                List.of(Tiles.TILES.get(83)));
 
         // Create the text maker and game state
         TextMaker textMaker = new TextMakerFr(players);
