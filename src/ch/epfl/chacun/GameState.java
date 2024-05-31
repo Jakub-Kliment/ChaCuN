@@ -275,20 +275,13 @@ public record GameState(List<PlayerColor> players,
     private GameState withTurnFinished() {
         MessageBoard newMessageBoard = messageBoard;
         Board newBoard = board;
-        boolean menhirForest = false;
+        Tile.Kind kind;
+        Area<Zone.Forest> forestWithMenhir = null;
 
         // Score the forests and rivers closed by the last tile
         for (Area<Zone.Forest> forestArea : newBoard.forestsClosedByLastTile()) {
-            boolean menhirMessage = Area.hasMenhir(forestArea)
-                    && !menhirForest
-                    && tileDecks.deckSize(Tile.Kind.MENHIR) != 0
-                    && board.lastPlacedTile().kind() != Tile.Kind.MENHIR;
-
-            if (menhirMessage) {
-                newMessageBoard = newMessageBoard
-                        .withClosedForestWithMenhir(currentPlayer(), forestArea);
-                menhirForest = true;
-            }
+            if (Area.hasMenhir(forestArea))
+                forestWithMenhir = forestArea;
             newMessageBoard = newMessageBoard.withScoredForest(forestArea);
         }
 
@@ -300,25 +293,25 @@ public record GameState(List<PlayerColor> players,
                 newBoard.riversClosedByLastTile());
 
         TileDecks newTileDecks = tileDecks;
-        // Check if the next tile is a menhir tile or a normal tile
-        Tile.Kind kind = (menhirForest &&
-                newBoard.lastPlacedTile().kind() == Tile.Kind.NORMAL)
-                ? Tile.Kind.MENHIR : Tile.Kind.NORMAL;
-
-        if (kind == Tile.Kind.MENHIR) {
+        if (forestWithMenhir != null) {
+            kind = Tile.Kind.MENHIR;
             newTileDecks = newTileDecks.withTopTileDrawnUntil(kind, newBoard::couldPlaceTile);
-            if (newTileDecks.deckSize(kind) != 0)
+            if (newTileDecks.deckSize(kind) != 0) {
+                newMessageBoard = newMessageBoard
+                        .withClosedForestWithMenhir(currentPlayer(), forestWithMenhir);
                 return new GameState(players, newTileDecks.withTopTileDrawn(kind),
                         newTileDecks.topTile(kind), newBoard, Action.PLACE_TILE, newMessageBoard);
+            }
         }
 
         List<PlayerColor> newPlayers = new LinkedList<>(players);
         newPlayers.add(newPlayers.removeFirst());
-        newTileDecks = newTileDecks.withTopTileDrawnUntil(Tile.Kind.NORMAL, newBoard::couldPlaceTile);
+        kind = Tile.Kind.NORMAL;
+        newTileDecks = newTileDecks.withTopTileDrawnUntil(kind, newBoard::couldPlaceTile);
 
-        if (newTileDecks.deckSize(Tile.Kind.NORMAL) != 0)
-            return new GameState(newPlayers, newTileDecks.withTopTileDrawn(Tile.Kind.NORMAL),
-                    newTileDecks.topTile(Tile.Kind.NORMAL), newBoard, Action.PLACE_TILE, newMessageBoard);
+        if (newTileDecks.deckSize(kind) != 0)
+            return new GameState(newPlayers, newTileDecks.withTopTileDrawn(kind),
+                    newTileDecks.topTile(kind), newBoard, Action.PLACE_TILE, newMessageBoard);
 
         return new GameState(newPlayers, newTileDecks, null, newBoard,
                 Action.END_GAME, newMessageBoard).withFinalPointsCounted();
