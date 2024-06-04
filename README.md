@@ -16,4 +16,7 @@ If you wish to play with someone long distance, you can use our action encoder a
 Your action will be interpreted as Base32 characters that you can send to other players who will simply have to
 write the encoded action into their game and the action will play itself.
 
+# Dependencies
+Java version 21 or newer and JavaFX version 22 or newer.
+
 # Have fun and enjoy
